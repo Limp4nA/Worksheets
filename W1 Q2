@@ -21,7 +21,7 @@ class Graph:
             """
             for row in self.adjmatrix:
                 row.append(0)
-            self.adjmatrix.append([0] * (index+1))  # Extend each row with one more zero
+            self.adjmatrix.append([0] * (index+1))  # Extend each row with one more zero , I am not sure why but if I did not add 1 it will be index error
 
             # first we will check if the verticexes are in our vertex dic ( keys) ,if true we will get the value that present the index
     def add_edge(self, from_vertex, to_vertex):
