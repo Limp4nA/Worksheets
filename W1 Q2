@@ -26,10 +26,15 @@ class Graph:
             # first we will check if the verticexes are in our vertex dic ( keys) ,if true we will get the value that present the index
 
 
+    def remover_vertex(self, vertex):
+        if vertex in self.vertices:
 
+            index = self.vertices[vertex]
 
-
-
+            del self.vertices[index]
+            del self.adjmatrix[index]
+            for row in self.adjmatrix:
+                del row[index]
 
     def add_edge(self, from_vertex, to_vertex):
         if from_vertex in self.vertices and to_vertex in self.vertices:
