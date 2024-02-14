@@ -1,1 +1,62 @@
+class Graph:
+    def __init__(self):
+        # Dictionary to store vertices
+        self.vertices = {}
+        self.adjmatrix = [] #2D list
+
+    def add_vertex(self, vertex):
+        #check if the vertex is already in there, if not we will add it
+        if vertex not in self.vertices:
+            
+            # use the index to give a uniqe value for each vertex
+            index = len(self.vertices)
+            
+            # add it to the vertext dectionary
+            self.vertices[vertex] = index
+
+            # Extend adjacency matrix for the new vertex
+            """
+            chatGPT explanation: appends a new row to the adjacency matrix, where the length of the row is determined by the variable index, 
+            and all elements in the row are initially set to zero. This is often used to initialize the adjacency matrix with the appropriate number of columns when adding a new vertex to the graph. Each zero represents the absence of a connection between the corresponding vertex and the newly added vertex.
+            """
+            for row in self.adjmatrix:
+                row.append(0)
+            self.adjmatrix.append([0] * (index+1))  # Extend each row with one more zero
+
+            # first we will check if the verticexes are in our vertex dic ( keys) ,if true we will get the value that present the index
+    def add_edge(self, from_vertex, to_vertex):
+        if from_vertex in self.vertices and to_vertex in self.vertices:
+            from_index = self.vertices[from_vertex]
+            to_index = self.vertices[to_vertex]
+
+            # update the releation (edges), 1 = there a connection
+            self.adjmatrix[from_index][to_index] = 1
+            self.adjmatrix[to_index][from_index] = 1
+
+    def display_matrix(self):
+        for row in self.adjmatrix:
+            print(row)
+
+
+# Testing the Graph class
+network = Graph()
+
+# Add vertices and connect them
+network.add_vertex("A")
+network.add_vertex("B")
+network.add_edge("A", "B")
+network.display_matrix()
+# Verify is all computers are connected
+#is_network_connected(network)
+#Output: True
+
+# Add more computers to the network and connect them
+network.add_vertex("C")
+network.add_vertex("C")
+network.add_edge("C", "D")
+
+# Verify is all computers are connected
+#is_network_connected(network)
+#Output: False
+
 
