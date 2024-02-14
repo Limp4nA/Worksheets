@@ -20,49 +20,50 @@ class Graph:
         if node in self.nodes:
             return self.nodes[node]
 
-    #shortest_path() returns the least number of steps from the start node to the goal
-    #start node is the current node that we are in right now
-    #goal is the distination -- visited is a list that holds all the visited nodes to make sure that the program doesnt go back to its way
-    #steps is a step counter
-    #the mothod goes to every possible path and compare to find the shortest path
-    def shortest_path(self,start,goal,visited=[],steps=0):
-
-        #if we reached the distination return the number of steps
-        if start == goal:
-            return steps
-
-        #min represents the least number of steps. it first initialized by the maximum number of steps possible aka (the number of nodes)
-        min = len(self.nodes)
-
-        #there_is_away is an assumption that there is no way to travel to. maybe because all the neighbor node are already been visited
-        there_is_away=False
-
-        #we add our current aka(start) node that we are in to the visited list
-        visited.append(start)
-
-        #for each neighbor node that is connected to our current aka(start) node
-        for neighbor in self.nodes[start]:
-
-            #if we had never visited the neighbor before
-            if neighbor not in visited:
-
-                #get the shortest steps by calling the method again and making the neighbor the current aka(start) node
-                #and a copy of the visited list because each path has his own visited nodes then, increment the steps by one
-                neighbor_shortest_path=self.shortest_path(neighbor,goal,visited.copy(),steps+1)
-
-                #there is away become True because we have a neighbor that we can visit
-                there_is_away=True
-
-                #if neighbor_shortest_path does exist and neighbor_shortest_path is less than our shortest path counter aka(min)
-                if neighbor_shortest_path != -1 and min> neighbor_shortest_path:
-
-                    #the neighbor_shortest_path become our shortest path
-                    min=neighbor_shortest_path
-
-        #if we never find a neighbor node that we can visit, maybe because all of the neighbor nodes has been visitied before
-        if not there_is_away:
-            #-1 represent that there is not way for this path to reach the goal
+    def shortest_path(self,node1,node2):
+        
+        if node1 not in self.nodes or node2 not in self.nodes:
             return -1
 
-        #return the minimum of the shortest paths between all the neighbors
-        return min
+        node1_neighbors_with_depth=[node1]
+        node2_neighbors_with_depth=[node2]
+
+        trash=[]
+
+        depth=0
+        turn=True
+
+        while (len(node1_neighbors_with_depth) !=0 and len(node2_neighbors_with_depth) !=0):
+            if self.intersection_check(node1_neighbors_with_depth,node2_neighbors_with_depth):
+                return depth
+
+            if turn:
+                node1_neighbors_with_depth=self.next_depth(node1_neighbors_with_depth,trash)
+                turn=False
+            else:
+                node2_neighbors_with_depth=self.next_depth(node2_neighbors_with_depth,trash)
+                turn=True
+
+            depth+=1
+            
+        return -1
+
+    def intersection_check(self,nodes1,nodes2):
+        for node1 in nodes1:
+            for node2 in nodes2:
+                if node1 == node2:
+                    return True
+        return False
+
+    def next_depth(self,old_neighbors,trash):
+        new_neighbors=[]
+
+        for neighbor in old_neighbors:
+            for neighbor_neighbor in self.nodes[neighbor]:
+                if neighbor_neighbor not in trash:
+                    new_neighbors.append(neighbor_neighbor)
+            if neighbor not in trash:
+                trash.append(neighbor)
+
+        return new_neighbors
+
