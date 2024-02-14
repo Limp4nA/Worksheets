@@ -36,7 +36,7 @@ class Graph:
             from_index = self.vertices[from_vertex]
             to_index = self.vertices[to_vertex]
 
-            # update the releation (edges), 1 = there a connection
+            # update the releation (edges), 1 = there a connection, it is a 2D list so we need to 2 indix
             self.adjmatrix[from_index][to_index] = 1
             self.adjmatrix[to_index][from_index] = 1
 
