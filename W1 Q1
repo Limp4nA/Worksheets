@@ -20,50 +20,93 @@ class Graph:
         if node in self.nodes:
             return self.nodes[node]
 
+#the shortest_path() asks for two nodes and returns the shortest path as an integer
+    #by expanding the neighbors of node1 and node2 until a common neighbor is found
     def shortest_path(self,node1,node2):
-        
+
+        #if one of the nodes are not in the graph
         if node1 not in self.nodes or node2 not in self.nodes:
+            #return a negative number aka(no path)
             return -1
 
+        #each list represents the circle circumference of neighbors. for every iteration, the lists expands
+        #starting with the nodes themselves because the depth = 0
         node1_neighbors_with_depth=[node1]
         node2_neighbors_with_depth=[node2]
 
+        #the list trash represents all the nodes we are done with. we use it when we expand the lists node(1 or 2)_neighbors_with_depth
+        #we throw all of the neighbors with depth = x into trash to expand node(1 or 2)_neighbors_with_depth with neighbors of depth = x+1
         trash=[]
 
+        #we start with depth = 0
         depth=0
+
+        #the turn boolean variable is used to give turns to node1 list and node2 list
+        # If turn is true then it is node1 list turn to expand. else is node2 list turn to expand
         turn=True
 
+        #while node1 list and node2 list are not empty
         while (len(node1_neighbors_with_depth) !=0 and len(node2_neighbors_with_depth) !=0):
+
+            #checks if there is a common node in the node(1&2) neighbors list
             if self.intersection_check(node1_neighbors_with_depth,node2_neighbors_with_depth):
+                #return the depth which is the shortest path or steps
                 return depth
 
+            #if it is node1_neighbors list turn
             if turn:
+                #expand the neighbors
                 node1_neighbors_with_depth=self.next_depth(node1_neighbors_with_depth,trash)
+
+                #changing turn to node2`s turn
                 turn=False
+
+            #if it is node2_neighbors list turn
             else:
+                #expand the neighbors
                 node2_neighbors_with_depth=self.next_depth(node2_neighbors_with_depth,trash)
+
+                #changing turn to node1`s turn
                 turn=True
 
+            #increment the depth by 1
             depth+=1
-            
+
+        #one of the node_neighbor_with_depth list is empty meaning that it cannot expand any further therefore the nodes are not connected
         return -1
 
-    def intersection_check(self,nodes1,nodes2):
-        for node1 in nodes1:
-            for node2 in nodes2:
-                if node1 == node2:
+    #the intersection_check() asks for two lists of nodes
+    #it returns true if there is a node that exists in both of the lists
+    def intersection_check(self, node1_neighbors, node2_neighbors):
+        for node1_neighbor in node1_neighbors:
+            for node2_neighbor in node2_neighbors:
+                if node1_neighbor == node2_neighbor:
                     return True
         return False
 
+    #the next_depth() asks for two lists of nodes. it throws all the nodes in old_neighbors into the trash and returns a list of the new neighbors
+    #this is the method that expands the neighbor's circle circumference.
     def next_depth(self,old_neighbors,trash):
+
+        # initialize the result list to an empty list
         new_neighbors=[]
 
+        #for each neighbor
         for neighbor in old_neighbors:
+
+            #for all neighbors in neighbor
             for neighbor_neighbor in self.nodes[neighbor]:
+
+                #if it's not in the trash list
                 if neighbor_neighbor not in trash:
+
+                    #add it to the result list
                     new_neighbors.append(neighbor_neighbor)
+
+            #throw the old neighbor into trash
             if neighbor not in trash:
                 trash.append(neighbor)
 
+        #return result
         return new_neighbors
 
