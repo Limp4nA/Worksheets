@@ -53,10 +53,14 @@ class Graph:
             self.adjmatrix[from_index][0]
             self.adjmatrix[to_index][0]
 
-
     def display_matrix(self):
+        print("Adjacency Matrix:")
         for row in self.adjmatrix:
             print(row)
+
+    def is_network_connected(self):
+        if len(self.adjmatrix) == 0:
+            return False
 
 
 # Testing the Graph class
