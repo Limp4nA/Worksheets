@@ -26,7 +26,7 @@ class Graph:
             # first we will check if the verticexes are in our vertex dic ( keys) ,if true we will get the value that present the index
 
 
-    def remover_vertex(self, vertex):
+    def remove_vertex(self, vertex):
         if vertex in self.vertices:
 
             index = self.vertices[vertex]
@@ -59,9 +59,34 @@ class Graph:
             print(row)
 
     def is_network_connected(self):
-        if len(self.adjmatrix) == 0:
-            return False
+        for row in self.adjmatrix:
+            if sum(row) == 0:  # If a row sums to 0, vertex has no connections
+                return False
+        return True if self.adjmatrix else False
 
+
+    def print_matrix(self):
+        result=' |'
+
+        line="\n"+("-"*(2+len(self.adjmatrix)*2))+"\n"
+        line='\n'
+        for key in self.vertices:
+            result+=f"{key}|"
+
+        result+=line
+
+        keys=list(self.vertices.keys())
+
+        for row in range(len(self.adjmatrix)):
+            result+=f"{keys[row]}|"
+
+            for col in range(len(self.adjmatrix[row])):
+
+                result+=f"{self.adjmatrix[row][col]}|"
+
+            result+=line
+
+        print(result)
 
 # Testing the Graph class
 network = Graph()
@@ -71,6 +96,7 @@ network.add_vertex("A")
 network.add_vertex("B")
 network.add_edge("A", "B")
 network.display_matrix()
+print("Output:",network.is_network_connected())
 # Verify is all computers are connected
 #is_network_connected(network)
 #Output: True
@@ -84,4 +110,4 @@ network.add_edge("C", "D")
 #is_network_connected(network)
 #Output: False
 
-
+network.print_matrix()
