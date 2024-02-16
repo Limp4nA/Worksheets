@@ -11,9 +11,9 @@ class Graph:
 
     #the add_relationship() takes two nodes and connects between them
     def add_relationship(self, node1, node2):
-        if data1 in self.nodes and data2 in self.nodes:
-            self.nodes[data1].append(data2)
-            self.nodes[data2].append(data1)
+        if node1 in self.nodes and node2 in self.nodes:
+            self.nodes[node1].append(node2)
+            self.nodes[node2].append(node1)
 
     #the find_friends() takes a node and returns a list of all the neighbors
     def find_friends(self, node):
