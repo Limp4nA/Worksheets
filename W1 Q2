@@ -146,3 +146,21 @@ network.add_edge("C", "D")
 #Output: False
 
 network.print_matrix()
+
+star=Graph()#Star network
+
+star.add_vertex("A");star.add_vertex("B");star.add_vertex("C");star.add_vertex("D");star.add_vertex("E");star.add_vertex("F");
+star.add_edge("A", "B");star.add_edge("A", "C");star.add_edge("A", "D");star.add_edge("A", "E");star.add_edge("A", "F")
+
+print("Star network:")
+print(f"is network connected: {is_network_connected(star)}")
+print(star.print_matrix())
+
+ring=Graph()#ring network
+
+ring.add_vertex("A");ring.add_vertex("B");ring.add_vertex("C");ring.add_vertex("D");ring.add_vertex("E");ring.add_vertex("F")
+ring.add_edge("A", "B");ring.add_edge("B", "C");ring.add_edge("C", "D");ring.add_edge("D", "E");ring.add_edge("E", "F");ring.add_edge("F", "A")
+
+print("Ring network:")
+print(f"is network connected: {is_network_connected(ring)}")
+print(ring.print_matrix())
