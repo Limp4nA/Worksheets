@@ -100,27 +100,26 @@ class Graph:
             result+=line
 
         print(result)
-    def is_network_connected(network):
+def is_network_connected(network):
 
-        visited=[]
-        qu=Queue()
+    visited = []
+    qu = Queue()
 
-        vertex=list(network.vertices.keys())[0]
+    vertex = list(network.vertices.keys())[0]
 
-
-        while len(qu.list)!=0 or len(visited)==0:
-
-            visited.append(vertex)
-
-            for neighbor in network.vertices[vertex]:
-                if neighbor not in visited and neighbor not in qu.list:
-                    qu.put(neighbor)
-
-            vertex=qu.get()
+    while len(qu.list) != 0 or len(visited) == 0:
 
         visited.append(vertex)
 
-        return len(visited) == len(network.vertices)
+        for neighbor in network.vertices[vertex]:
+            if neighbor not in visited and neighbor not in qu.list:
+                qu.put(neighbor)
+
+        vertex = qu.get()
+
+    visited.append(vertex)
+
+    return len(visited) == len(network.vertices)
 # Testing the Graph class
 network = Graph()
 
