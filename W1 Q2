@@ -154,13 +154,13 @@ star.add_edge("A", "B");star.add_edge("A", "C");star.add_edge("A", "D");star.add
 
 print("Star network:")
 print(f"is network connected: {is_network_connected(star)}")
-print(star.print_matrix())
+star.print_matrix()
 
 ring=Graph()#ring network
 
 ring.add_vertex("A");ring.add_vertex("B");ring.add_vertex("C");ring.add_vertex("D");ring.add_vertex("E");ring.add_vertex("F")
 ring.add_edge("A", "B");ring.add_edge("B", "C");ring.add_edge("C", "D");ring.add_edge("D", "E");ring.add_edge("E", "F");ring.add_edge("F", "A")
-
+print()
 print("Ring network:")
 print(f"is network connected: {is_network_connected(ring)}")
-print(ring.print_matrix())
+ring.print_matrix()
