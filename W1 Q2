@@ -14,36 +14,43 @@ class Queue:
 
 class Graph:
     def __init__(self):
-        self.nodes = {}
+        self.vertices = {}
         self.ajd_matrix=None
 
     def add_vertex(self, data):
-        if data not in self.nodes:
-            self.nodes[data]=[]
-            self.update_matrix()
+        if data not in self.vertices:
+            self.vertices[data]=[]
 
     def del_vertex(self,data):
-        if data in self.nodes:
-            del self.nodes[data]
-            self.update_matrix()
+        if data in self.vertices:
+            del self.vertices[data]
 
+    def remove_edge(self, from_vertex, to_vertex):
+        if from_vertex in self.vertices and to_vertex in self.vertices:
+            for i in range(len(self.vertices[from_vertex])):
+                if self.vertices[from_vertex][i] == to_vertex:
+                    del self.vertices[from_vertex][i]
+                    break
+            for i in range(len(self.vertices[to_vertex])):
+                if self.vertices[to_vertex][i] == from_vertex:
+                    del self.vertices[to_vertex][i]
+                    break
     def add_edge(self, data1, data2):
-        if data1 in self.nodes and data2 in self.nodes:
-            self.nodes[data1].append(data2)
-            self.nodes[data2].append(data1)
-            self.update_matrix()
+        if data1 in self.vertices and data2 in self.vertices:
+            self.vertices[data1].append(data2)
+            self.vertices[data2].append(data1)
 
     def update_matrix(self):
 
         self.ajd_matrix=[]
 
-        for node in self.nodes:
+        for node in self.vertices:
 
             node_ajds=[]
 
-            for other_node in self.nodes:
+            for other_node in self.vertices:
 
-                if other_node in self.nodes[node]:
+                if other_node in self.vertices[node]:
                     node_ajds.append(1)
                 else:
                     node_ajds.append(".")
@@ -52,16 +59,18 @@ class Graph:
             self.ajd_matrix.append(node_ajds)
 
     def print_matrix(self):
+
+        self.update_matrix()
         result=' |'
 
         # line="\n"+("-"*(2+len(self.ajd_matrix)*2))+"\n"
         line='\n'
-        for key in self.nodes:
+        for key in self.vertices:
             result+=f"{key}|"
 
         result+=line
 
-        keys=list(self.nodes.keys())
+        keys=list(self.vertices.keys())
 
         for row in range(len(self.ajd_matrix)):
             result+=f"{keys[row]}|"
@@ -79,14 +88,14 @@ def is_network_connected(graph):
     visited=[]
     qu=Queue()
 
-    node=list(graph.nodes.keys())[0]
+    node=list(graph.vertices.keys())[0]
 
 
     while len(qu.list)!=0 or len(visited)==0:
 
         visited.append(node)
 
-        for neighbor in graph.nodes[node]:
+        for neighbor in graph.vertices[node]:
             if neighbor not in visited and neighbor not in qu.list:
                 qu.put(neighbor)
 
@@ -94,7 +103,7 @@ def is_network_connected(graph):
 
     visited.append(node)
 
-    return len(visited) == len(graph.nodes)
+    return len(visited) == len(graph.vertices)
 
 
 g=Graph()
