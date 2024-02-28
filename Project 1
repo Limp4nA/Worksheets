@@ -10,5 +10,5 @@ def word_ladder(start, goal, words):
 def find_neighbors(word, words):
     
     
-start_word = str(input("Enter the start word please "))
-goal_word = str(input("Enter the end word please "))
+start_word = str(input("Enter the start word please: "))
+goal_word = str(input("Enter the end word please: "))
