@@ -1,3 +1,103 @@
+import queue
+class Graph:
+
+    def __init__(self):
+        self.nodes = {}
+        self.shortest=-1
+
+    def add_member(self, node):
+        if node not in self.nodes:
+            self.nodes[node]=[]
+
+    def add_relationship(self, node1, node2):
+        if node1 in self.nodes and node2 in self.nodes:
+            self.nodes[node1].append(node2)
+            self.nodes[node2].append(node1)
+
+    def shortest_steps(self, node1, node2):
+
+        if node1 not in self.nodes or node2 not in self.nodes:
+            return -1
+
+        node1_neighbors_with_depth=[node1]
+        node2_neighbors_with_depth=[node2]
+
+        trash=[]
+
+        depth=0
+
+        turn=True
+
+        while (len(node1_neighbors_with_depth) !=0 and len(node2_neighbors_with_depth) !=0):
+
+            if self.intersection_check(node1_neighbors_with_depth,node2_neighbors_with_depth):
+                return depth
+
+            if turn:
+                node1_neighbors_with_depth=self.next_depth(node1_neighbors_with_depth,trash)
+
+                turn=False
+
+            else:
+                node2_neighbors_with_depth=self.next_depth(node2_neighbors_with_depth,trash)
+
+                turn=True
+
+            depth+=1
+
+        return -1
+
+    def intersection_check(self, node1_neighbors, node2_neighbors):
+        for node1_neighbor in node1_neighbors:
+            for node2_neighbor in node2_neighbors:
+                if node1_neighbor == node2_neighbor:
+                    return True
+        return False
+
+    def next_depth(self,old_neighbors,trash):
+
+        new_neighbors=[]
+
+        for neighbor in old_neighbors:
+
+            for neighbor_neighbor in self.nodes[neighbor]:
+
+                if neighbor_neighbor not in trash:
+
+                    new_neighbors.append(neighbor_neighbor)
+
+            if neighbor not in trash:
+                trash.append(neighbor)
+
+        return new_neighbors
+
+    #the shortest_path() method returns a list of the shortest path
+    def shortest_path(self, start, goal, visited=[], steps=0):
+
+        if self.shortest==-1:
+            self.shortest=self.shortest_steps(start,goal)
+            if self.shortest==-1:
+                return []
+
+        visited.append(start)
+
+        if start == goal:
+            return visited
+
+        if  steps >= self.shortest:
+            return []
+
+        for neighbor in self.nodes[start]:
+
+            if neighbor not in visited:
+
+                neighbor_shortest_path = self.shortest_path(neighbor, goal, visited.copy(), steps + 1)
+
+                if len(neighbor_shortest_path)>0:
+                    return neighbor_shortest_path
+
+        return []
+
 possi_words = []
 with open("words_alpha.txt", "r") as words_file:
     for line in words_file:
