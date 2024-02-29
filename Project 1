@@ -98,14 +98,70 @@ class Graph:
 
         return []
 
+#create_graph() asks for two words (start , goal) and a list of all the words
+#and it returns a graph, each node has a value of a string, and all of its neighbors are from the find_neighbors() function
+def create_graph(start,goal,words):
+
+    graph = Graph()
+
+    visited = []
+    q = queue.Queue()
+    q.put(start)
+    while q.qsize() > 0:
+
+        current = q.get()
+        graph.add_member(current)
+        current_neighbors = find_neighbors(current,words)
+        visited.append(current)
+
+        for neighbor in current_neighbors:
+
+
+            if neighbor not in list(q.queue) and neighbor not in visited:
+                if neighbor == goal:
+                    graph.add_member(neighbor)
+                    graph.add_relationship(current,goal)
+                    return graph
+
+                q.put(neighbor)
+
+
+            graph.add_member(neighbor)
+            graph.add_relationship(current,neighbor)
+
+    return graph
+
+#the word_ladder() asks for two words (start, goal) and a list of all the words
+#it prints the word ladder starting at 'start' to 'goal'
+def word_ladder(start, goal,words):
+
+    #we create the graph
+    graph=create_graph(start,goal, words)
+
+
+    #we send a message to know that the graph has finished because sometimes the graph can take a long time to generate
+    print("------------------------")
+    print("-----(graph finish)-----")
+    print("------------------------")
+
+    #ladder is a list of the shortest path from start to goal
+    ladder = graph.shortest_path(start,goal)
+
+    print()
+
+    #we print the shortest steps and the ladder
+    print(f"{graph.shortest} steps:")
+
+    for i in range(len(ladder)-1):
+        print(f'{ladder[i]} -> ', end='')
+    print(ladder[-1])
+
+
 possi_words = []
 with open("words_alpha.txt", "r") as words_file:
     for line in words_file:
         possi_words.extend(line.split())
         
-def word_ladder(start, goal, words):
-    
-
 
 def find_neighbors(word, words):
     
