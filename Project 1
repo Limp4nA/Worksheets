@@ -1,49 +1,53 @@
 import queue
+
 class Graph:
 
     def __init__(self):
         self.nodes = {}
-        self.shortest=-1
+        self.shortest = -1
 
     def add_member(self, node):
         if node not in self.nodes:
-            self.nodes[node]=[]
+            self.nodes[node] = []
 
     def add_relationship(self, node1, node2):
         if node1 in self.nodes and node2 in self.nodes:
             self.nodes[node1].append(node2)
             self.nodes[node2].append(node1)
 
+    #shortest_steps() asks for two nodes and return the minimum amount of steps as an integer
+    #note: shortest_steps is the shortest_path() in week 15 sheet 1 Q1
+    #intersection_check() and next_depth() are also brought back from the same worksheet
     def shortest_steps(self, node1, node2):
 
         if node1 not in self.nodes or node2 not in self.nodes:
             return -1
 
-        node1_neighbors_with_depth=[node1]
-        node2_neighbors_with_depth=[node2]
+        node1_neighbors_with_depth = [node1]
+        node2_neighbors_with_depth = [node2]
 
-        trash=[]
+        trash = []
 
-        depth=0
+        depth = 0
 
-        turn=True
+        turn = True
 
-        while (len(node1_neighbors_with_depth) !=0 and len(node2_neighbors_with_depth) !=0):
+        while (len(node1_neighbors_with_depth) != 0 and len(node2_neighbors_with_depth) != 0):
 
-            if self.intersection_check(node1_neighbors_with_depth,node2_neighbors_with_depth):
+            if self.intersection_check(node1_neighbors_with_depth, node2_neighbors_with_depth):
                 return depth
 
             if turn:
-                node1_neighbors_with_depth=self.next_depth(node1_neighbors_with_depth,trash)
+                node1_neighbors_with_depth = self.next_depth(node1_neighbors_with_depth, trash)
 
-                turn=False
+                turn = False
 
             else:
-                node2_neighbors_with_depth=self.next_depth(node2_neighbors_with_depth,trash)
+                node2_neighbors_with_depth = self.next_depth(node2_neighbors_with_depth, trash)
 
-                turn=True
+                turn = True
 
-            depth+=1
+            depth += 1
 
         return -1
 
@@ -54,16 +58,15 @@ class Graph:
                     return True
         return False
 
-    def next_depth(self,old_neighbors,trash):
+    def next_depth(self, old_neighbors, trash):
 
-        new_neighbors=[]
+        new_neighbors = []
 
         for neighbor in old_neighbors:
 
             for neighbor_neighbor in self.nodes[neighbor]:
 
                 if neighbor_neighbor not in trash:
-
                     new_neighbors.append(neighbor_neighbor)
 
             if neighbor not in trash:
@@ -71,12 +74,12 @@ class Graph:
 
         return new_neighbors
 
-    #the shortest_path() method returns a list of the shortest path
+    # the shortest_path() method returns a list of the shortest path
     def shortest_path(self, start, goal, visited=[], steps=0):
 
-        if self.shortest==-1:
-            self.shortest=self.shortest_steps(start,goal)
-            if self.shortest==-1:
+        if self.shortest == -1:
+            self.shortest = self.shortest_steps(start, goal)
+            if self.shortest == -1:
                 return []
 
         visited.append(start)
@@ -84,7 +87,7 @@ class Graph:
         if start == goal:
             return visited
 
-        if  steps >= self.shortest:
+        if steps >= self.shortest:
             return []
 
         for neighbor in self.nodes[start]:
@@ -93,66 +96,65 @@ class Graph:
 
                 neighbor_shortest_path = self.shortest_path(neighbor, goal, visited.copy(), steps + 1)
 
-                if len(neighbor_shortest_path)>0:
+                if len(neighbor_shortest_path) > 0:
                     return neighbor_shortest_path
 
         return []
 
-#create_graph() asks for two words (start , goal) and a list of all the words
+#note: here is where we do the breadth-first search (BFS) algorithm
+# create_graph() asks for two words (start , goal) and a list of all the words
 #and it returns a graph, each node has a value of a string, and all of its neighbors are from the find_neighbors() function
-def create_graph(start,goal,words):
-
+def create_graph(start, goal, words):
     graph = Graph()
 
     visited = []
     q = queue.Queue()
     q.put(start)
+
+    #we traverse through the words in the BFS way
     while q.qsize() > 0:
 
         current = q.get()
         graph.add_member(current)
-        current_neighbors = find_neighbors(current,words)
+        current_neighbors = find_neighbors(current, words)
         visited.append(current)
 
         for neighbor in current_neighbors:
 
-
             if neighbor not in list(q.queue) and neighbor not in visited:
                 if neighbor == goal:
                     graph.add_member(neighbor)
-                    graph.add_relationship(current,goal)
+                    graph.add_relationship(current, goal)
                     return graph
 
                 q.put(neighbor)
 
-
             graph.add_member(neighbor)
-            graph.add_relationship(current,neighbor)
+            graph.add_relationship(current, neighbor)
 
     return graph
 
-#the word_ladder() asks for two words (start, goal) and a list of all the words
-#it prints the word ladder starting at 'start' to 'goal'
-def word_ladder(start, goal,words):
 
-    #we create the graph
-    graph=create_graph(start,goal, words)
+# the word_ladder() asks for two words (start, goal) and a list of all the words
+# it prints the word ladder starting at 'start' to 'goal'
+def word_ladder(start, goal, words):
+    # we create the graph
+    graph = create_graph(start, goal, words)
 
-
-    #we send a message to know that the graph has finished because sometimes the graph can take a long time to generate
+    # we send a message to know that the graph has finished because sometimes the graph can take a long time to generate
     print("------------------------")
     print("-----(graph finish)-----")
     print("------------------------")
 
-    #ladder is a list of the shortest path from start to goal
-    ladder = graph.shortest_path(start,goal)
+    # ladder is a list of the shortest path from start to goal
+    ladder = graph.shortest_path(start, goal)
 
     print()
 
-    #we print the shortest steps and the ladder
+    # we print the shortest steps and the ladder
     print(f"{graph.shortest} steps:")
 
-    for i in range(len(ladder)-1):
+    for i in range(len(ladder) - 1):
         print(f'{ladder[i]} -> ', end='')
     print(ladder[-1])
 
@@ -161,10 +163,11 @@ possi_words = []
 with open("words_alpha.txt", "r") as words_file:
     for line in words_file:
         possi_words.extend(line.split())
-        
+
 
 def find_neighbors(word, words):
-    
-    
+    pass
+
+
 start_word = str(input("Enter the start word please: "))
 goal_word = str(input("Enter the end word please: "))
