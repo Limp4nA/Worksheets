@@ -166,8 +166,16 @@ with open("words_alpha.txt", "r") as words_file:
 
 
 def find_neighbors(word, words):
-    pass
+    neighbors = [] # An empty list to store neighbours.
+    word_length = len(word) 
+    for pot_nei in words:
+        if len(pot_nei) == word_length: # Checking if the potential neigbor is the same length as the input.
+            diff = sum(1 for a,b in zip(word,pot_nei) if a !=b) # Finding the amount of diffirent letters. 
+            if diff == 1:
+                neighbors.append(pot_nei) 
+    return neighbors
 
 
-start_word = str(input("Enter the start word please: "))
-goal_word = str(input("Enter the end word please: "))
+start_word = str(input("Enter the start word please: ")).lower()
+goal_word = str(input("Enter the end word please: ")).lower()
+word_ladder(start_word, goal_word, possi_words)
