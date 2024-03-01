@@ -161,12 +161,14 @@ def word_ladder(start, goal, words):
 
 def find_neighbors(word, words):
     neighbors = [] # An empty list to store neighbors.
-    word_length = len(word)
-    for pot_nei in words:
-        if len(pot_nei) == word_length: # Checking if the potential neighbor is the same length as the input.
-            diff = sum(1 for a,b in zip(word,pot_nei) if a !=b) # Finding the amount of diffirent letters.
-            if diff == 1:
-                neighbors.append(pot_nei)
+    for w in words: 
+         if len(word) == len(w):
+            similarity = 0
+            for litter in range(len(word)):
+                if w[litter] is word[litter]:
+                     similarity += 1
+            if similarity == len(word) - 1:  # If the similarity is equal to the length of the word minus one words differ by exactly one letter.
+                neighbors.append(w)
     return neighbors
 
 start_word = str(input("Enter the start word please: ")).lower()
