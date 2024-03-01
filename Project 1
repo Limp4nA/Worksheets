@@ -174,10 +174,12 @@ def find_neighbors(word, words):
 start_word = str(input("Enter the start word please: ")).lower()
 goal_word = str(input("Enter the end word please: ")).lower()
 
+# creat a list with all words in the words_alpha.txt file:
 with open("words_alpha.txt", "r") as words_file:
     all_words = words_file.read()
     all_words = all_words.split("\n")
 
+# filtering the all_words list to creat a new list for the words that have the same length of the target word
 targeted_words=[]
 for i in range(len(all_words)):
     if len(all_words[i]) == len(start_word):
