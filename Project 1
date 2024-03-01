@@ -143,7 +143,7 @@ def word_ladder(start, goal, words):
     graph = create_graph(start, goal, words)
 
     # we send a message to know that the graph has finished because sometimes the graph can take a long time to generate
-    print("------------------------")
+    print("\n------------------------")
     print("-----(graph finish)-----")
     print("------------------------")
 
@@ -169,11 +169,16 @@ def find_neighbors(word, words):
                 neighbors.append(pot_nei)
     return neighbors
 
-possi_words = []
-with open("words_alpha.txt", "r") as words_file:
-    for line in words_file:
-        possi_words.extend(line.split())
-
 start_word = str(input("Enter the start word please: ")).lower()
 goal_word = str(input("Enter the end word please: ")).lower()
-word_ladder(start_word, goal_word, possi_words)
+
+with open("words_alpha.txt", "r") as words_file:
+    all_words = words_file.read()
+    all_words = all_words.split("\n")
+
+targeted_words=[]
+for i in range(len(all_words)):
+    if len(all_words[i]) == len(start_word):
+        targeted_words.append(all_words[i])
+
+word_ladder(start_word, goal_word, targeted_words)
