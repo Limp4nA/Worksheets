@@ -171,6 +171,7 @@ def find_neighbors(word, words):
                 neighbors.append(w)
     return neighbors
 
+# Get input from the user
 start_word = str(input("Enter the start word please: ")).lower()
 goal_word = str(input("Enter the end word please: ")).lower()
 
@@ -185,4 +186,5 @@ for i in range(len(all_words)):
     if len(all_words[i]) == len(start_word):
         targeted_words.append(all_words[i])
 
+# Find and print the word ladder
 word_ladder(start_word, goal_word, targeted_words)
