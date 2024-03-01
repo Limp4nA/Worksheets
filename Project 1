@@ -1,9 +1,10 @@
 import queue
-
 class Graph:
 
     def __init__(self):
         self.nodes = {}
+
+        #shortest is a variable that keeps track on the shortest steps from two specific nodes
         self.shortest = -1
 
     def add_member(self, node):
@@ -75,11 +76,12 @@ class Graph:
         return new_neighbors
 
     # the shortest_path() method returns a list of the shortest path
-    def shortest_path(self, start, goal, visited=[], steps=0):
+    def shortest_path(self, start, goal, visited=[], steps=0,shortest=None):
 
-        if self.shortest == -1:
-            self.shortest = self.shortest_steps(start, goal)
-            if self.shortest == -1:
+        if shortest is None:
+            shortest = self.shortest_steps(start, goal)
+            self.shortest=shortest
+            if shortest == -1:
                 return []
 
         visited.append(start)
@@ -87,14 +89,14 @@ class Graph:
         if start == goal:
             return visited
 
-        if steps >= self.shortest:
+        if steps >= shortest:
             return []
 
         for neighbor in self.nodes[start]:
 
             if neighbor not in visited:
 
-                neighbor_shortest_path = self.shortest_path(neighbor, goal, visited.copy(), steps + 1)
+                neighbor_shortest_path = self.shortest_path(neighbor, goal, visited.copy(), steps + 1,shortest)
 
                 if len(neighbor_shortest_path) > 0:
                     return neighbor_shortest_path
@@ -134,7 +136,6 @@ def create_graph(start, goal, words):
 
     return graph
 
-
 # the word_ladder() asks for two words (start, goal) and a list of all the words
 # it prints the word ladder starting at 'start' to 'goal'
 def word_ladder(start, goal, words):
@@ -158,23 +159,20 @@ def word_ladder(start, goal, words):
         print(f'{ladder[i]} -> ', end='')
     print(ladder[-1])
 
+def find_neighbors(word, words):
+    neighbors = [] # An empty list to store neighbors.
+    word_length = len(word)
+    for pot_nei in words:
+        if len(pot_nei) == word_length: # Checking if the potential neighbor is the same length as the input.
+            diff = sum(1 for a,b in zip(word,pot_nei) if a !=b) # Finding the amount of diffirent letters.
+            if diff == 1:
+                neighbors.append(pot_nei)
+    return neighbors
 
 possi_words = []
 with open("words_alpha.txt", "r") as words_file:
     for line in words_file:
         possi_words.extend(line.split())
-
-
-def find_neighbors(word, words):
-    neighbors = [] # An empty list to store neighbours.
-    word_length = len(word) 
-    for pot_nei in words:
-        if len(pot_nei) == word_length: # Checking if the potential neigbor is the same length as the input.
-            diff = sum(1 for a,b in zip(word,pot_nei) if a !=b) # Finding the amount of diffirent letters. 
-            if diff == 1:
-                neighbors.append(pot_nei) 
-    return neighbors
-
 
 start_word = str(input("Enter the start word please: ")).lower()
 goal_word = str(input("Enter the end word please: ")).lower()
