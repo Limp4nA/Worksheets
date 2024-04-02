@@ -1,0 +1,213 @@
+import pygame
+import random
+pygame.init()
+
+# behind the scenes sitting variables
+SCREEN_WIDTH = 900
+SCREEN_HEIGHT = 900
+FPS = 60
+CARD_SIZE = 1.2
+Background_Color = (250, 150, 150)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+clock = pygame.time.Clock()
+font = pygame.font.Font('m6x11.ttf',50)
+pygame.event.set_blocked(pygame.MOUSEMOTION)
+
+texts = {}
+
+class Card:
+
+    CARD_WIDTH = 100
+    CARD_HEIGHT = 144
+    sprite_sheet = pygame.image.load('CuteCards_outline.png').convert_alpha()
+
+    def __init__(self, val: str,suit: str):
+        #Spades, Hearts, Diamonds, Clubs
+        self.val: int = self.get_value(val)
+        self.suit = suit
+        self.x = SCREEN_WIDTH
+        self.y = SCREEN_HEIGHT - Card.CARD_HEIGHT * CARD_SIZE
+
+    def get_value(self,val) -> int:
+        result=None
+        try:
+            result = int(val)
+
+        except:
+            if val == 'A':
+                result = 1
+            elif val == 'J':
+                result = 11
+            elif val == 'Q':
+                result = 12
+            elif val == 'K':
+                result = 13
+
+        return result
+
+    def get_image(self):
+
+        card_col = self.val - 1
+        card_row = None
+
+        if self.suit == 'Clubs':
+            card_row = 0
+        elif self.suit == 'Diamonds':
+            card_row = 1
+        elif self.suit == 'Spades':
+            card_row = 2
+        elif self.suit == 'Hearts':
+            card_row = 3
+
+        card_x = Card.CARD_WIDTH * card_col
+        card_y = Card.CARD_HEIGHT * card_row
+
+        image = pygame.Surface((Card.CARD_WIDTH, Card.CARD_HEIGHT)).convert_alpha()
+        image.blit(Card.sprite_sheet, (0,0), (card_x, card_y, card_x + Card.CARD_WIDTH, card_y + Card.CARD_HEIGHT))
+        image = pygame.transform.scale(image, (Card.CARD_WIDTH * CARD_SIZE , Card.CARD_HEIGHT * CARD_SIZE))
+        image.set_colorkey((0,0,0))
+
+        return image
+class Deck_of_cards:
+
+    def __init__(self):
+        self.cards = []
+
+        values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+        suits = ['Clubs', 'Diamonds', 'Spades', 'Hearts']
+
+        for suit in suits:
+            for value in values:
+                self.cards.append(Card(value, suit))
+
+        random.shuffle(self.cards)
+
+    def draw(self) -> Card:
+        if len(self.cards) > 0:
+            card = self.cards[-1]
+            del self.cards[-1]
+            return card
+        else:
+            return None
+class Timer:
+
+    def __init__(self, duration, repeat =False, autostart = False, function = None):
+        self.duration = duration
+        self.start_time = 0
+        self.active = False
+        self.repeat = repeat
+        self.func = function
+        if autostart:
+            self.activate()
+
+    def activate(self):
+        self.active = True
+        self.start_time = pygame.time.get_ticks()
+
+    def deactivate(self):
+        self.active = False
+        self.start_time = 0
+        if self.repeat:
+            self.activate()
+
+    def update(self):
+        if self.active:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.start_time >= self.duration:
+                if self.func:
+                    self.func()
+                self.deactivate()
+def draw():
+    global player_hand , deck_of_cards
+    player_hand.append(deck_of_cards.draw())
+def texts_update() -> None:
+    global texts , level, max_cards, score, player_hand , target
+    texts = {
+        'level':font.render(f'Level {level}', True, 'white'),
+        'max_cards': font.render(f'Cards {len(player_hand)}/{max_cards}', True, 'white'),
+        'score': font.render(f'Score {score}', True, 'white'),
+        'target': font.render(f'Target {target}', True, 'white')
+    }
+def get_destination()
+
+
+cards = [Card('A','Clubs'),Card('2','Diamonds'),Card('3','Spades'),Card('4','Hearts')]
+card_images = [cards[0].get_image(),cards[1].get_image(),cards[2].get_image(),cards[3].get_image()]
+# game sitting variables
+player_hand = []
+deck_of_cards = Deck_of_cards()
+level = 1
+max_cards = 5
+score = 0
+target = 20
+
+timers = {
+}
+
+x = SCREEN_WIDTH #+ Card.CARD_WIDTH
+y = SCREEN_HEIGHT - Card.CARD_HEIGHT
+
+print(Card.CARD_WIDTH)
+con = False
+
+#Game Loop
+run = True
+while run:
+    texts_update()
+    clock.tick(FPS)
+    screen.fill(Background_Color)
+    # key = pygame.key.get_pressed()
+    # mouse = pygame.mouse.get_pressed()
+    off_set = 60
+    beggining = 10
+    screen.blit(texts['level'] , (10,off_set * 0 + beggining))
+    screen.blit(texts['max_cards'] , (10,off_set * 1 + beggining))
+    screen.blit(texts['score'] , (10,off_set * 2 + beggining))
+    screen.blit(texts['target'] , (10,off_set * 3 + beggining))
+
+
+    for i in range(len(cards)):
+        screen.blit(card_images[i],(cards[i].x, cards[i].y))
+
+    # if key[pygame.K_a] == True:
+    #     col += 1
+    #     col %= 13
+    #     card = get_card_image(sprite_sheet_image, row, col)
+    # if key[pygame.K_d] == True:
+    #     row+=1
+    #     row%=4
+    #     card = get_card_image(sprite_sheet_image, row, col)
+
+    # pygame.draw.rect(screen,(255,0,0),player)
+    # key = pygame.key.get_pressed()
+    # if key[pygame.K_a]:
+    #     player.move_ip(-1,0)
+    # elif key[pygame.K_d]:
+    #     player.move_ip(1,0)
+    # elif key[pygame.K_w]:
+    #     player.move_ip(0,-1)
+    # elif key[pygame.K_s]:
+    #     player.move_ip(0,1)
+
+
+
+    # screen.blit(card,(cardx,cardy))
+
+
+    if con:
+
+        for i in range(len(cards)):
+            cards[i].x -= i +1
+            if cards[i].x < -Card.CARD_WIDTH:
+                cards[i].x = SCREEN_WIDTH
+
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+
+        if event.type == pygame.KEYDOWN:
+            con = True
+
+    pygame.display.update()
+pygame.quit()
