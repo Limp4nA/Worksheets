@@ -3,18 +3,23 @@ import random
 pygame.init()
 
 # behind the scenes sitting variables
+#start of TURKI`s implementation----------------------------------------------------------------------
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 900
 FPS = 60
 CARD_SIZE = 1.2
+CARD_SPEED = 90
 Background_Color = (250, 150, 150)
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 font = pygame.font.Font('m6x11.ttf',50)
 pygame.event.set_blocked(pygame.MOUSEMOTION)
-
+cards_x_adjustment = None
+X_destination = None
 texts = {}
+#end of TURKI`s implementation------------------------------------------------------------------------
 
+#start of TURKI`s implementation----------------------------------------------------------------------
 class Card:
 
     CARD_WIDTH = 100
@@ -26,7 +31,7 @@ class Card:
         self.val: int = self.get_value(val)
         self.suit = suit
         self.x = SCREEN_WIDTH
-        self.y = SCREEN_HEIGHT - Card.CARD_HEIGHT * CARD_SIZE
+        self.y = SCREEN_HEIGHT - Card.CARD_HEIGHT * CARD_SIZE - 50
 
     def get_value(self,val) -> int:
         result=None
@@ -118,8 +123,9 @@ class Timer:
                     self.func()
                 self.deactivate()
 def draw():
-    global player_hand , deck_of_cards
+    global player_hand , player_hand_images ,deck_of_cards
     player_hand.append(deck_of_cards.draw())
+    player_hand_images.append(player_hand[-1].get_image())
 def texts_update() -> None:
     global texts , level, max_cards, score, player_hand , target
     texts = {
@@ -128,86 +134,148 @@ def texts_update() -> None:
         'score': font.render(f'Score {score}', True, 'white'),
         'target': font.render(f'Target {target}', True, 'white')
     }
-def get_destination()
+def draw_texts() -> None:
+    texts_update()
+
+    off_set = 60
+    beggining = 10
+
+    screen.blit(texts['level'] , (10,off_set * 0 + beggining))
+    screen.blit(texts['max_cards'] , (10,off_set * 1 + beggining))
+    screen.blit(texts['score'] , (10,off_set * 2 + beggining))
+    screen.blit(texts['target'] , (10,off_set * 3 + beggining))
+def update_X_destination() -> float:
+    global player_hand, max_cards, X_destination
+
+    cards_line_length = SCREEN_WIDTH - Card.CARD_WIDTH * CARD_SIZE
+    places_for_the_cards = cards_line_length / max_cards
+
+    X_destination = places_for_the_cards * len(player_hand)
+def moving_card() -> None:
+    global player_hand, card_is_moving, X_destination
 
 
-cards = [Card('A','Clubs'),Card('2','Diamonds'),Card('3','Spades'),Card('4','Hearts')]
-card_images = [cards[0].get_image(),cards[1].get_image(),cards[2].get_image(),cards[3].get_image()]
+    if card_is_moving:
+
+        moving_card = player_hand[-1]
+
+
+        if moving_card.x - CARD_SPEED > X_destination:
+            moving_card.x -= CARD_SPEED
+
+        else:
+            moving_card.x = X_destination
+            card_is_moving = False
+def draw_hand() -> None:
+    global screen, player_hand, player_hand_images, cards_x_adjustment
+    for i in range(len(player_hand)):
+        screen.blit(player_hand_images[i],[player_hand[i].x + cards_x_adjustment, player_hand[i].y])
+def update_cards_x_adjustment() -> None:
+    global cards_x_adjustment
+
+    cards_line_length = SCREEN_WIDTH - Card.CARD_WIDTH * CARD_SIZE
+    last_card_x_pos = (cards_line_length / max_cards) * (max_cards -1)
+
+    cards_x_adjustment = (SCREEN_WIDTH - last_card_x_pos - (Card.CARD_WIDTH * CARD_SIZE))
+    cards_x_adjustment /= 2
+def update_timers() -> None:
+    global timers
+
+    for timer in timers.keys():
+        timers[timer].update()
+#end of TURKI`s implementation------------------------------------------------------------------------
+
+#start of ARDA`s implementation----------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+#end of ARDA`s implementation------------------------------------------------------------------------
+
+
+#start of LAMA`s implementation----------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+#end of LAMA`s implementation------------------------------------------------------------------------
+
+# this function will be called by a timer when the level is finished.
+
+def end_level() -> None:
+    #some one should implement it
+    pass
+
+
+def update_all() -> None:
+    # here is shows all of the changes of the screen to the user
+    pygame.display.update()
+
+    # it makes the program run at 60 FPS
+    clock.tick(FPS)
+
+    # here where the fill the screen with pink all of it.
+    # and if you don`t understant why we do that every frame, then try to remove this line and run the program
+    screen.fill(Background_Color)
+
+    # here we draw all of the text in the top left corner
+    draw_texts()
+
+    # here we draw the cards in the screen
+    draw_hand()
+
+    # here we move the card that is being drawn if the (card_is_moving is True)
+    moving_card()
+
+    # we need to move this function to the place where we start each level.
+    # we only need to update the value at the begging of every level not every frame
+    update_cards_x_adjustment()
+
+    #we update all of the timers
+    update_timers()
+
+
 # game sitting variables
+#-----------------------
 player_hand = []
+player_hand_images = []
 deck_of_cards = Deck_of_cards()
 level = 1
 max_cards = 5
 score = 0
 target = 20
-
+target_increment = 5
 timers = {
+    #we dont wont the second the player draw the last card, the level ends this timer we solve this issue
+    'end level': Timer(2000, function = end_level)
 }
+#-----------------------
 
-x = SCREEN_WIDTH #+ Card.CARD_WIDTH
-y = SCREEN_HEIGHT - Card.CARD_HEIGHT
-
-print(Card.CARD_WIDTH)
-con = False
-
-#Game Loop
+card_is_moving = False
 run = True
+#Game Loop
 while run:
-    texts_update()
-    clock.tick(FPS)
-    screen.fill(Background_Color)
-    # key = pygame.key.get_pressed()
-    # mouse = pygame.mouse.get_pressed()
-    off_set = 60
-    beggining = 10
-    screen.blit(texts['level'] , (10,off_set * 0 + beggining))
-    screen.blit(texts['max_cards'] , (10,off_set * 1 + beggining))
-    screen.blit(texts['score'] , (10,off_set * 2 + beggining))
-    screen.blit(texts['target'] , (10,off_set * 3 + beggining))
 
+    #update everything for this frame
+    update_all()
 
-    for i in range(len(cards)):
-        screen.blit(card_images[i],(cards[i].x, cards[i].y))
-
-    # if key[pygame.K_a] == True:
-    #     col += 1
-    #     col %= 13
-    #     card = get_card_image(sprite_sheet_image, row, col)
-    # if key[pygame.K_d] == True:
-    #     row+=1
-    #     row%=4
-    #     card = get_card_image(sprite_sheet_image, row, col)
-
-    # pygame.draw.rect(screen,(255,0,0),player)
-    # key = pygame.key.get_pressed()
-    # if key[pygame.K_a]:
-    #     player.move_ip(-1,0)
-    # elif key[pygame.K_d]:
-    #     player.move_ip(1,0)
-    # elif key[pygame.K_w]:
-    #     player.move_ip(0,-1)
-    # elif key[pygame.K_s]:
-    #     player.move_ip(0,1)
-
-
-
-    # screen.blit(card,(cardx,cardy))
-
-
-    if con:
-
-        for i in range(len(cards)):
-            cards[i].x -= i +1
-            if cards[i].x < -Card.CARD_WIDTH:
-                cards[i].x = SCREEN_WIDTH
-
-
+    # the event handler
     for event in pygame.event.get():
+        # shut down the program of the player preses the X symbol in the screen
         if event.type == pygame.QUIT:
             run = False
 
-        if event.type == pygame.KEYDOWN:
-            con = True
+        # if the player presses any key
+        if event.type == pygame.KEYUP:
 
-    pygame.display.update()
+            # if no card is moving and the player can draw more cards
+            if not card_is_moving and len(player_hand) < max_cards:
+                # there is a card moving now
+                card_is_moving = True
+
+                #update the x destination for the new card that has been drawn
+                update_X_destination()
+
+                #draw a card
+                draw()
+
+                # if the player draws the maximum amount of cards
+                if len(player_hand) == max_cards:
+                    #activate the timer for ending the level. because we want to give the player a couple of the seconds the see what he/she drawn
+                    timers['end level'].activate()
+
 pygame.quit()
