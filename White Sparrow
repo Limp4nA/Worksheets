@@ -1,52 +1,77 @@
 import pygame
 import random
+
 pygame.init()
 
 # behind the scenes sitting variables
-#start of TURKI`s implementation----------------------------------------------------------------------
+# ----------------
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 900
+
 FPS = 60
-CARD_SIZE = 1.2
-CARD_SPEED = 90
-Background_Color = (250, 150, 150)
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
-font = pygame.font.Font('m6x11.ttf',50)
+
+# the width and height in pixels from the sprite_sheet
+CARD_WIDTH = 25
+CARD_HEIGHT = 36
+CARD_SIZE = 1.5 * 4 # <-- leave the (* 4) and only change the first number in the left
+CARD_SPEED = 90
+CARD_Y_ADJUSTMENT = 50 # <-- it represent the distance (in pixels) between the cards and the bottem side of the screen
+CARD_Y = (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) - CARD_Y_ADJUSTMENT
+
+DECK_OF_CARDS_X = SCREEN_WIDTH - 200
+DECK_OF_CARDS_Y = 75
+DECK_OF_CARDS_SIZE = 1 * 4
+DECK_OF_CARDS_SPACING = .5
+DECK_OF_CARDS_ROTATION = 170
+DECK_OF_CARDS_SPEED = 20
+
+black_card_back_image = None
+red_card_back_image = None
+
+Background_Color = 'pink'#(250, 150, 150)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
 pygame.event.set_blocked(pygame.MOUSEMOTION)
-cards_x_adjustment = None
-X_destination = None
+
+cards_x_adjustment = 0 # <--- this variable is explained in the update_cards_x_adjustment()
+X_destination = None # <--- this variable is explained in the update_X_destination()
+
+TEXT_COLOR = 'white'
+TEXT_SIZE = 100
+font = pygame.font.Font('m6x11.ttf', TEXT_SIZE)
 texts = {}
-#end of TURKI`s implementation------------------------------------------------------------------------
-
-#start of ARDA`s implementation----------------------------------------------------------------------
-#----------------------------------------------------------------------------------------------------
-#end of ARDA`s implementation------------------------------------------------------------------------
+# ----------------
 
 
-#start of LAMA`s implementation----------------------------------------------------------------------
-#----------------------------------------------------------------------------------------------------
-#end of LAMA`s implementation------------------------------------------------------------------------
 
-#start of TURKI`s implementation----------------------------------------------------------------------
+# start of TURKI`s implementation----------------------------------------------------------------------
+
 class Card:
 
-    CARD_WIDTH = 100
-    CARD_HEIGHT = 144
-    sprite_sheet = pygame.image.load('CuteCards_outline.png').convert_alpha()
+    # loading the sprite sheet into a variable
+    sprite_sheet = pygame.image.load('CuteCardsPixel_outline.png').convert_alpha()
 
     def __init__(self, val: str,suit: str):
-        #Spades, Hearts, Diamonds, Clubs
-        self.val: int = self.get_value(val)
-        self.suit = suit
-        self.x = SCREEN_WIDTH
-        self.y = SCREEN_HEIGHT - Card.CARD_HEIGHT * CARD_SIZE - 50
+        #each card is defined by value and a suit and a x position
 
-    def get_value(self,val) -> int:
-        result=None
+        # the variable val that has been passed by the constructor has the type of str
+        # so, we call get_value to convert the value into an integer
+        self.val: int = self.get_value(val)
+
+        self.suit: str = suit
+
+        # Note: the point that represent the Card image is in the top left corner
+        # meaning, if the x = SCREEN_WIDTH, the card will be outside the border of the screen
+        self.x = SCREEN_WIDTH
+
+    def get_value(self,val):
+
+        # we try if val can be converted by the int() function
         try:
             result = int(val)
 
+        # if we get an error that mean val is a litter
         except:
             if val == 'A':
                 result = 1
@@ -59,9 +84,18 @@ class Card:
 
         return result
 
-    def get_image(self):
+    def get_image(self) -> pygame.surface.Surface:
 
+        # this function return an image of the card (self) from the sprite sheet
+
+        # to understand how it works take a look at the file CuteCardsPixel_outline.png
+        # and imagine it to look like a 2D list
+
+        # the column index is the easiest to calculate it is just  the value of the card - 1
         card_col = self.val - 1
+
+
+        # the row index depends on the suit of the card
         card_row = None
 
         if self.suit == 'Clubs':
@@ -73,36 +107,91 @@ class Card:
         elif self.suit == 'Hearts':
             card_row = 3
 
-        card_x = Card.CARD_WIDTH * card_col
-        card_y = Card.CARD_HEIGHT * card_row
+        # here we get the x-y position of the card in the sprite sheet
+        # and we multiply by the card width and height to jump from card to card horizontally and vertically
+        card_x = card_col * CARD_WIDTH
+        card_y = card_row * CARD_HEIGHT
 
-        image = pygame.Surface((Card.CARD_WIDTH, Card.CARD_HEIGHT)).convert_alpha()
-        image.blit(Card.sprite_sheet, (0,0), (card_x, card_y, card_x + Card.CARD_WIDTH, card_y + Card.CARD_HEIGHT))
-        image = pygame.transform.scale(image, (Card.CARD_WIDTH * CARD_SIZE , Card.CARD_HEIGHT * CARD_SIZE))
-        image.set_colorkey((0,0,0))
+        # we initialize an empty black image with a size of [CARD_WIDTH, CARD_HEIGHT]
+        image = pygame.Surface((CARD_WIDTH, CARD_HEIGHT)).convert_alpha()
 
+        # we overwrite the image of the card in the sprite sheet into the image
+        # and the arguments for the blit() are as follows
+        # 1 - a Surface which is in this case is the (sprite sheet)
+        # 2 - the x-y position in the image
+        # 3 - the rectangular area of the sprite sheet that we want to cut in the form (x1, y1, x2, y2)
+        image.blit(Card.sprite_sheet, [0, 0], [card_x, card_y, card_x + CARD_WIDTH, card_y + CARD_HEIGHT])
+
+        # then we transform the size of the image by a scaler
+        # the first arg is the image and the second is a list that stores the scale amount of the width and height
+        image = pygame.transform.scale(image, [CARD_WIDTH * CARD_SIZE , CARD_HEIGHT * CARD_SIZE])
+
+        #there are still some black pixels in the four corners, and this function will trim the image and remove it
+        # by giving it the color that we want to remove
+        image.set_colorkey('black')
+
+        # and the image is ready to be returned
         return image
+class Stack:
+
+    def __init__(self):
+        self.list=[]
+
+    def push(self,data):
+        return self.list.append(data)
+
+    def pop(self):
+        if self.is_empty():
+            return None
+        else:
+            return self.list.pop()
+
+    def peek(self):
+        if self.is_empty():
+            return None
+        else:
+            return self.list[-1]
+
+    def is_empty(self):
+        return len(self.list)==0
 class Deck_of_cards:
 
     def __init__(self):
-        self.cards = []
+        self.cards_back_images = []
+        self.size = 52
 
         values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
         suits = ['Clubs', 'Diamonds', 'Spades', 'Hearts']
-
+        cards = []
         for suit in suits:
             for value in values:
-                self.cards.append(Card(value, suit))
+                cards.append(Card(value, suit))
 
-        random.shuffle(self.cards)
+        random.shuffle(cards)
+
+        self.cards = Stack()
+        self.cards.list = cards
+
+        for i in range(len(cards)):
+
+            if cards[i].suit == 'Diamonds' or cards[i].suit == 'Hearts':
+                current_image = red_card_back_image
+
+            else:
+                current_image = black_card_back_image
+
+            current_dictionary = {'image': current_image,
+                                  'x': DECK_OF_CARDS_X,
+                                  'y': DECK_OF_CARDS_Y - (DECK_OF_CARDS_SPACING * i)
+                                  }
+
+            self.cards_back_images.append(current_dictionary)
+
+
 
     def draw(self) -> Card:
-        if len(self.cards) > 0:
-            card = self.cards[-1]
-            del self.cards[-1]
-            return card
-        else:
-            return None
+        self.size -= 1
+        return self.cards.pop()
 class Timer:
 
     def __init__(self, duration, repeat =False, autostart = False, function = None):
@@ -131,80 +220,173 @@ class Timer:
                 if self.func:
                     self.func()
                 self.deactivate()
-def draw():
+def draw() -> None:
+
+    # this function draws a cards to the player hand
     global player_hand , player_hand_images ,deck_of_cards
     player_hand.append(deck_of_cards.draw())
-    player_hand_images.append(player_hand[-1].get_image())
-def texts_update() -> None:
-    global texts , level, max_cards, score, player_hand , target
-    texts = {
-        'level':font.render(f'Level {level}', True, 'white'),
-        'max_cards': font.render(f'Cards {len(player_hand)}/{max_cards}', True, 'white'),
-        'score': font.render(f'Score {score}', True, 'white'),
-        'target': font.render(f'Target {target}', True, 'white')
-    }
-def draw_texts() -> None:
-    texts_update()
 
-    off_set = 60
+    #then we add the card`s image to the player_hand_images list
+    player_hand_images.append(player_hand[-1].get_image())
+def update_texts() -> None:
+    # it updates all the texts
+    global texts , level, max_cards, score, player_hand , target
+
+    texts['level'] = font.render(f'Level {level}', True, TEXT_COLOR)
+    texts['max_cards'] = font.render(f'Cards {len(player_hand)}/{max_cards}', True, TEXT_COLOR)
+    texts['score'] = font.render(f'Score {score}', True, TEXT_COLOR)
+    texts['target'] = font.render(f'Target {target}', True, TEXT_COLOR)
+def draw_texts() -> None:
+    # this function update the texts by calling update_texts() then draws them in the top left corner of the screen
+    update_texts()
+
+    # these two variable controls the distance between each text and the screen
+    off_set = 120
     beggining = 10
 
+    # here is the drawing
     screen.blit(texts['level'] , (10,off_set * 0 + beggining))
     screen.blit(texts['max_cards'] , (10,off_set * 1 + beggining))
     screen.blit(texts['score'] , (10,off_set * 2 + beggining))
     screen.blit(texts['target'] , (10,off_set * 3 + beggining))
 def update_X_destination() -> float:
+
+    # X_destination variable represents the X position destination of the moving card that has been drawn
+
     global player_hand, max_cards, X_destination
 
-    cards_line_length = SCREEN_WIDTH - Card.CARD_WIDTH * CARD_SIZE
+    # this number represents the interval of all the possible x position any card can be
+    # which is:  0 <= X <=  cards_line_length
+    cards_line_length = SCREEN_WIDTH - CARD_WIDTH * CARD_SIZE
+
+    # then we divide it by the max_cards to git the distance between each card. to have an evenly spread distribution
     places_for_the_cards = cards_line_length / max_cards
 
+    #then the X_destination of the moving cards is equal to the distance between each card * the moving card order
     X_destination = places_for_the_cards * len(player_hand)
 def moving_card() -> None:
-    global player_hand, card_is_moving, X_destination
+
+    # this function is responsible for moving the card that has been drawn
+
+    global player_hand, card_is_moving_to_hand, X_destination , card_is_moving_from_deck
+
+    # logically the moving card is the last card in the player hand
+    moving_card = None
+
+    # first of we check is there a moving card to the hand
+    if card_is_moving_from_deck:
+
+        # moving_card = player_hand[-1]
+        moving_card_dictionary = deck_of_cards.cards_back_images[deck_of_cards.size]
+
+        if moving_card_dictionary['x'] + DECK_OF_CARDS_SPEED < SCREEN_WIDTH + 50:
+            moving_card_dictionary['x'] += DECK_OF_CARDS_SPEED
+        else:
+            card_is_moving_from_deck = False
+            card_is_moving_to_hand = True
 
 
-    if card_is_moving:
-
+    elif card_is_moving_to_hand:
         moving_card = player_hand[-1]
 
-
+        # we check if we shift the moving card to the left by CARD_SPEED will it be still in the right side of the X_destination
         if moving_card.x - CARD_SPEED > X_destination:
+            # if yes shift the moving card
             moving_card.x -= CARD_SPEED
 
         else:
+            # the moving card has reached the destination
             moving_card.x = X_destination
-            card_is_moving = False
+
+            #now, there is no moving cards
+            card_is_moving_to_hand = False
 def draw_hand() -> None:
+
+    # this function just print all of the player hand in the screen
+    # by iterating through (player_hand for the x and y position) and (player_hand_images for the images)
     global screen, player_hand, player_hand_images, cards_x_adjustment
+
     for i in range(len(player_hand)):
-        screen.blit(player_hand_images[i],[player_hand[i].x + cards_x_adjustment, player_hand[i].y])
+        # and adding the cards_x_adjustment to the cards x value
+        screen.blit(player_hand_images[i],[player_hand[i].x + cards_x_adjustment, CARD_Y])
 def update_cards_x_adjustment() -> None:
-    global cards_x_adjustment
 
-    cards_line_length = SCREEN_WIDTH - Card.CARD_WIDTH * CARD_SIZE
-    last_card_x_pos = (cards_line_length / max_cards) * (max_cards -1)
+    # this function updates cards_x_adjustment.
+    # the only factor that can change cards_x_adjustment value in in-game runtime is max_cards
+    # so, we only need to call this function when max_cards changes
 
-    cards_x_adjustment = (SCREEN_WIDTH - last_card_x_pos - (Card.CARD_WIDTH * CARD_SIZE))
-    cards_x_adjustment /= 2
+    # the purpose of cards_x_adjustment is to make the player hand cards align in the middle not in the left corner,
+    # so we increment all the cards x value by cards_x_adjustment
+
+    # without the x_adjustment, cards will stuck to the left-side border of the screen and there will be a gap in the right side
+    # we need to git the gap and divide it by two and the result will be the cards_x_adjustment value
+
+    # to see the differance with or without the cards_x_adjustment, change the value of this boolean variable to False
+    with_cards_x_adjustment = True
+
+    if with_cards_x_adjustment:
+
+        global cards_x_adjustment
+
+        cards_line_length = SCREEN_WIDTH - CARD_WIDTH * CARD_SIZE
+        last_card_x_pos = (cards_line_length / max_cards) * (max_cards -1)
+
+        right_side_gap = (SCREEN_WIDTH - last_card_x_pos - (CARD_WIDTH * CARD_SIZE))
+        cards_x_adjustment = right_side_gap/2
 def update_timers() -> None:
+
+    #we just call the update() method for all timers
     global timers
 
     for timer in timers.keys():
         timers[timer].update()
-#end of TURKI`s implementation------------------------------------------------------------------------
+def card_back_image(color: str) -> pygame.surface.Surface:
+    card_x = 14 * CARD_WIDTH
+    if color == 'black':
+        card_y = 2 * CARD_HEIGHT
 
-#start of ARDA`s implementation----------------------------------------------------------------------
-#----------------------------------------------------------------------------------------------------
-#end of ARDA`s implementation------------------------------------------------------------------------
+    elif color == 'red':
+        card_y = 3 * CARD_HEIGHT
+    card_back_image = pygame.Surface((CARD_WIDTH, CARD_HEIGHT)).convert_alpha()
+    card_back_image.blit(Card.sprite_sheet, [0, 0], [card_x, card_y, card_x + CARD_WIDTH, card_y + CARD_HEIGHT])
+    card_back_image = pygame.transform.scale(card_back_image, [CARD_WIDTH * DECK_OF_CARDS_SIZE, CARD_HEIGHT * DECK_OF_CARDS_SIZE])
+    card_back_image = pygame.transform.rotate(card_back_image, DECK_OF_CARDS_ROTATION)
+
+    card_back_image.set_colorkey('black')
+    return card_back_image
+def draw_deck_of_cards() -> None:
 
 
-#start of LAMA`s implementation----------------------------------------------------------------------
-#----------------------------------------------------------------------------------------------------
-#end of LAMA`s implementation------------------------------------------------------------------------
+    if card_is_moving_from_deck:
+        the_drawn_card = 1
+    else:
+        the_drawn_card = 0
+
+
+    for i in range(deck_of_cards.size + the_drawn_card):
+
+        image = deck_of_cards.cards_back_images[i]['image']
+        x = deck_of_cards.cards_back_images[i]['x']
+        y = deck_of_cards.cards_back_images[i]['y']
+        screen.blit(image, [x, y])
+
+
+
+
+# end of TURKI`s implementation------------------------------------------------------------------------
+
+# start of ARDA`s implementation----------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# end of ARDA`s implementation------------------------------------------------------------------------
+
+
+# start of LAMA`s implementation----------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# end of LAMA`s implementation------------------------------------------------------------------------
+
+
 
 # this function will be called by a timer when the level is finished.
-
 def end_level() -> None:
     #some one should implement it
     pass
@@ -227,7 +409,7 @@ def update_all() -> None:
     # here we draw the cards in the screen
     draw_hand()
 
-    # here we move the card that is being drawn if the (card_is_moving is True)
+    # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
     moving_card()
 
     # we need to move this function to the place where we start each level.
@@ -237,6 +419,14 @@ def update_all() -> None:
     #we update all of the timers
     update_timers()
 
+    draw_deck_of_cards()
+
+
+# images loading
+#-----------------------
+black_card_back_image = card_back_image('black')
+red_card_back_image = card_back_image('red')
+#-----------------------
 
 # game sitting variables
 #-----------------------
@@ -244,7 +434,7 @@ player_hand = []
 player_hand_images = []
 deck_of_cards = Deck_of_cards()
 level = 1
-max_cards = 5
+max_cards = 20
 score = 0
 target = 20
 target_increment = 5
@@ -254,9 +444,17 @@ timers = {
 }
 #-----------------------
 
-card_is_moving = False
+
+
+
+
+
+card_is_moving_to_hand = False
+card_is_moving_from_deck = False
+
+
+#Game Loop ------------------------------
 run = True
-#Game Loop
 while run:
 
     #update everything for this frame
@@ -272,9 +470,9 @@ while run:
         if event.type == pygame.KEYUP:
 
             # if no card is moving and the player can draw more cards
-            if not card_is_moving and len(player_hand) < max_cards:
+            if not card_is_moving_from_deck and not card_is_moving_to_hand and len(player_hand) < max_cards:
                 # there is a card moving now
-                card_is_moving = True
+                card_is_moving_from_deck = True
 
                 #update the x destination for the new card that has been drawn
                 update_X_destination()
@@ -284,6 +482,7 @@ while run:
 
                 # if the player draws the maximum amount of cards
                 if len(player_hand) == max_cards:
+
                     #activate the timer for ending the level. because we want to give the player a couple of the seconds the see what he/she drawn
                     timers['end level'].activate()
 
