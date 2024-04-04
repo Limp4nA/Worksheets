@@ -4,7 +4,7 @@ import random
 pygame.init()
 
 # behind the scenes sitting variables
-# ----------------
+# ----------------------------------------------------------------
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 900
 
@@ -23,13 +23,13 @@ DECK_OF_CARDS_X = SCREEN_WIDTH - 200
 DECK_OF_CARDS_Y = 75
 DECK_OF_CARDS_SIZE = 1 * 4
 DECK_OF_CARDS_SPACING = .5
-DECK_OF_CARDS_ROTATION = 170
+DECK_OF_CARDS_ROTATION = 170 # in degrees
 DECK_OF_CARDS_SPEED = 20
 
 black_card_back_image = None
 red_card_back_image = None
 
-Background_Color = 'pink'#(250, 150, 150)
+Background_Color = 'purple'
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 pygame.event.set_blocked(pygame.MOUSEMOTION)
@@ -41,12 +41,11 @@ TEXT_COLOR = 'white'
 TEXT_SIZE = 100
 font = pygame.font.Font('m6x11.ttf', TEXT_SIZE)
 texts = {}
-# ----------------
+# ----------------------------------------------------------------
 
 
 
 # start of TURKI`s implementation----------------------------------------------------------------------
-
 class Card:
 
     # loading the sprite sheet into a variable
@@ -157,9 +156,8 @@ class Stack:
 class Deck_of_cards:
 
     def __init__(self):
-        self.cards_back_images = []
-        self.size = 52
 
+        # we start by creating a list that holds all the 52 cards
         values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
         suits = ['Clubs', 'Diamonds', 'Spades', 'Hearts']
         cards = []
@@ -167,58 +165,113 @@ class Deck_of_cards:
             for value in values:
                 cards.append(Card(value, suit))
 
+        # here we shuffle the cards by the using the random.shuffle() function
         random.shuffle(cards)
 
+        # then we create a stack that we hold of the shuffled cards
         self.cards = Stack()
         self.cards.list = cards
 
+        # the size attribute will hold the number of cards in the Stack (card)
+        self.size = 52
+
+        # this list will hold all the images in the deck of cards
+        self.cards_back_images = []
+
+        # this loop will initialize the images list
         for i in range(len(cards)):
 
+            # if the card is red --> get the red image
             if cards[i].suit == 'Diamonds' or cards[i].suit == 'Hearts':
                 current_image = red_card_back_image
 
+            # if the card is black --> get the black image
             else:
                 current_image = black_card_back_image
 
+            # each element in the cards_back_images will be a dictionary that holds the image and the x-y position
             current_dictionary = {'image': current_image,
                                   'x': DECK_OF_CARDS_X,
-                                  'y': DECK_OF_CARDS_Y - (DECK_OF_CARDS_SPACING * i)
-                                  }
+                                  'y': DECK_OF_CARDS_Y - (DECK_OF_CARDS_SPACING * i)}
 
             self.cards_back_images.append(current_dictionary)
 
 
 
     def draw(self) -> Card:
+
+        # don't forget to decrement the size when drawing a card from the Stack
         self.size -= 1
+
+        # remove the last card and return it
         return self.cards.pop()
 class Timer:
 
-    def __init__(self, duration, repeat =False, autostart = False, function = None):
+    # Timer object is a timer that have a duration in milliseconds
+    # and a switch (on, off) represented by the active attribute
+    # and a function to execute when the timer finishes
+
+    def __init__(self, duration: int, repeat=False, autostart=False, function=None):
+
         self.duration = duration
-        self.start_time = 0
         self.active = False
-        self.repeat = repeat
         self.func = function
+
+        # start_time will be used to calculate if we surpassed the duration or not
+        self.start_time = 0
+
+        # if the repeat is True, then the moment the timer finished it will start again automatically
+        self.repeat = repeat
+
+        # when a timer object is created it will not be active, however, if the autostart argument is True
+        # it will be activated
         if autostart:
             self.activate()
 
     def activate(self):
+        # this function start the timer
         self.active = True
+
+        # and we update start_time by the current time
         self.start_time = pygame.time.get_ticks()
 
     def deactivate(self):
+        # this function ends the timer
         self.active = False
-        self.start_time = 0
+
+
+        # self.start_time = 0
+
+        # if the timer is on repeat
         if self.repeat:
+            # start again
             self.activate()
 
     def update(self):
+
+        # in this method we check if the timer finished
+        # by getting the difference between start_time and current_time and see
+        # if the result is greater than the duration
+
+        # note: the method has to be called in every frame
+
+
+        # check of the timer is active
         if self.active:
+
+            # we get current_time
             current_time = pygame.time.get_ticks()
+
+            # check the difference
             if current_time - self.start_time >= self.duration:
+
+                # if the function exist
                 if self.func:
+
+                    # call it
                     self.func()
+
+                # turn off the timer
                 self.deactivate()
 def draw() -> None:
 
@@ -340,13 +393,19 @@ def update_timers() -> None:
 
     for timer in timers.keys():
         timers[timer].update()
-def card_back_image(color: str) -> pygame.surface.Surface:
+def get_card_back_image(color: str) -> pygame.surface.Surface:
+
+    # this function can return the back of the (black/red) from the sprite sheet
+
+    # it has the same logic as draw_hand() function
+
     card_x = 14 * CARD_WIDTH
     if color == 'black':
         card_y = 2 * CARD_HEIGHT
 
     elif color == 'red':
         card_y = 3 * CARD_HEIGHT
+
     card_back_image = pygame.Surface((CARD_WIDTH, CARD_HEIGHT)).convert_alpha()
     card_back_image.blit(Card.sprite_sheet, [0, 0], [card_x, card_y, card_x + CARD_WIDTH, card_y + CARD_HEIGHT])
     card_back_image = pygame.transform.scale(card_back_image, [CARD_WIDTH * DECK_OF_CARDS_SIZE, CARD_HEIGHT * DECK_OF_CARDS_SIZE])
@@ -356,7 +415,13 @@ def card_back_image(color: str) -> pygame.surface.Surface:
     return card_back_image
 def draw_deck_of_cards() -> None:
 
+    # this function draws the deck_of_cards
 
+    # however, there is a problem, when the player draw a card, this function will not draw the last card
+    # the played had drawn because it is no longer in the deck therefore we cant draw the moving card in the screen.
+    # the solution is in this if statement down below
+
+    # if there is a moving card from the deck, let the_drawn_card = 1 so we count the card in the next for loop
     if card_is_moving_from_deck:
         the_drawn_card = 1
     else:
@@ -365,14 +430,13 @@ def draw_deck_of_cards() -> None:
 
     for i in range(deck_of_cards.size + the_drawn_card):
 
+        # we game the image and the x-y of each card in the deck_of_card
         image = deck_of_cards.cards_back_images[i]['image']
         x = deck_of_cards.cards_back_images[i]['x']
         y = deck_of_cards.cards_back_images[i]['y']
+
+        # we draw the image in the screen
         screen.blit(image, [x, y])
-
-
-
-
 # end of TURKI`s implementation------------------------------------------------------------------------
 
 # start of ARDA`s implementation----------------------------------------------------------------------
@@ -393,6 +457,10 @@ def end_level() -> None:
 
 
 def update_all() -> None:
+
+    # we call this function in every frame. 60 times per second
+
+
     # here is shows all of the changes of the screen to the user
     pygame.display.update()
 
@@ -409,23 +477,25 @@ def update_all() -> None:
     # here we draw the cards in the screen
     draw_hand()
 
+    # here we draw the deck_of_cards in the screen
+    draw_deck_of_cards()
+
     # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
     moving_card()
 
-    # we need to move this function to the place where we start each level.
-    # we only need to update the value at the begging of every level not every frame
+    # TODO we need to move this function to the place where we start each level.
+    #  we only need to update the value at the begging of every level not every frame
     update_cards_x_adjustment()
 
-    #we update all of the timers
+    #we update all of the timers to check if they are finished
     update_timers()
 
-    draw_deck_of_cards()
 
 
 # images loading
 #-----------------------
-black_card_back_image = card_back_image('black')
-red_card_back_image = card_back_image('red')
+black_card_back_image = get_card_back_image('black')
+red_card_back_image = get_card_back_image('red')
 #-----------------------
 
 # game sitting variables
@@ -434,12 +504,12 @@ player_hand = []
 player_hand_images = []
 deck_of_cards = Deck_of_cards()
 level = 1
-max_cards = 20
+max_cards = 5
 score = 0
 target = 20
 target_increment = 5
 timers = {
-    #we dont wont the second the player draw the last card, the level ends this timer we solve this issue
+    #we dont wont the second the player draw the last card, the level ends. with this timer we solve this issue
     'end level': Timer(2000, function = end_level)
 }
 #-----------------------
@@ -459,6 +529,8 @@ while run:
 
     #update everything for this frame
     update_all()
+
+
 
     # the event handler
     for event in pygame.event.get():
