@@ -19,9 +19,9 @@ CARD_SPEED = 90
 CARD_Y_ADJUSTMENT = 50 # <-- it represent the distance (in pixels) between the cards and the bottem side of the screen
 CARD_Y = (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) - CARD_Y_ADJUSTMENT
 
-DECK_OF_CARDS_X = SCREEN_WIDTH - 200
+DECK_OF_CARDS_X = SCREEN_WIDTH - 250
 DECK_OF_CARDS_Y = 75
-DECK_OF_CARDS_SIZE = 1 * 4
+DECK_OF_CARDS_SIZE = 1.2 * 4 # <-- leave the (* 4) and only change the first number in the left
 DECK_OF_CARDS_SPACING = .5
 DECK_OF_CARDS_ROTATION = 170 # in degrees
 DECK_OF_CARDS_SPEED = 20
@@ -45,7 +45,7 @@ texts = {}
 
 
 
-# start of TURKI`s implementation----------------------------------------------------------------------
+# start of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------
 class Card:
 
     # loading the sprite sheet into a variable
@@ -409,6 +409,8 @@ def get_card_back_image(color: str) -> pygame.surface.Surface:
     card_back_image = pygame.Surface((CARD_WIDTH, CARD_HEIGHT)).convert_alpha()
     card_back_image.blit(Card.sprite_sheet, [0, 0], [card_x, card_y, card_x + CARD_WIDTH, card_y + CARD_HEIGHT])
     card_back_image = pygame.transform.scale(card_back_image, [CARD_WIDTH * DECK_OF_CARDS_SIZE, CARD_HEIGHT * DECK_OF_CARDS_SIZE])
+
+    # the new thing is we rotate the image to give a 3D effect
     card_back_image = pygame.transform.rotate(card_back_image, DECK_OF_CARDS_ROTATION)
 
     card_back_image.set_colorkey('black')
@@ -437,7 +439,7 @@ def draw_deck_of_cards() -> None:
 
         # we draw the image in the screen
         screen.blit(image, [x, y])
-# end of TURKI`s implementation------------------------------------------------------------------------
+# end of TURKI`s implementation (ID: 5554912)------------------------------------------------------------------------
 
 # start of ARDA`s implementation----------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------
@@ -504,7 +506,7 @@ player_hand = []
 player_hand_images = []
 deck_of_cards = Deck_of_cards()
 level = 1
-max_cards = 5
+max_cards = 8
 score = 0
 target = 20
 target_increment = 5
@@ -539,7 +541,7 @@ while run:
             run = False
 
         # if the player presses any key
-        if event.type == pygame.KEYUP:
+        if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
 
             # if no card is moving and the player can draw more cards
             if not card_is_moving_from_deck and not card_is_moving_to_hand and len(player_hand) < max_cards:
@@ -555,7 +557,7 @@ while run:
                 # if the player draws the maximum amount of cards
                 if len(player_hand) == max_cards:
 
-                    #activate the timer for ending the level. because we want to give the player a couple of the seconds the see what he/she drawn
+                    #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
                     timers['end level'].activate()
 
 pygame.quit()
