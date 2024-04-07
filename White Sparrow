@@ -1,6 +1,27 @@
 import pygame
 import random
 
+
+#LAMA 5555093:
+
+#local import in order to add and controle the sounds within the game
+from pygame import mixer
+#pre-initialization(random values so we can make sure it works properly)
+pygame.mixer.pre_init(44100, -16,2,512)
+#initialize
+mixer.init()
+
+#load sounds & set the volum: float
+game_sound = pygame.mixer.Sound('piano-loops.wav')
+game_sound.set_volume(0.25)
+#flip_cards_sound = pygame.mixer.Sound('flipping-cards.wav')
+#flip_cards_sound.set_volume(0.5)
+one_card_sound = pygame.mixer.Sound('card.wav')
+one_card_sound.set_volume(10)
+button_click_sound = pygame.mixer.Sound('button_click.wav')
+
+#TURKI:
+
 pygame.init()
 
 # behind the scenes sitting variables
@@ -528,6 +549,8 @@ card_is_moving_from_deck = False
 #Game Loop ------------------------------
 run = True
 while run:
+    # while game run -> play game background sound
+    game_sound.play()
 
     #update everything for this frame
     update_all()
@@ -545,8 +568,13 @@ while run:
 
             # if no card is moving and the player can draw more cards
             if not card_is_moving_from_deck and not card_is_moving_to_hand and len(player_hand) < max_cards:
-                # there is a card moving now
+                 # there is a card moving now so:
+                # 1-play a card sound 2- stop the background sound while card sounds is playing so they donot overlap.
+
                 card_is_moving_from_deck = True
+                game_sound.stop()
+                one_card_sound.play()
+                game_sound.play()
 
                 #update the x destination for the new card that has been drawn
                 update_X_destination()
