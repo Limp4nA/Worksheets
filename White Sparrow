@@ -17,6 +17,7 @@ game_sound.set_volume(0.25)
 one_card_sound = pygame.mixer.Sound('card.wav')
 one_card_sound.set_volume(10)
 button_click_sound = pygame.mixer.Sound('button_click.wav')
+button_click_sound.set_volume(0.5)
 
 #TURKI:
 
