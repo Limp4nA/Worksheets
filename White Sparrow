@@ -6,8 +6,10 @@ import random
 
 #local import in order to add and controle the sounds within the game
 from pygame import mixer
+
 #pre-initialization(random values so we can make sure it works properly)
 pygame.mixer.pre_init(44100, -16,2,512)
+
 #initialize
 mixer.init()
 
@@ -46,9 +48,6 @@ DECK_OF_CARDS_SPACING = .5
 DECK_OF_CARDS_ROTATION = 170 # in degrees
 DECK_OF_CARDS_SPEED = 20
 
-black_card_back_image = None
-red_card_back_image = None
-
 Background_Color = 'purple'
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -59,8 +58,21 @@ X_destination = None # <--- this variable is explained in the update_X_destinati
 
 TEXT_COLOR = 'white'
 TEXT_SIZE = 100
+TEXT_X = 10
+TEXT_Y = 10
 font = pygame.font.Font('m6x11.ttf', TEXT_SIZE)
 texts = {}
+
+MESSAGE_COLOR = 'black'
+MESSAGE_X = SCREEN_WIDTH / 2 - 200
+MESSAGE_Y = SCREEN_HEIGHT / 2
+MESSAGE_SIZE = 50
+MESSAGE_FADE_SPEED = 2
+DEFAULT_ALPHA_VALUE = 200
+ALPHA_VALUE = 0
+MESSAGES_DISTANCE = 200
+messages = {'score': ''}
+
 # ----------------------------------------------------------------
 
 
@@ -315,13 +327,26 @@ def draw_texts() -> None:
 
     # these two variable controls the distance between each text and the screen
     off_set = 120
-    beggining = 10
+    iterate = 0
 
     # here is the drawing
-    screen.blit(texts['level'] , (10,off_set * 0 + beggining))
-    screen.blit(texts['max_cards'] , (10,off_set * 1 + beggining))
-    screen.blit(texts['score'] , (10,off_set * 2 + beggining))
-    screen.blit(texts['target'] , (10,off_set * 3 + beggining))
+    for text in texts:
+        screen.blit(texts[text], (TEXT_X, TEXT_Y + (off_set * iterate)))
+
+        if text == 'score':
+
+            message_image = font.render(messages[text], True, MESSAGE_COLOR)
+            message_image.set_alpha(ALPHA_VALUE)
+
+            screen.blit(message_image, (TEXT_X + 330, TEXT_Y + (off_set * iterate)))
+
+        iterate += 1
+
+    # screen.blit(texts['level'] , (10,off_set * 0 + beggining))
+    # screen.blit(texts['max_cards'] , (10,off_set * 1 + beggining))
+    # screen.blit(texts['score'] , (10,off_set * 2 + beggining))
+    # # screen.blit(messages['score'], (340, off_set * 2 + beggining))
+    # screen.blit(texts['target'] , (10,off_set * 3 + beggining))
 def update_X_destination() -> float:
 
     # X_destination variable represents the X position destination of the moving card that has been drawn
@@ -459,6 +484,36 @@ def draw_deck_of_cards() -> None:
 
         # we draw the image in the screen
         screen.blit(image, [x, y])
+def reset_messages() -> None:
+
+    # reset the messages alpha value and delete all the messages except the score
+
+    global messages, ALPHA_VALUE
+
+    # reset the alpha_value to show all the messages that will pop out
+    ALPHA_VALUE = DEFAULT_ALPHA_VALUE
+
+    messages = {'score': messages['score']}
+def draw_messages() -> None:
+
+    global ALPHA_VALUE, MESSAGE_FADE_SPEED, messages
+
+    if ALPHA_VALUE >= 0:
+
+        off_set = 0
+
+        for message in messages:
+
+            if message != 'score':
+
+                message_image = font.render(messages[message], True, MESSAGE_COLOR)
+                message_image.set_alpha(ALPHA_VALUE)
+
+                screen.blit(message_image, [MESSAGE_X + (off_set * MESSAGES_DISTANCE), MESSAGE_Y])
+
+                off_set += 1
+
+        ALPHA_VALUE -= MESSAGE_FADE_SPEED
 # end of TURKI`s implementation (ID: 5554912)------------------------------------------------------------------------
 
 # start of ARDA`s implementation----------------------------------------------------------------------
@@ -480,7 +535,7 @@ def end_level() -> None:
 
 def update_all() -> None:
 
-    # we call this function in every frame. 60 times per second
+    # Note: we call this function in every frame. 60 times per second
 
 
     # here is shows all of the changes of the screen to the user
@@ -511,6 +566,8 @@ def update_all() -> None:
 
     #we update all of the timers to check if they are finished
     update_timers()
+
+    draw_messages()
 
 
 
@@ -548,16 +605,16 @@ card_is_moving_from_deck = False
 #Game Loop ------------------------------
 run = True
 while run:
+
     # while game run -> play game background sound
     game_sound.play()
 
     #update everything for this frame
     update_all()
 
-
-
     # the event handler
     for event in pygame.event.get():
+
         # shut down the program of the player preses the X symbol in the screen
         if event.type == pygame.QUIT:
             run = False
@@ -580,6 +637,12 @@ while run:
 
                 #draw a card
                 draw()
+
+                # reset the messages alpha value and delete all the messages except the score
+                reset_messages()
+
+                # set the score message
+                messages['score'] = f"+{player_hand[-1].val}"
 
                 # if the player draws the maximum amount of cards
                 if len(player_hand) == max_cards:
