@@ -41,6 +41,7 @@ TEXT_COLOR = 'white'
 TEXT_X = 10
 TEXT_Y = 10
 TEXT_SIZE = 100
+TEXT_OFF_SET = 100 # is the distance in pixels between each text
 font = pygame.font.Font('m6x11.ttf', TEXT_SIZE)
 texts = {}
 
@@ -64,7 +65,6 @@ slide_out = False
 card_is_moving_to_hand = False
 card_is_moving_from_deck = False
 # ----------------------------------------------------------------
-
 
 class Card:
 
@@ -308,35 +308,34 @@ def update_texts() -> None:
     global texts , level, max_cards, score, player_hand , target
 
     texts['level'] = font.render(f'Level {level}', True, TEXT_COLOR)
-    texts['max_cards'] = font.render(f'Cards {len(player_hand)}/{max_cards}', True, TEXT_COLOR)
+    texts['multiplier'] = font.render(f'multiplier {multiplier}', True, TEXT_COLOR)
     texts['score'] = font.render(f'Score {score}', True, TEXT_COLOR)
     texts['target'] = font.render(f'Target {target}', True, TEXT_COLOR)
+    texts['max_cards'] = font.render(f'Cards {len(player_hand)}/{max_cards}', True, TEXT_COLOR)
 def draw_texts() -> None:
     # this function update the texts by calling update_texts() then draws them in the top left corner of the screen
     update_texts()
 
-    # these two variable controls the distance between each text and the screen
-    off_set = 120
     iterate = 0
 
     # here is the drawing
     for text in texts:
-        screen.blit(texts[text], (TEXT_X, TEXT_Y + (off_set * iterate)))
+        screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
         if text == 'score':
 
             message_image = font.render(messages[text], True, MESSAGE_COLOR)
             message_image.set_alpha(ALPHA_VALUE)
 
-            screen.blit(message_image, (TEXT_X + 330, TEXT_Y + (off_set * iterate)))
+            screen.blit(message_image, (TEXT_X + 330, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
         iterate += 1
 
-    # screen.blit(texts['level'] , (10,off_set * 0 + beggining))
-    # screen.blit(texts['max_cards'] , (10,off_set * 1 + beggining))
-    # screen.blit(texts['score'] , (10,off_set * 2 + beggining))
-    # # screen.blit(messages['score'], (340, off_set * 2 + beggining))
-    # screen.blit(texts['target'] , (10,off_set * 3 + beggining))
+    # screen.blit(texts['level'] , (10,TEXT_OFF_SET * 0 + beggining))
+    # screen.blit(texts['max_cards'] , (10,TEXT_OFF_SET * 1 + beggining))
+    # screen.blit(texts['score'] , (10,TEXT_OFF_SET * 2 + beggining))
+    # # screen.blit(messages['score'], (340, TEXT_OFF_SET * 2 + beggining))
+    # screen.blit(texts['target'] , (10,TEXT_OFF_SET * 3 + beggining))
 def update_X_destination() -> float:
 
     # X_destination variable represents the X position destination of the moving card that has been drawn
@@ -569,45 +568,45 @@ pygame.mixer.music.play(-1,0.0, 4000)
 
 # this function will be called by a timer when the level is finished.
 def end_level() -> None:
-  #some one should implement it
-  pass
+    #some one should implement it
+    pass
 
 
 def update_all() -> None:
 
-  # Note: we call this function in every frame. 60 times per second
+    # Note: we call this function in every frame. 60 times per second
 
 
-  # here is shows all of the changes of the screen to the user
-  pygame.display.update()
+    # here is shows all of the changes of the screen to the user
+    pygame.display.update()
 
-  # it makes the program run at 60 FPS
-  clock.tick(FPS)
+    # it makes the program run at 60 FPS
+    clock.tick(FPS)
 
-  # here where the fill the screen with pink all of it.
-  # and if you don`t understant why we do that every frame, then try to remove this line and run the program
-  screen.fill(Background_Color)
+    # here where the fill the screen with pink all of it.
+    # and if you don`t understant why we do that every frame, then try to remove this line and run the program
+    screen.fill(Background_Color)
 
-  # here we draw all of the text in the top left corner
-  draw_texts()
+    # here we draw all of the text in the top left corner
+    draw_texts()
 
-  # here we draw the cards in the screen
-  draw_hand()
+    # here we draw the cards in the screen
+    draw_hand()
 
-  # here we draw the deck_of_cards in the screen
-  draw_deck_of_cards()
+    # here we draw the deck_of_cards in the screen
+    draw_deck_of_cards()
 
-  # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
-  moving_card()
+    # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
+    moving_card()
 
-  # TODO we need to move this function to the place where we start each level.
-  #  we only need to update the value at the begging of every level not every frame
-  update_cards_x_adjustment()
+    # TODO we need to move this function to the place where we start each level.
+    #  we only need to update the value at the begging of every level not every frame
+    update_cards_x_adjustment()
 
-  #we update all of the timers to check if they are finished
-  update_timers()
+    #we update all of the timers to check if they are finished
+    update_timers()
 
-  draw_messages()
+    draw_messages()
 
 
 
@@ -627,65 +626,57 @@ max_cards = 5
 score = 0
 target = 20
 target_increment = 5
+multiplier = 1
 timers = {
-  #we dont wont the second the player draw the last card, the level ends. with this timer we solve this issue
-  'end level': Timer(2000, function = end_level),
-  'card slide': Timer(1000, function = set_slide_out)
+    #we dont wont the second the player draw the last card, the level ends. with this timer we solve this issue
+    'end level': Timer(2000, function = end_level),
+    'card slide': Timer(1000, function = set_slide_out)
 }
 #-----------------------
-
-
-
-
-
-
-
-
 
 #Game Loop ------------------------------
 run = True
 while run:
 
+    #update everything for this frame
+    update_all()
 
-  #update everything for this frame
-  update_all()
+    # the event handler
+    for event in pygame.event.get():
 
-  # the event handler
-  for event in pygame.event.get():
+        # shut down the program of the player preses the X symbol in the screen
+        if event.type == pygame.QUIT:
+             run = False
 
-      # shut down the program of the player preses the X symbol in the screen
-      if event.type == pygame.QUIT:
-          run = False
+        # if the player presses any key
+        if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
 
-      # if the player presses any key
-      if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
+            # if no card is moving and the player can draw more cards
+            if not card_is_moving_from_deck and not card_is_moving_to_hand and len(player_hand) < max_cards:
+                # there is a card moving now so:
+                # 1-play a card sound 2- stop the background sound while card sounds is playing so they donot overlap.
 
-          # if no card is moving and the player can draw more cards
-          if not card_is_moving_from_deck and not card_is_moving_to_hand and len(player_hand) < max_cards:
-               # there is a card moving now so:
-              # 1-play a card sound 2- stop the background sound while card sounds is playing so they donot overlap.
+                card_is_moving_from_deck = True
+                sounds['one_card'].play()
 
-              card_is_moving_from_deck = True
-              sounds['one_card'].play()
+                # update the x destination for the new card that has been drawn
+                update_X_destination()
 
-              #update the x destination for the new card that has been drawn
-              update_X_destination()
+                # draw a card
+                draw()
 
-              #draw a card
-              draw()
+                # reset the messages alpha value and delete all the messages except the score
+                reset_messages()
 
-              # reset the messages alpha value and delete all the messages except the score
-              reset_messages()
+                # set the score message
+                messages['score'] = f"+{player_hand[-1].val}"
 
-              # set the score message
-              messages['score'] = f"+{player_hand[-1].val}"
+                # if the player draws the maximum amount of cards
+                if len(player_hand) == max_cards:
 
-              # if the player draws the maximum amount of cards
-              if len(player_hand) == max_cards:
+                    timers['card slide'].activate()
 
-                  timers['card slide'].activate()
-
-                  #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
-                  timers['end level'].activate()
+                    #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
+                    timers['end level'].activate()
 
 pygame.quit()
