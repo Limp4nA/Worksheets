@@ -1,6 +1,6 @@
 import pygame
 import random
-
+import math
 
 #LAMA 5555093:
 
@@ -15,14 +15,13 @@ mixer.init()
 
 #load sounds & set the volum: float
 game_sound = pygame.mixer.Sound('piano-loops.wav')
-game_sound.set_volume(0.25)
+game_sound.set_volume(0.01)
 one_card_sound = pygame.mixer.Sound('card.wav')
 one_card_sound.set_volume(10)
 button_click_sound = pygame.mixer.Sound('button_click.wav')
 button_click_sound.set_volume(0.5)
 
-#TURKI:
-
+#TURKI 5554912:
 pygame.init()
 
 # behind the scenes sitting variables
@@ -72,6 +71,13 @@ DEFAULT_ALPHA_VALUE = 200
 ALPHA_VALUE = 0
 MESSAGES_DISTANCE = 200
 messages = {'score': ''}
+
+
+y_slide = math.pi
+sin_coefficient = 1
+SMALL_ADDING_AMOUNT = .9
+CARDS_SLIDE_SPEED = 0.02
+slide_out = False
 
 # ----------------------------------------------------------------
 
@@ -400,13 +406,36 @@ def moving_card() -> None:
             card_is_moving_to_hand = False
 def draw_hand() -> None:
 
-    # this function just print all of the player hand in the screen
+    # this function just print all the player hand in the screen
     # by iterating through (player_hand for the x and y position) and (player_hand_images for the images)
-    global screen, player_hand, player_hand_images, cards_x_adjustment
+    global screen, player_hand, player_hand_images, cards_x_adjustment, y_slide, slide_out
+    global sin_coefficient, SMALL_ADDING_AMOUNT, CARDS_SLIDE_SPEED
+
+
+    if slide_out:
+        card_y = CARD_Y * (sin_coefficient * math.sin(y_slide) + sin_coefficient + SMALL_ADDING_AMOUNT)
+
+    else:
+        card_y = CARD_Y
+
 
     for i in range(len(player_hand)):
-        # and adding the cards_x_adjustment to the cards x value
-        screen.blit(player_hand_images[i],[player_hand[i].x + cards_x_adjustment, CARD_Y])
+
+        card_x = player_hand[i].x + cards_x_adjustment
+
+        screen.blit(player_hand_images[i],[card_x , card_y])
+
+    if slide_out:
+
+        y_slide -= CARDS_SLIDE_SPEED
+
+        if card_y >= SCREEN_HEIGHT:
+            slide_out = False
+            player_hand.clear()
+            # player_hand_images.clear()
+
+
+
 def update_cards_x_adjustment() -> None:
 
     # this function updates cards_x_adjustment.
@@ -514,6 +543,15 @@ def draw_messages() -> None:
                 off_set += 1
 
         ALPHA_VALUE -= MESSAGE_FADE_SPEED
+def set_slide_out() -> None:
+
+    global set_slide_out, y_slide, slide_out, sin_coefficient, SMALL_ADDING_AMOUNT
+
+    slide_out = True
+    y_slide = math.asin((1 - sin_coefficient - SMALL_ADDING_AMOUNT)/sin_coefficient)
+    # print(y_slide)
+
+
 # end of TURKI`s implementation (ID: 5554912)------------------------------------------------------------------------
 
 # start of ARDA`s implementation----------------------------------------------------------------------
@@ -589,7 +627,8 @@ target = 20
 target_increment = 5
 timers = {
     #we dont wont the second the player draw the last card, the level ends. with this timer we solve this issue
-    'end level': Timer(2000, function = end_level)
+    'end level': Timer(2000, function = end_level),
+    'card slide': Timer(1000, function = set_slide_out)
 }
 #-----------------------
 
@@ -646,6 +685,8 @@ while run:
 
                 # if the player draws the maximum amount of cards
                 if len(player_hand) == max_cards:
+
+                    timers['card slide'].activate()
 
                     #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
                     timers['end level'].activate()
