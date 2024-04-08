@@ -102,6 +102,8 @@ class Card:
         # meaning, if the x = SCREEN_WIDTH, the card will be outside the border of the screen
         self.x = SCREEN_WIDTH
 
+        self.y = CARD_Y
+
     def get_value(self,val):
 
         # we try if val can be converted by the int() function
@@ -415,8 +417,8 @@ def draw_hand() -> None:
     if slide_out:
         card_y = CARD_Y * (sin_coefficient * math.sin(y_slide) + sin_coefficient + SMALL_ADDING_AMOUNT)
 
-    else:
-        card_y = CARD_Y
+    elif len(player_hand) >= 1:
+        card_y = player_hand[0].y
 
 
     for i in range(len(player_hand)):
@@ -431,11 +433,9 @@ def draw_hand() -> None:
 
         if card_y >= SCREEN_HEIGHT:
             slide_out = False
-            player_hand.clear()
-            # player_hand_images.clear()
 
-
-
+            for card in player_hand:
+                card.y = SCREEN_HEIGHT
 def update_cards_x_adjustment() -> None:
 
     # this function updates cards_x_adjustment.
