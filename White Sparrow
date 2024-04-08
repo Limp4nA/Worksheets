@@ -1,4 +1,5 @@
-# start of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------
+
+''' start of TURKI`s implementation (ID: 5554912)--------------------------------------------------------------------'''
 import pygame
 import random
 import math
@@ -17,7 +18,7 @@ clock = pygame.time.Clock()
 CARD_WIDTH = 25
 CARD_HEIGHT = 36
 CARD_SIZE = 1.5 * 4 # <-- leave the (* 4) and only change the first number in the left
-CARD_SPEED = 90
+CARD_SPEED = 90 # pixel per frame
 CARD_Y_ADJUSTMENT = 50 # <-- it represent the distance (in pixels) between the cards and the bottem side of the screen
 CARD_Y = (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) - CARD_Y_ADJUSTMENT
 
@@ -37,13 +38,13 @@ cards_x_adjustment = 0 # <--- this variable is explained in the update_cards_x_a
 X_destination = None # <--- this variable is explained in the update_X_destination()
 
 TEXT_COLOR = 'white'
-TEXT_SIZE = 100
 TEXT_X = 10
 TEXT_Y = 10
+TEXT_SIZE = 100
 font = pygame.font.Font('m6x11.ttf', TEXT_SIZE)
 texts = {}
 
-MESSAGE_COLOR = 'black'
+MESSAGE_COLOR = 'pink'
 MESSAGE_X = SCREEN_WIDTH / 2 - 200
 MESSAGE_Y = SCREEN_HEIGHT / 2
 MESSAGE_SIZE = 50
@@ -54,12 +55,14 @@ MESSAGES_DISTANCE = 200
 messages = {'score': ''}
 
 
-y_slide = math.pi
-sin_coefficient = 1
+Y_SLIDE = math.pi
+SIN_COEFFICIENT = 1
 SMALL_ADDING_AMOUNT = .9
 CARDS_SLIDE_SPEED = 0.02
 slide_out = False
 
+card_is_moving_to_hand = False
+card_is_moving_from_deck = False
 # ----------------------------------------------------------------
 
 
@@ -389,12 +392,12 @@ def draw_hand() -> None:
 
     # this function just print all the player hand in the screen
     # by iterating through (player_hand for the x and y position) and (player_hand_images for the images)
-    global screen, player_hand, player_hand_images, cards_x_adjustment, y_slide, slide_out
-    global sin_coefficient, SMALL_ADDING_AMOUNT, CARDS_SLIDE_SPEED
+    global screen, player_hand, player_hand_images, cards_x_adjustment, Y_SLIDE, slide_out
+    global SIN_COEFFICIENT, SMALL_ADDING_AMOUNT, CARDS_SLIDE_SPEED
 
 
     if slide_out:
-        card_y = CARD_Y * (sin_coefficient * math.sin(y_slide) + sin_coefficient + SMALL_ADDING_AMOUNT)
+        card_y = CARD_Y * (SIN_COEFFICIENT * math.sin(Y_SLIDE) + SIN_COEFFICIENT + SMALL_ADDING_AMOUNT)
 
     elif len(player_hand) >= 1:
         card_y = player_hand[0].y
@@ -408,7 +411,7 @@ def draw_hand() -> None:
 
     if slide_out:
 
-        y_slide -= CARDS_SLIDE_SPEED
+        Y_SLIDE -= CARDS_SLIDE_SPEED
 
         if card_y >= SCREEN_HEIGHT:
             slide_out = False
@@ -524,14 +527,14 @@ def draw_messages() -> None:
         ALPHA_VALUE -= MESSAGE_FADE_SPEED
 def set_slide_out() -> None:
 
-    global set_slide_out, y_slide, slide_out, sin_coefficient, SMALL_ADDING_AMOUNT
+    global set_slide_out, Y_SLIDE, slide_out, SIN_COEFFICIENT, SMALL_ADDING_AMOUNT
 
     slide_out = True
-    y_slide = math.asin((1 - sin_coefficient - SMALL_ADDING_AMOUNT)/sin_coefficient)
-    # print(y_slide)
-# end of TURKI`s implementation (ID: 5554912)------------------------------------------------------------------------
+    Y_SLIDE = math.asin((1 - SIN_COEFFICIENT - SMALL_ADDING_AMOUNT) / SIN_COEFFICIENT)
+    # print(Y_SLIDE)
+''' end of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------'''
 
-# start of LAMA`s implementation (ID: 5555093)----------------------------------------------------------------------
+''' start of LAMA`s implementation (ID: 5555093)---------------------------------------------------------------------'''
 
 #local import in order to add and controle the sounds within the game
 from pygame import mixer
@@ -544,12 +547,12 @@ mixer.init()
 
 #load sounds & set the volum: float
 sounds = {
-    'one_card': pygame.mixer.Sound('card.wav'),
-    'button_click': pygame.mixer.Sound('button_click.wav')
-            }
+   'one_card': pygame.mixer.Sound('card.wav'),
+   'button_click': pygame.mixer.Sound('button_click.wav')
+           }
 
-sounds['one_card'].set_volume(1)
-sounds['button_click'].set_volume(0.5)
+sounds['one_card'].set_volume(.4)
+sounds['button_click'].set_volume(.4)
 
 #load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
 pygame.mixer.music.load("piano-loops.wav")
@@ -557,54 +560,54 @@ pygame.mixer.music.load("piano-loops.wav")
 # play the background sound with 4000 ms delay that more comfortable for users since it does not start strong
 pygame.mixer.music.play(-1,0.0, 4000)
 
-# end of LAMA`s implementation (ID: 5555093)------------------------------------------------------------------------
+''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 
-# start of ARDA`s implementation ----------------------------------------------------------------------
+''' start of ARDA`s implementation ----------------------------------------------------------------------'''
 # ----------------------------------------------------------------------------------------------------
-# end of ARDA`s implementation------------------------------------------------------------------------
+''' end of ARDA`s implementation------------------------------------------------------------------------'''
 
 
 # this function will be called by a timer when the level is finished.
 def end_level() -> None:
-    #some one should implement it
-    pass
+  #some one should implement it
+  pass
 
 
 def update_all() -> None:
 
-    # Note: we call this function in every frame. 60 times per second
+  # Note: we call this function in every frame. 60 times per second
 
 
-    # here is shows all of the changes of the screen to the user
-    pygame.display.update()
+  # here is shows all of the changes of the screen to the user
+  pygame.display.update()
 
-    # it makes the program run at 60 FPS
-    clock.tick(FPS)
+  # it makes the program run at 60 FPS
+  clock.tick(FPS)
 
-    # here where the fill the screen with pink all of it.
-    # and if you don`t understant why we do that every frame, then try to remove this line and run the program
-    screen.fill(Background_Color)
+  # here where the fill the screen with pink all of it.
+  # and if you don`t understant why we do that every frame, then try to remove this line and run the program
+  screen.fill(Background_Color)
 
-    # here we draw all of the text in the top left corner
-    draw_texts()
+  # here we draw all of the text in the top left corner
+  draw_texts()
 
-    # here we draw the cards in the screen
-    draw_hand()
+  # here we draw the cards in the screen
+  draw_hand()
 
-    # here we draw the deck_of_cards in the screen
-    draw_deck_of_cards()
+  # here we draw the deck_of_cards in the screen
+  draw_deck_of_cards()
 
-    # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
-    moving_card()
+  # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
+  moving_card()
 
-    # TODO we need to move this function to the place where we start each level.
-    #  we only need to update the value at the begging of every level not every frame
-    update_cards_x_adjustment()
+  # TODO we need to move this function to the place where we start each level.
+  #  we only need to update the value at the begging of every level not every frame
+  update_cards_x_adjustment()
 
-    #we update all of the timers to check if they are finished
-    update_timers()
+  #we update all of the timers to check if they are finished
+  update_timers()
 
-    draw_messages()
+  draw_messages()
 
 
 
@@ -620,14 +623,14 @@ player_hand = []
 player_hand_images = []
 deck_of_cards = Deck_of_cards()
 level = 1
-max_cards = 8
+max_cards = 5
 score = 0
 target = 20
 target_increment = 5
 timers = {
-    #we dont wont the second the player draw the last card, the level ends. with this timer we solve this issue
-    'end level': Timer(2000, function = end_level),
-    'card slide': Timer(1000, function = set_slide_out)
+  #we dont wont the second the player draw the last card, the level ends. with this timer we solve this issue
+  'end level': Timer(2000, function = end_level),
+  'card slide': Timer(1000, function = set_slide_out)
 }
 #-----------------------
 
@@ -636,8 +639,7 @@ timers = {
 
 
 
-card_is_moving_to_hand = False
-card_is_moving_from_deck = False
+
 
 
 #Game Loop ------------------------------
@@ -645,45 +647,45 @@ run = True
 while run:
 
 
-    #update everything for this frame
-    update_all()
+  #update everything for this frame
+  update_all()
 
-    # the event handler
-    for event in pygame.event.get():
+  # the event handler
+  for event in pygame.event.get():
 
-        # shut down the program of the player preses the X symbol in the screen
-        if event.type == pygame.QUIT:
-            run = False
+      # shut down the program of the player preses the X symbol in the screen
+      if event.type == pygame.QUIT:
+          run = False
 
-        # if the player presses any key
-        if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
+      # if the player presses any key
+      if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
 
-            # if no card is moving and the player can draw more cards
-            if not card_is_moving_from_deck and not card_is_moving_to_hand and len(player_hand) < max_cards:
-                 # there is a card moving now so:
-                # 1-play a card sound 2- stop the background sound while card sounds is playing so they donot overlap.
+          # if no card is moving and the player can draw more cards
+          if not card_is_moving_from_deck and not card_is_moving_to_hand and len(player_hand) < max_cards:
+               # there is a card moving now so:
+              # 1-play a card sound 2- stop the background sound while card sounds is playing so they donot overlap.
 
-                card_is_moving_from_deck = True
-                sounds['one_card'].play()
+              card_is_moving_from_deck = True
+              sounds['one_card'].play()
 
-                #update the x destination for the new card that has been drawn
-                update_X_destination()
+              #update the x destination for the new card that has been drawn
+              update_X_destination()
 
-                #draw a card
-                draw()
+              #draw a card
+              draw()
 
-                # reset the messages alpha value and delete all the messages except the score
-                reset_messages()
+              # reset the messages alpha value and delete all the messages except the score
+              reset_messages()
 
-                # set the score message
-                messages['score'] = f"+{player_hand[-1].val}"
+              # set the score message
+              messages['score'] = f"+{player_hand[-1].val}"
 
-                # if the player draws the maximum amount of cards
-                if len(player_hand) == max_cards:
+              # if the player draws the maximum amount of cards
+              if len(player_hand) == max_cards:
 
-                    timers['card slide'].activate()
+                  timers['card slide'].activate()
 
-                    #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
-                    timers['end level'].activate()
+                  #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
+                  timers['end level'].activate()
 
 pygame.quit()
