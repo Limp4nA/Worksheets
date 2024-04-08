@@ -1,32 +1,8 @@
+# start of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------
 import pygame
 import random
 import math
 
-#LAMA 5555093:
-
-#local import in order to add and controle the sounds within the game
-from pygame import mixer
-
-#pre-initialization(random values so we can make sure it works properly)
-pygame.mixer.pre_init(44100, -16,2,512)
-
-#initialize
-mixer.init()
-
-#load sounds & set the volum: float
-sounds = {
-    'one_card': pygame.mixer.Sound('card.wav'),
-    'button_click': pygame.mixer.Sound('button_click.wav')}
-
-sounds['one_card_sound'].set_volume(10)
-sounds['button_click_sound'].set_volume(0.5)
-
-#load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
-pygame.mixer.music.load("piano-loops.wav")
-# play the background sound with 4000 ms delay that more comfortable for users since it does not start strong
-pygame.mixer.music.play(-1,0.0, 4000)
-
-#TURKI 5554912:
 pygame.init()
 
 # behind the scenes sitting variables
@@ -87,8 +63,6 @@ slide_out = False
 # ----------------------------------------------------------------
 
 
-
-# start of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------
 class Card:
 
     # loading the sprite sheet into a variable
@@ -555,19 +529,39 @@ def set_slide_out() -> None:
     slide_out = True
     y_slide = math.asin((1 - sin_coefficient - SMALL_ADDING_AMOUNT)/sin_coefficient)
     # print(y_slide)
-
-
 # end of TURKI`s implementation (ID: 5554912)------------------------------------------------------------------------
 
-# start of ARDA`s implementation----------------------------------------------------------------------
+# start of LAMA`s implementation (ID: 5555093)----------------------------------------------------------------------
+
+#local import in order to add and controle the sounds within the game
+from pygame import mixer
+
+#pre-initialization(random values so we can make sure it works properly)
+pygame.mixer.pre_init(44100, -16,2,512)
+
+#initialize
+mixer.init()
+
+#load sounds & set the volum: float
+sounds = {
+    'one_card': pygame.mixer.Sound('card.wav'),
+    'button_click': pygame.mixer.Sound('button_click.wav')
+            }
+
+sounds['one_card'].set_volume(1)
+sounds['button_click'].set_volume(0.5)
+
+#load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
+pygame.mixer.music.load("piano-loops.wav")
+
+# play the background sound with 4000 ms delay that more comfortable for users since it does not start strong
+pygame.mixer.music.play(-1,0.0, 4000)
+
+# end of LAMA`s implementation (ID: 5555093)------------------------------------------------------------------------
+
+# start of ARDA`s implementation ----------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------
 # end of ARDA`s implementation------------------------------------------------------------------------
-
-
-# start of LAMA`s implementation----------------------------------------------------------------------
-# ----------------------------------------------------------------------------------------------------
-# end of LAMA`s implementation------------------------------------------------------------------------
-
 
 
 # this function will be called by a timer when the level is finished.
