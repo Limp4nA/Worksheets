@@ -15,8 +15,8 @@ mixer.init()
 
 #load sounds & set the volum: float
 sounds = {
-    'one_card_sound': pygame.mixer.Sound('card.wav'),
-    'button_click_sound': pygame.mixer.Sound('button_click.wav')}
+    'one_card': pygame.mixer.Sound('card.wav'),
+    'button_click': pygame.mixer.Sound('button_click.wav')}
 
 sounds['one_card_sound'].set_volume(10)
 sounds['button_click_sound'].set_volume(0.5)
@@ -670,7 +670,7 @@ while run:
                 # 1-play a card sound 2- stop the background sound while card sounds is playing so they donot overlap.
 
                 card_is_moving_from_deck = True
-                sounds['one_card_sound'].play()
+                sounds['one_card'].play()
 
                 #update the x destination for the new card that has been drawn
                 update_X_destination()
