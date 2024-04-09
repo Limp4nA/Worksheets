@@ -1,4 +1,3 @@
-
 ''' start of TURKI`s implementation (ID: 5554912)--------------------------------------------------------------------'''
 import pygame
 import random
@@ -43,6 +42,10 @@ TEXT_Y = 10
 TEXT_SIZE = 100
 TEXT_OFF_SET = 100 # is the distance in pixels between each text
 font = pygame.font.Font('m6x11.ttf', TEXT_SIZE)
+score_reached_color = [255, 255, 0]
+score_color = TEXT_COLOR
+shake_score = False
+shake_score_amount = 1
 texts = {}
 
 MESSAGE_COLOR = 'pink'
@@ -64,6 +67,7 @@ slide_out = False
 
 card_is_moving_to_hand = False
 card_is_moving_from_deck = False
+
 # ----------------------------------------------------------------
 
 class Card:
@@ -309,7 +313,7 @@ def update_texts() -> None:
 
     texts['level'] = font.render(f'Level {level}', True, TEXT_COLOR)
     texts['multiplier'] = font.render(f'multiplier {multiplier}', True, TEXT_COLOR)
-    texts['score'] = font.render(f'Score {score}', True, TEXT_COLOR)
+    texts['score'] = font.render(f'Score {score}', True, score_color)
     texts['target'] = font.render(f'Target {target}', True, TEXT_COLOR)
     texts['max_cards'] = font.render(f'Cards {len(player_hand)}/{max_cards}', True, TEXT_COLOR)
 def draw_texts() -> None:
@@ -318,16 +322,28 @@ def draw_texts() -> None:
 
     iterate = 0
 
+    global shake_score_amount, score, target
+
     # here is the drawing
     for text in texts:
-        screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
+        # screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
         if text == 'score':
 
-            message_image = font.render(messages[text], True, MESSAGE_COLOR)
-            message_image.set_alpha(ALPHA_VALUE)
+            if shake_score:
+                screen.blit(texts[text], (TEXT_X +shake_score_amount, TEXT_Y + (TEXT_OFF_SET * iterate)+shake_score_amount))
+                shake_score_amount *= -1
+            else:
+                screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
-            screen.blit(message_image, (TEXT_X + 330, TEXT_Y + (TEXT_OFF_SET * iterate)))
+                message_image = font.render(messages[text], True, MESSAGE_COLOR)
+                message_image.set_alpha(ALPHA_VALUE)
+
+                screen.blit(message_image, (TEXT_X + 390, TEXT_Y + (TEXT_OFF_SET * iterate)))
+
+
+        else:
+            screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
         iterate += 1
 
@@ -531,6 +547,26 @@ def set_slide_out() -> None:
     slide_out = True
     Y_SLIDE = math.asin((1 - SIN_COEFFICIENT - SMALL_ADDING_AMOUNT) / SIN_COEFFICIENT)
     # print(Y_SLIDE)
+def update_score_shake_and_color():
+    global score, target, score_color, shake_score, shake_score_amount, score_reached_color
+
+    if score >= target:
+        score_color = score_reached_color
+    else:
+        score_color = TEXT_COLOR
+
+    if score >= target * 1.5:
+        shake_score = True
+
+        score_reached_color = [255, 255 * (target * 1.5) / score , 0]
+
+        if shake_score_amount < 3.3:
+            shake_score_amount = score/(target * 1.5)
+        else:
+            shake_score_amount = 3.3
+    else:
+        shake_score = False
+
 ''' end of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------'''
 
 ''' start of LAMA`s implementation (ID: 5555093)---------------------------------------------------------------------'''
@@ -670,6 +706,8 @@ while run:
 
                 # set the score message
                 messages['score'] = f"+{player_hand[-1].val}"
+
+                update_score_shake_and_color()
 
                 # if the player draws the maximum amount of cards
                 if len(player_hand) == max_cards:
