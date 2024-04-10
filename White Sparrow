@@ -580,21 +580,27 @@ pygame.mixer.pre_init(44100, -16,2,512)
 #initialize
 mixer.init()
 
-#load sounds & set the volum: float
+#variables
+VOLUME = 0.4
+MUSIC_DELAY = 4000
+
+
+#load sounds & set the volume
+
 global sounds
 sounds= {
    'one_card': pygame.mixer.Sound('card.wav'),
    'button_click': pygame.mixer.Sound('button_click.wav')
            }
 
-sounds['one_card'].set_volume(.4)
-sounds['button_click'].set_volume(.4)
+sounds['one_card'].set_volume(VOLUME)
+sounds['button_click'].set_volume(VOLUME)
 
 #load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
 pygame.mixer.music.load("piano-loops.wav")
 
 # play the background sound with 4000 ms delay that more comfortable for users since it does not start strong
-pygame.mixer.music.play(-1,0.0, 4000)
+pygame.mixer.music.play(-1,0.0, MUSIC_DELAY)
 
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 
@@ -690,8 +696,7 @@ while run:
 
             # if no card is moving and the player can draw more cards
             if not card_is_moving_from_deck and not card_is_moving_to_hand and len(player_hand) < max_cards:
-                # there is a card moving now so:
-                # 1-play a card sound 2- stop the background sound while card sounds is playing so they donot overlap.
+                # there is a card moving now so play a card sound 
 
                 card_is_moving_from_deck = True
                 sounds['one_card'].play()
