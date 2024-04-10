@@ -581,7 +581,8 @@ pygame.mixer.pre_init(44100, -16,2,512)
 mixer.init()
 
 #load sounds & set the volum: float
-sounds = {
+global sounds
+sounds= {
    'one_card': pygame.mixer.Sound('card.wav'),
    'button_click': pygame.mixer.Sound('button_click.wav')
            }
