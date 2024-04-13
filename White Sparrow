@@ -7,8 +7,10 @@ pygame.init()
 
 # behind the scenes sitting variables
 # ----------------------------------------------------------------
+Background_Color = 'purple'
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 900
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 FPS = 60
 clock = pygame.time.Clock()
@@ -28,9 +30,6 @@ DECK_OF_CARDS_SPACING = .5
 DECK_OF_CARDS_ROTATION = 170 # in degrees
 DECK_OF_CARDS_SPEED = 20
 
-Background_Color = 'purple'
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
 pygame.event.set_blocked(pygame.MOUSEMOTION)
 
 cards_x_adjustment = 0 # <--- this variable is explained in the update_cards_x_adjustment()
@@ -42,7 +41,7 @@ TEXT_Y = 10
 TEXT_SIZE = 100
 TEXT_OFF_SET = 100 # is the distance in pixels between each text
 font = pygame.font.Font('m6x11.ttf', TEXT_SIZE)
-score_reached_color = [255, 255, 0]
+score_reached_color = [255, 255, 0] # <- this is yellow
 score_color = TEXT_COLOR
 shake_score = False
 shake_score_amount = 1
@@ -59,7 +58,7 @@ MESSAGES_DISTANCE = 200
 messages = {'score': ''}
 
 
-Y_SLIDE = math.pi
+y_slide = math.pi
 SIN_COEFFICIENT = 1
 SMALL_ADDING_AMOUNT = .9
 CARDS_SLIDE_SPEED = 0.02
@@ -407,12 +406,12 @@ def draw_hand() -> None:
 
     # this function just print all the player hand in the screen
     # by iterating through (player_hand for the x and y position) and (player_hand_images for the images)
-    global screen, player_hand, player_hand_images, cards_x_adjustment, Y_SLIDE, slide_out
+    global screen, player_hand, player_hand_images, cards_x_adjustment, y_slide, slide_out
     global SIN_COEFFICIENT, SMALL_ADDING_AMOUNT, CARDS_SLIDE_SPEED
 
 
     if slide_out:
-        card_y = CARD_Y * (SIN_COEFFICIENT * math.sin(Y_SLIDE) + SIN_COEFFICIENT + SMALL_ADDING_AMOUNT)
+        card_y = CARD_Y * (SIN_COEFFICIENT * math.sin(y_slide) + SIN_COEFFICIENT + SMALL_ADDING_AMOUNT)
 
     elif len(player_hand) >= 1:
         card_y = player_hand[0].y
@@ -426,7 +425,7 @@ def draw_hand() -> None:
 
     if slide_out:
 
-        Y_SLIDE -= CARDS_SLIDE_SPEED
+        y_slide -= CARDS_SLIDE_SPEED
 
         if card_y >= SCREEN_HEIGHT:
             slide_out = False
@@ -542,12 +541,12 @@ def draw_messages() -> None:
         ALPHA_VALUE -= MESSAGE_FADE_SPEED
 def set_slide_out() -> None:
 
-    global set_slide_out, Y_SLIDE, slide_out, SIN_COEFFICIENT, SMALL_ADDING_AMOUNT
+    global set_slide_out, y_slide, slide_out, SIN_COEFFICIENT, SMALL_ADDING_AMOUNT
 
     slide_out = True
-    Y_SLIDE = math.asin((1 - SIN_COEFFICIENT - SMALL_ADDING_AMOUNT) / SIN_COEFFICIENT)
-    # print(Y_SLIDE)
-def update_score_shake_and_color():
+    y_slide = math.asin((1 - SIN_COEFFICIENT - SMALL_ADDING_AMOUNT) / SIN_COEFFICIENT)
+    # print(y_slide)
+def update_score_shake_and_color() -> None:
     global score, target, score_color, shake_score, shake_score_amount, score_reached_color
 
     if score >= target:
@@ -696,7 +695,7 @@ while run:
 
             # if no card is moving and the player can draw more cards
             if not card_is_moving_from_deck and not card_is_moving_to_hand and len(player_hand) < max_cards:
-                # there is a card moving now so play a card sound 
+                # there is a card moving now so play a card sound
 
                 card_is_moving_from_deck = True
                 sounds['one_card'].play()
