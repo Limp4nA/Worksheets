@@ -22,6 +22,7 @@ CARD_SIZE = 1.5 * 4 # <-- leave the (* 4) and only change the first number in th
 CARD_SPEED = 90 # pixel per frame
 CARD_Y_ADJUSTMENT = 50 # <-- it represent the distance (in pixels) between the cards and the bottem side of the screen
 CARD_Y = (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) - CARD_Y_ADJUSTMENT
+CARDS_SPRITE_SHEET = pygame.image.load('CuteCardsPixel_outline.png').convert_alpha() # <-- loading the sprite sheet into a variable
 
 DECK_OF_CARDS_X = SCREEN_WIDTH - 250
 DECK_OF_CARDS_Y = 75
@@ -70,9 +71,6 @@ card_is_moving_from_deck = False
 # ----------------------------------------------------------------
 
 class Card:
-
-    # loading the sprite sheet into a variable
-    sprite_sheet = pygame.image.load('CuteCardsPixel_outline.png').convert_alpha()
 
     def __init__(self, val: str,suit: str):
         #each card is defined by value and a suit and a x position
@@ -144,7 +142,7 @@ class Card:
         # 1 - a Surface which is in this case is the (sprite sheet)
         # 2 - the x-y position in the image
         # 3 - the rectangular area of the sprite sheet that we want to cut in the form (x1, y1, x2, y2)
-        image.blit(Card.sprite_sheet, [0, 0], [card_x, card_y, card_x + CARD_WIDTH, card_y + CARD_HEIGHT])
+        image.blit(CARDS_SPRITE_SHEET, [0, 0], [card_x, card_y, card_x + CARD_WIDTH, card_y + CARD_HEIGHT])
 
         # then we transform the size of the image by a scaler
         # the first arg is the image and the second is a list that stores the scale amount of the width and height
@@ -477,7 +475,7 @@ def get_card_back_image(color: str) -> pygame.surface.Surface:
         card_y = 3 * CARD_HEIGHT
 
     card_back_image = pygame.Surface((CARD_WIDTH, CARD_HEIGHT)).convert_alpha()
-    card_back_image.blit(Card.sprite_sheet, [0, 0], [card_x, card_y, card_x + CARD_WIDTH, card_y + CARD_HEIGHT])
+    card_back_image.blit(CARDS_SPRITE_SHEET, [0, 0], [card_x, card_y, card_x + CARD_WIDTH, card_y + CARD_HEIGHT])
     card_back_image = pygame.transform.scale(card_back_image, [CARD_WIDTH * DECK_OF_CARDS_SIZE, CARD_HEIGHT * DECK_OF_CARDS_SIZE])
 
     # the new thing is we rotate the image to give a 3D effect
@@ -664,15 +662,22 @@ player_hand = []
 player_hand_images = []
 deck_of_cards = Deck_of_cards()
 level = 1
-max_cards = 5
+max_cards = 8
 score = 0
 target = 20
 target_increment = 5
 multiplier = 1
+#-----------------------
+
+
+# timers initialising
+#-----------------------
 timers = {
-    #we dont wont the second the player draw the last card, the level ends. with this timer we solve this issue
-    'end level': Timer(2000, function = end_level),
-    'card slide': Timer(1000, function = set_slide_out)
+  #we dont wont the second the player draw the last card, the level ends. with this timer it solves this issue
+  'end level': Timer(2000, function = end_level),
+
+
+  'card slide': Timer(1000, function = set_slide_out)
 }
 #-----------------------
 
