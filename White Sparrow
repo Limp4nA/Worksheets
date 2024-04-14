@@ -29,6 +29,8 @@ CARD_SPEED = 90 # pixel per frame
 CARD_Y_ADJUSTMENT = 50 # <-- it represent the distance (in pixels) between the cards and the bottem side of the screen
 CARD_Y = (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) - CARD_Y_ADJUSTMENT
 CARDS_SPRITE_SHEET = pygame.image.load('CuteCardsPixel_outline.png').convert_alpha() # <-- loading the sprite sheet into a variable
+FALLING_CARDS_MAX_SPEED = 8
+FALLING_CARDS_MIN_SPEED = 2
 
 DECK_OF_CARDS_X = SCREEN_WIDTH - 250
 DECK_OF_CARDS_Y = 75
@@ -77,7 +79,7 @@ card_is_moving_from_deck = False
 
 class Card:
 
-    def __init__(self, val: str,suit: str):
+    def __init__(self, val: str, suit: str, speed=None):
         #each card is defined by value and a suit and a x position
 
         # the variable val that has been passed by the constructor has the type of str
@@ -91,6 +93,10 @@ class Card:
         self.x = SCREEN_WIDTH
 
         self.y = CARD_Y
+
+        self.image = self.get_image()
+
+        self.speed = speed
 
     def get_value(self,val):
 
@@ -304,11 +310,8 @@ class Timer:
 def draw() -> None:
 
     # this function draws a cards to the player hand
-    global player_hand , player_hand_images ,deck_of_cards
+    global player_hand, deck_of_cards
     player_hand.append(deck_of_cards.draw())
-
-    #then we add the card`s image to the player_hand_images list
-    player_hand_images.append(player_hand[-1].get_image())
 def update_texts() -> None:
     # it updates all the texts
     global texts , level, max_cards, score, player_hand , target
@@ -342,10 +345,10 @@ def draw_texts() -> None:
             else:
                 screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
-                message_image = font.render(messages[text], True, MESSAGE_COLOR)
-                message_image.set_alpha(ALPHA_VALUE)
+            message_image = font.render(messages[text], True, MESSAGE_COLOR)
+            message_image.set_alpha(ALPHA_VALUE)
 
-                screen.blit(message_image, (TEXT_X + 390, TEXT_Y + (TEXT_OFF_SET * iterate)))
+            screen.blit(message_image, (TEXT_X + 390, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
 
         else:
@@ -407,14 +410,14 @@ def draw_hand() -> None:
 
     # this function just print all the player hand in the screen
     # by iterating through (player_hand for the x and y position) and (player_hand_images for the images)
-    global screen, player_hand, player_hand_images, cards_x_adjustment, y_slide, slide_out
+    global screen, player_hand, cards_x_adjustment, y_slide, slide_out
     global SIN_COEFFICIENT, SMALL_ADDING_AMOUNT, CARDS_SLIDE_SPEED
 
 
     if slide_out:
         card_y = CARD_Y * (SIN_COEFFICIENT * math.sin(y_slide) + SIN_COEFFICIENT + SMALL_ADDING_AMOUNT)
 
-    elif len(player_hand) >= 1:
+    elif len(player_hand):
         card_y = player_hand[0].y
 
 
@@ -422,7 +425,7 @@ def draw_hand() -> None:
 
         card_x = player_hand[i].x + cards_x_adjustment
 
-        screen.blit(player_hand_images[i],[card_x , card_y])
+        screen.blit(player_hand[i].image, [card_x, card_y])
 
     if slide_out:
 
@@ -585,6 +588,96 @@ def show_display():
 
     # here is shows all of the changes of the screen to the user
     pygame.display.update()
+def show_menu_screen():
+
+
+    TITLE_SIZE = 100
+    TITLE_FONT = pygame.font.Font('m6x11.ttf', TITLE_SIZE)
+    TITLE = "WHITE SPARROW"
+    TITLE_IMAGE = TITLE_FONT.render(f'{TITLE}', True, TEXT_COLOR)
+    TITLE_X = SCREEN_WIDTH/2 - TITLE_SIZE * 3
+    TITLE_Y = SCREEN_HEIGHT/4
+    TITLE_SPEED = 0.03
+
+    WELCOME = "WELCOME TO"
+    WELCOME_IMAGE = TITLE_FONT.render(f'{WELCOME}', True, TEXT_COLOR)
+    WELCOME_X = TITLE_X + 50
+    WELCOME_Y = TITLE_Y - 100
+
+
+    RECT_X = TITLE_X - 17
+    RECT_Y = TITLE_Y - 100 - 15
+    RECT_WIDTH = 610
+    RECT_HEIGHT = 200
+    RECT_COLOR = [100, 0, 100]
+    PURPLE_RECT = pygame.Surface((RECT_WIDTH, RECT_HEIGHT)).convert_alpha()
+    PURPLE_RECT.fill(RECT_COLOR)
+
+    x_big = 10
+    y_big = 10
+    BLACK_RECT = pygame.Surface((RECT_WIDTH + x_big, RECT_HEIGHT + y_big)).convert_alpha()
+    BLACK_RECT.fill('black')
+
+    dt = 0
+    falling_cards = []
+
+    for i in range(10):
+        falling_cards.append(get_random_card())
+
+
+    show_menu = True
+    while show_menu:
+
+        screen.fill(Background_Color)
+        clock.tick(FPS)
+
+        i = 0
+        while i < len(falling_cards):
+            screen.blit(falling_cards[i].image, [falling_cards[i].x, falling_cards[i].y])
+
+            falling_cards[i].y += falling_cards[i].speed
+
+            if falling_cards[i].y >= SCREEN_HEIGHT:
+                del falling_cards[i]
+
+                falling_cards.append(get_random_card())
+
+                i -= 1
+
+            i += 1
+
+        hovering = 20 * math.sin(dt)
+        dt += TITLE_SPEED
+        dt %= 2*math.pi
+
+        screen.blit(BLACK_RECT, [RECT_X - x_big/2, RECT_Y + hovering - y_big/2])
+        screen.blit(PURPLE_RECT, [RECT_X, RECT_Y + hovering])
+        screen.blit(WELCOME_IMAGE, [WELCOME_X, WELCOME_Y + hovering])
+        screen.blit(TITLE_IMAGE, [TITLE_X, TITLE_Y + hovering])
+
+        for event in pygame.event.get():
+            if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP or event.type == pygame.QUIT:
+                show_menu = False
+
+        show_display()
+def get_random_card():
+    values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+    suits = ['Clubs', 'Diamonds', 'Spades', 'Hearts']
+
+    values_random_index = random.randint(0, len(values) - 1)
+    suits_random_index = random.randint(0, len(suits) - 1)
+
+    falling_speed = random.randint(FALLING_CARDS_MIN_SPEED, FALLING_CARDS_MAX_SPEED)
+
+    card = Card(values[values_random_index], suits[suits_random_index], speed=falling_speed)
+
+    card.x = random.randint(-int(CARD_WIDTH * CARD_SIZE / 1.5), SCREEN_WIDTH - int(CARD_WIDTH * CARD_SIZE / 1.5))
+    card.y = random.randint(-CARD_HEIGHT *CARD_SIZE * 5, -CARD_HEIGHT * CARD_SIZE)
+
+
+    return card
+
+show_menu_screen()
 ''' end of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------'''
 
 ''' start of LAMA`s implementation (ID: 5555093)---------------------------------------------------------------------'''
@@ -678,7 +771,6 @@ red_card_back_image = get_card_back_image('red')
 # game sitting variables
 #-----------------------
 player_hand = []
-player_hand_images = []
 deck_of_cards = Deck_of_cards()
 level = 1
 max_cards = 8
@@ -746,7 +838,5 @@ while run:
 
                     #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
                     timers['end level'].activate()
-
-
 
 pygame.quit()
