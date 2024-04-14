@@ -73,7 +73,6 @@ slide_out = False
 
 card_is_moving_to_hand = False
 card_is_moving_from_deck = False
-
 # ----------------------------------------------------------------
 
 class Card:
@@ -320,6 +319,7 @@ def update_texts() -> None:
     texts['target'] = font.render(f'Target {target}', True, TEXT_COLOR)
     texts['max_cards'] = font.render(f'Cards {len(player_hand)}/{max_cards}', True, TEXT_COLOR)
 def draw_texts() -> None:
+
     # this function update the texts by calling update_texts() then draws them in the top left corner of the screen
     update_texts()
 
@@ -329,13 +329,16 @@ def draw_texts() -> None:
 
     # here is the drawing
     for text in texts:
-        # screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
         if text == 'score':
 
             if shake_score:
-                screen.blit(texts[text], (TEXT_X +shake_score_amount, TEXT_Y + (TEXT_OFF_SET * iterate)+shake_score_amount))
-                shake_score_amount *= -1
+
+                x_off_set = random.randint(0, shake_score_amount * 2) - shake_score_amount
+                y_off_set = random.randint(0, shake_score_amount * 2) - shake_score_amount
+
+                screen.blit(texts[text], (TEXT_X + x_off_set, TEXT_Y + (TEXT_OFF_SET * iterate) + y_off_set))
+
             else:
                 screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
@@ -349,12 +352,6 @@ def draw_texts() -> None:
             screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
         iterate += 1
-
-    # screen.blit(texts['level'] , (10,TEXT_OFF_SET * 0 + beggining))
-    # screen.blit(texts['max_cards'] , (10,TEXT_OFF_SET * 1 + beggining))
-    # screen.blit(texts['score'] , (10,TEXT_OFF_SET * 2 + beggining))
-    # # screen.blit(messages['score'], (340, TEXT_OFF_SET * 2 + beggining))
-    # screen.blit(texts['target'] , (10,TEXT_OFF_SET * 3 + beggining))
 def update_X_destination() -> float:
 
     # X_destination variable represents the X position destination of the moving card that has been drawn
@@ -563,12 +560,7 @@ def update_score_shake_and_color() -> None:
 
         score_reached_color = [255, 255 * (target * 1.5) / score , 0]
 
-        if shake_score_amount < 3.3:
-            shake_score_amount = score/(target * 1.5)
-        else:
-            shake_score_amount = 3.3
-    else:
-        shake_score = False
+        shake_score_amount = score//target
 def screen_shake_on():
     global screen_shake
 
