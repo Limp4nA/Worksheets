@@ -8,9 +8,15 @@ pygame.init()
 # behind the scenes sitting variables
 # ----------------------------------------------------------------
 Background_Color = 'purple'
-SCREEN_WIDTH = 900
+SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 900
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+# we will draw everything into it
+screen = pygame.surface.Surface([SCREEN_WIDTH, SCREEN_HEIGHT])
+# then, we put the screen into the display to show, the reason for that is to shake the screen
+display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen_shake = False
+SCREEN_SHAKE_AMOUNT = 12
+SCREEN_SHAKE_TIME = 250
 
 FPS = 60
 clock = pygame.time.Clock()
@@ -49,13 +55,13 @@ shake_score_amount = 1
 texts = {}
 
 MESSAGE_COLOR = 'pink'
-MESSAGE_X = SCREEN_WIDTH / 2 - 200
-MESSAGE_Y = SCREEN_HEIGHT / 2
+MESSAGE_X = SCREEN_WIDTH / 2 - 50
+MESSAGE_Y = SCREEN_HEIGHT / 2 - 150
 MESSAGE_SIZE = 50
 MESSAGE_FADE_SPEED = 2
 DEFAULT_ALPHA_VALUE = 200
 ALPHA_VALUE = 0
-MESSAGES_DISTANCE = 200
+MESSAGES_DISTANCE = 100
 messages = {'score': ''}
 
 
@@ -532,7 +538,7 @@ def draw_messages() -> None:
                 message_image = font.render(messages[message], True, MESSAGE_COLOR)
                 message_image.set_alpha(ALPHA_VALUE)
 
-                screen.blit(message_image, [MESSAGE_X + (off_set * MESSAGES_DISTANCE), MESSAGE_Y])
+                screen.blit(message_image, [MESSAGE_X , MESSAGE_Y+ (off_set * MESSAGES_DISTANCE)])
 
                 off_set += 1
 
@@ -563,7 +569,30 @@ def update_score_shake_and_color() -> None:
             shake_score_amount = 3.3
     else:
         shake_score = False
+def screen_shake_on():
+    global screen_shake
 
+    if screen_shake:
+        screen_shake = False
+    else:
+        screen_shake = True
+
+        timers['screen shake off'].activate()
+def show_display():
+
+    if screen_shake:
+
+        # the interval is (-SCREEN_SHAKE_AMOUNT , SCREEN_SHAKE_AMOUNT)
+        x_off_set = random.randint(0, SCREEN_SHAKE_AMOUNT * 2) - SCREEN_SHAKE_AMOUNT
+        y_off_set = random.randint(0, SCREEN_SHAKE_AMOUNT * 2) - SCREEN_SHAKE_AMOUNT
+
+        display.blit(screen, [x_off_set, y_off_set])
+
+    else:
+        display.blit(screen, [0, 0])
+
+    # here is shows all of the changes of the screen to the user
+    pygame.display.update()
 ''' end of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------'''
 
 ''' start of LAMA`s implementation (ID: 5555093)---------------------------------------------------------------------'''
@@ -614,39 +643,37 @@ def end_level() -> None:
 
 def update_all() -> None:
 
-    # Note: we call this function in every frame. 60 times per second
+  # Note: we call this function in every frame. 60 times per second
 
+  show_display()
 
-    # here is shows all of the changes of the screen to the user
-    pygame.display.update()
+  # it makes the program run at 60 FPS
+  clock.tick(FPS)
 
-    # it makes the program run at 60 FPS
-    clock.tick(FPS)
+  # here where the fill the screen with pink all of it.
+  # and if you don`t understant why we do that every frame, then try to remove this line and run the program
+  screen.fill(Background_Color)
 
-    # here where the fill the screen with pink all of it.
-    # and if you don`t understant why we do that every frame, then try to remove this line and run the program
-    screen.fill(Background_Color)
+  # here we draw all of the text in the top left corner
+  draw_texts()
 
-    # here we draw all of the text in the top left corner
-    draw_texts()
+  # here we draw the cards in the screen
+  draw_hand()
 
-    # here we draw the cards in the screen
-    draw_hand()
+  # here we draw the deck_of_cards in the screen
+  draw_deck_of_cards()
 
-    # here we draw the deck_of_cards in the screen
-    draw_deck_of_cards()
+  # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
+  moving_card()
 
-    # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
-    moving_card()
+  # TODO we need to move this function to the place where we start each level.
+  #  we only need to update the value at the begging of every level not every frame
+  update_cards_x_adjustment()
 
-    # TODO we need to move this function to the place where we start each level.
-    #  we only need to update the value at the begging of every level not every frame
-    update_cards_x_adjustment()
+  #we update all of the timers to check if they are finished
+  update_timers()
 
-    #we update all of the timers to check if they are finished
-    update_timers()
-
-    draw_messages()
+  draw_messages()
 
 
 
@@ -674,10 +701,11 @@ multiplier = 1
 #-----------------------
 timers = {
   #we dont wont the second the player draw the last card, the level ends. with this timer it solves this issue
-  'end level': Timer(2000, function = end_level),
+  'end level': Timer(2000, function=end_level),
 
+  'card slide': Timer(1000, function=set_slide_out),
 
-  'card slide': Timer(1000, function = set_slide_out)
+  'screen shake off': Timer(SCREEN_SHAKE_TIME, function=screen_shake_on)
 }
 #-----------------------
 
@@ -726,5 +754,7 @@ while run:
 
                     #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
                     timers['end level'].activate()
+
+
 
 pygame.quit()
