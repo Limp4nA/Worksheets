@@ -695,6 +695,15 @@ mixer.init()
 VOLUME = 0.4
 MUSIC_DELAY = 4000
 
+#just random values we will updated as we need
+START_X = SCREEN_WIDTH/3
+START_Y = SCREEN_HEIGHT/2
+EXIT_X = 2*SCREEN_WIDTH/3
+EXIT_Y = SCREEN_HEIGHT/2
+NO_X = SCREEN_WIDTH/3
+NO_Y = SCREEN_HEIGHT/2
+YES_X = 2*SCREEN_WIDTH/3
+YES_Y = SCREEN_HEIGHT/2
 
 #load sounds & set the volume
 
@@ -712,6 +721,69 @@ pygame.mixer.music.load("piano-loops.wav")
 
 # play the background sound with 4000 ms delay that more comfortable for users since it does not start strong
 pygame.mixer.music.play(-1,0.0, MUSIC_DELAY)
+
+# button images loading
+global button_images
+
+button_images = {
+    'yes_button': pygame.image.load('Yes_button.png').convert_alpha(),
+    'no_button': pygame.image.load('No_button.png').convert_alpha(),
+    'start_button': pygame.image.load('start_button.png').convert_alpha(),
+    'exit_button' : pygame.image.load('exit_button.png').convert_alpha()
+}
+
+
+class Button():
+    # Adding scale parameter in case we need to resize the images
+    def __init__(self, x: float, y: float, image, scale):
+    # to adjest images we need first to know what the original dimention
+        width = image.get_width()
+        height = image.get_height()
+
+    # assign the scaled version of the image, and multiply both width & height by the scale
+        self.image =  pygame.transform.scale(image, (int(width * scale), int(height * scale) ))
+
+        #creat a rectangle for the image
+        self.rect = self.image.get_rect()
+        #to determine where the rectangle and the image to be
+        self.rect.topleft = (x,y)
+
+    # in order to click the button once and release it before click it again
+        self.clicked = False
+
+    def draw(self):
+        # instance variable so we can return it in order to make each button does different thing
+        action = False
+        # the idea is to click the buttons by left side button of the mouse to do that:
+
+        #get mouse position
+        mouse_pos = pygame.mouse.get_pos()
+
+        # to check if the mouse over one of buttons & clicked conditions
+
+        #is the mouse is colliding the rectangle of the button ? if yes check the click
+        if self.rect.collidepoint(mouse_pos):
+            #for left mouse button -> 0
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked = True
+                action = True
+
+            if pygame.mouse.get_pressed()[0] == 0:
+                self.clicked == False
+
+        return action
+
+
+        #draw button on screen
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+
+#creat Button instances
+
+start_button = Button(START_X,START_Y,button_images['start_button'],0.25)
+exit_button = Button(EXIT_X, EXIT_Y,button_images['exit_button'], 0.25)
+yes_button = Button(YES_X,YES_Y,button_images['yes_button'],1)
+no_button = Button(NO_X,NO_Y,button_images['no_button'],1)
 
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 
