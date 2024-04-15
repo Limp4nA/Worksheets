@@ -672,7 +672,7 @@ def get_random_card():
     card = Card(values[values_random_index], suits[suits_random_index], speed=falling_speed)
 
     card.x = random.randint(-int(CARD_WIDTH * CARD_SIZE / 1.5), SCREEN_WIDTH - int(CARD_WIDTH * CARD_SIZE / 1.5))
-    card.y = random.randint(-CARD_HEIGHT *CARD_SIZE * 5, -CARD_HEIGHT * CARD_SIZE)
+    card.y = random.randint(-CARD_HEIGHT * int(CARD_SIZE) * 5, -CARD_HEIGHT * int(CARD_SIZE))
 
 
     return card
