@@ -312,6 +312,8 @@ def draw() -> None:
     # this function draws a cards to the player hand
     global player_hand, deck_of_cards
     player_hand.append(deck_of_cards.draw())
+    calculate_score()
+
 def update_texts() -> None:
     # it updates all the texts
     global texts , level, max_cards, score, player_hand , target
@@ -784,6 +786,21 @@ start_button = Button(START_X,START_Y,button_images['start_button'],0.25)
 exit_button = Button(EXIT_X, EXIT_Y,button_images['exit_button'], 0.25)
 yes_button = Button(YES_X,YES_Y,button_images['yes_button'],1)
 no_button = Button(NO_X,NO_Y,button_images['no_button'],1)
+
+# to calcute score 
+def calculate_score():
+# score is a global variable and player_hand contains the current hand of cards
+
+    global score, player_hand  
+
+    # Sum of card values 
+    score = 0
+    for card in player_hand:
+        score += card.val  # adding the score value
+
+    # Update the score display
+    update_texts()
+
 
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 
