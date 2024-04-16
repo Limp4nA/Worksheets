@@ -64,7 +64,7 @@ MESSAGE_FADE_SPEED = 2
 DEFAULT_ALPHA_VALUE = 200
 ALPHA_VALUE = 0
 MESSAGES_DISTANCE = 100
-messages = {'score': ''}
+messages = {'score': '', 'multiplier': ''}
 
 
 y_slide = math.pi
@@ -333,7 +333,14 @@ def draw_texts() -> None:
     global shake_score_amount, score, target
 
     # here is the drawing
-    for text in texts:
+    for text in texts.keys():
+
+        if text == 'score' or text == 'multiplier':
+
+            message_image = font.render(messages[text], True, MESSAGE_COLOR)
+            message_image.set_alpha(ALPHA_VALUE)
+
+            screen.blit(message_image, (TEXT_X + 520, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
         if text == 'score':
 
@@ -347,14 +354,10 @@ def draw_texts() -> None:
             else:
                 screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
-            message_image = font.render(messages[text], True, MESSAGE_COLOR)
-            message_image.set_alpha(ALPHA_VALUE)
-
-            screen.blit(message_image, (TEXT_X + 390, TEXT_Y + (TEXT_OFF_SET * iterate)))
-
-
         else:
             screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
+
+
 
         iterate += 1
 def update_X_destination() -> float:
@@ -524,7 +527,9 @@ def reset_messages() -> None:
     # reset the alpha_value to show all the messages that will pop out
     ALPHA_VALUE = DEFAULT_ALPHA_VALUE
 
-    messages = {'score': messages['score']}
+    messages = {'score': messages['score'],
+                'multiplier': messages['multiplier']
+                }
 def draw_messages() -> None:
 
     global ALPHA_VALUE, MESSAGE_FADE_SPEED, messages
@@ -535,7 +540,7 @@ def draw_messages() -> None:
 
         for message in messages:
 
-            if message != 'score':
+            if message != 'score' and message != 'multiplier':
 
                 message_image = font.render(messages[message], True, MESSAGE_COLOR)
                 message_image.set_alpha(ALPHA_VALUE)
@@ -787,13 +792,13 @@ exit_button = Button(EXIT_X, EXIT_Y,button_images['exit_button'], 0.25)
 yes_button = Button(YES_X,YES_Y,button_images['yes_button'],1)
 no_button = Button(NO_X,NO_Y,button_images['no_button'],1)
 
-# to calcute score 
+# to calcute score
 def calculate_score():
 # score is a global variable and player_hand contains the current hand of cards
 
-    global score, player_hand  
+    global score, player_hand
 
-    # Sum of card values 
+    # Sum of card values
     score = 0
     for card in player_hand:
         score += card.val  # adding the score value
