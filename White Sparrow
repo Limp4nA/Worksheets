@@ -574,11 +574,11 @@ def update_score_shake_and_color() -> None:
 def screen_shake_on():
     global screen_shake
 
-    if screen_shake:
+    if screen_shake and not timers['screen shake off'].active:
         screen_shake = False
-    else:
-        screen_shake = True
 
+    elif not screen_shake:
+        screen_shake = True
         timers['screen shake off'].activate()
 def show_display():
 
