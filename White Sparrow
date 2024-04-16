@@ -5,22 +5,24 @@ import math
 
 pygame.init()
 
-# behind the scenes sitting variables
+# start of behind the scenes sitting variables
 # ----------------------------------------------------------------
-Background_Color = 'purple'
+
+# -- start of screen sittings --
+Background_Color = [50,90,50] #'green'
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 900
+
 # we will draw everything into it
 screen = pygame.surface.Surface([SCREEN_WIDTH, SCREEN_HEIGHT])
-# then, we put the screen into the display to show, the reason for that is to shake the screen
+
+# then, we put the screen into the display to show the player, the reason for that is to shake the screen
 display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 screen_shake = False
 SCREEN_SHAKE_AMOUNT = 12
 SCREEN_SHAKE_TIME = 250
 
-FPS = 60
-clock = pygame.time.Clock()
-
+# -- start of cards sittings --
 # the width and height in pixels from the sprite_sheet
 CARD_WIDTH = 25
 CARD_HEIGHT = 36
@@ -32,6 +34,7 @@ CARDS_SPRITE_SHEET = pygame.image.load('CuteCardsPixel_outline.png').convert_alp
 FALLING_CARDS_MAX_SPEED = 8
 FALLING_CARDS_MIN_SPEED = 2
 
+# -- start of deck_of_cards sittings --
 DECK_OF_CARDS_X = SCREEN_WIDTH - 250
 DECK_OF_CARDS_Y = 75
 DECK_OF_CARDS_SIZE = 1.2 * 4 # <-- leave the (* 4) and only change the first number in the left
@@ -39,11 +42,7 @@ DECK_OF_CARDS_SPACING = .5
 DECK_OF_CARDS_ROTATION = 170 # in degrees
 DECK_OF_CARDS_SPEED = 20
 
-pygame.event.set_blocked(pygame.MOUSEMOTION)
-
-cards_x_adjustment = 0 # <--- this variable is explained in the update_cards_x_adjustment()
-X_destination = None # <--- this variable is explained in the update_X_destination()
-
+# -- start of text sittings --
 TEXT_COLOR = 'white'
 TEXT_X = 10
 TEXT_Y = 10
@@ -56,6 +55,7 @@ shake_score = False
 shake_score_amount = 1
 texts = {}
 
+# -- start of messages sittings --
 MESSAGE_COLOR = 'pink'
 MESSAGE_X = SCREEN_WIDTH / 2 - 50
 MESSAGE_Y = SCREEN_HEIGHT / 2 - 150
@@ -66,16 +66,73 @@ ALPHA_VALUE = 0
 MESSAGES_DISTANCE = 100
 messages = {'score': '', 'multiplier': ''}
 
-
+# -- start of cards slide-our animation sittings --
 y_slide = math.pi
 SIN_COEFFICIENT = 1
-SMALL_ADDING_AMOUNT = .9
+SMALL_ADDING_AMOUNT = .9 #local minimum
 CARDS_SLIDE_SPEED = 0.02
 slide_out = False
 
+# -- start of menu sittings --
+#title message
+TITLE_SIZE = 100
+TITLE_FONT = pygame.font.Font('m6x11.ttf', TITLE_SIZE)
+TITLE = "WHITE SPARROW"
+TITLE_IMAGE = TITLE_FONT.render(f'{TITLE}', True, TEXT_COLOR)
+TITLE_X = SCREEN_WIDTH / 2 - TITLE_SIZE * 3
+TITLE_Y = SCREEN_HEIGHT / 4
+TITLE_SPEED = 0.03
+title_dt = 0
+
+#welcome message
+WELCOME = "WELCOME TO"
+WELCOME_IMAGE = TITLE_FONT.render(f'{WELCOME}', True, TEXT_COLOR)
+WELCOME_X = TITLE_X + 50
+WELCOME_Y = TITLE_Y - 100
+
+#the rectangles behind the title and the welcome message
+RECT_X = TITLE_X - 17
+RECT_Y = TITLE_Y - 100 - 15
+RECT_WIDTH = 610
+RECT_HEIGHT = 200
+RECT_COLOR = [110,0,0]#[100, 0, 100]
+#initializing the purple rectangle
+
+PURPLE_RECT = pygame.Surface((RECT_WIDTH, RECT_HEIGHT)).convert_alpha()
+PURPLE_RECT.fill(RECT_COLOR)
+
+# How wide (x-axis) and high (y-axis) is the black rectangle compared
+# to the purple rectangle to give an outline effect
+x_big = 10
+y_big = 10
+#initializing the black rectangle that is behind the purple rectangle
+BLACK_RECT = pygame.Surface((RECT_WIDTH + x_big, RECT_HEIGHT + y_big)).convert_alpha()
+BLACK_RECT.fill('black')
+
+# if it True, it will start the menu exit animation after the player presses the button
+menu_exiting = False
+# the y-axis shifter for all menu screen images
+menu_exiting_shift = 0
+# the animation change of time
+menu_exiting_dt = 0
+
+
+
+
+# -- start of small group variables sittings
 card_is_moving_to_hand = False
 card_is_moving_from_deck = False
+
+pygame.event.set_blocked(pygame.MOUSEMOTION)
+
+cards_x_adjustment = 0 # <--- this variable is explained in the update_cards_x_adjustment()
+X_destination = None # <--- this variable is explained in the update_X_destination()
+
+FPS = 60
+clock = pygame.time.Clock()
+
 # ----------------------------------------------------------------
+# end of behind the scenes sitting variables
 
 class Card:
 
@@ -310,8 +367,7 @@ def draw() -> None:
     # this function draws a cards to the player hand
     global player_hand, deck_of_cards
     player_hand.append(deck_of_cards.draw())
-    calculate_score()
-
+    # calculate_score()
 def update_texts() -> None:
     # it updates all the texts
     global texts , level, max_cards, score, player_hand , target
@@ -340,17 +396,15 @@ def draw_texts() -> None:
 
             screen.blit(message_image, (TEXT_X + 520, TEXT_Y + (TEXT_OFF_SET * iterate)))
 
-        if text == 'score':
+        if text == 'score' and shake_score:
 
-            if shake_score:
+            x_off_set = random.randint(0, shake_score_amount * 2) - shake_score_amount
+            y_off_set = random.randint(0, shake_score_amount * 2) - shake_score_amount
 
-                x_off_set = random.randint(0, shake_score_amount * 2) - shake_score_amount
-                y_off_set = random.randint(0, shake_score_amount * 2) - shake_score_amount
+            screen.blit(texts[text], (TEXT_X + x_off_set, TEXT_Y + (TEXT_OFF_SET * iterate) + y_off_set))
 
-                screen.blit(texts[text], (TEXT_X + x_off_set, TEXT_Y + (TEXT_OFF_SET * iterate) + y_off_set))
-
-            else:
-                screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
+        elif menu_exiting and SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) > -menu_exiting_shift:
+            screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate) + SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) + menu_exiting_shift))
 
         else:
             screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
@@ -496,7 +550,7 @@ def draw_deck_of_cards() -> None:
 
     # this function draws the deck_of_cards
 
-    # however, there is a problem, when the player draw a card, this function will not draw the last card
+    # there is a problem, when the player draw a card, this function will not draw the last card
     # the played had drawn because it is no longer in the deck therefore we cant draw the moving card in the screen.
     # the solution is in this if statement down below
 
@@ -512,7 +566,12 @@ def draw_deck_of_cards() -> None:
         # we game the image and the x-y of each card in the deck_of_card
         image = deck_of_cards.cards_back_images[i]['image']
         x = deck_of_cards.cards_back_images[i]['x']
+
         y = deck_of_cards.cards_back_images[i]['y']
+
+        if menu_exiting and  SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) > -menu_exiting_shift:
+            y = deck_of_cards.cards_back_images[i]['y'] + SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) + menu_exiting_shift
+
 
         # we draw the image in the screen
         screen.blit(image, [x, y])
@@ -580,9 +639,13 @@ def screen_shake_on():
         timers['screen shake off'].activate()
 def show_display():
 
+    global menu_exiting_dt, menu_exiting
+
+    display.fill(Background_Color)
+
     if screen_shake:
 
-        # the interval is (-SCREEN_SHAKE_AMOUNT , SCREEN_SHAKE_AMOUNT)
+        # the random value interval of X&Y is (-SCREEN_SHAKE_AMOUNT , SCREEN_SHAKE_AMOUNT)
         x_off_set = random.randint(0, SCREEN_SHAKE_AMOUNT * 2) - SCREEN_SHAKE_AMOUNT
         y_off_set = random.randint(0, SCREEN_SHAKE_AMOUNT * 2) - SCREEN_SHAKE_AMOUNT
 
@@ -595,35 +658,9 @@ def show_display():
     pygame.display.update()
 def show_menu_screen():
 
-
-    TITLE_SIZE = 100
-    TITLE_FONT = pygame.font.Font('m6x11.ttf', TITLE_SIZE)
-    TITLE = "WHITE SPARROW"
-    TITLE_IMAGE = TITLE_FONT.render(f'{TITLE}', True, TEXT_COLOR)
-    TITLE_X = SCREEN_WIDTH/2 - TITLE_SIZE * 3
-    TITLE_Y = SCREEN_HEIGHT/4
-    TITLE_SPEED = 0.03
-
-    WELCOME = "WELCOME TO"
-    WELCOME_IMAGE = TITLE_FONT.render(f'{WELCOME}', True, TEXT_COLOR)
-    WELCOME_X = TITLE_X + 50
-    WELCOME_Y = TITLE_Y - 100
+    global menu_exiting, menu_exiting_dt, title_dt
 
 
-    RECT_X = TITLE_X - 17
-    RECT_Y = TITLE_Y - 100 - 15
-    RECT_WIDTH = 610
-    RECT_HEIGHT = 200
-    RECT_COLOR = [100, 0, 100]
-    PURPLE_RECT = pygame.Surface((RECT_WIDTH, RECT_HEIGHT)).convert_alpha()
-    PURPLE_RECT.fill(RECT_COLOR)
-
-    x_big = 10
-    y_big = 10
-    BLACK_RECT = pygame.Surface((RECT_WIDTH + x_big, RECT_HEIGHT + y_big)).convert_alpha()
-    BLACK_RECT.fill('black')
-
-    dt = 0
     falling_cards = []
 
     for i in range(10):
@@ -636,33 +673,24 @@ def show_menu_screen():
         screen.fill(Background_Color)
         clock.tick(FPS)
 
-        i = 0
-        while i < len(falling_cards):
-            screen.blit(falling_cards[i].image, [falling_cards[i].x, falling_cards[i].y])
 
-            falling_cards[i].y += falling_cards[i].speed
+        draw_and_move_falling_cards(falling_cards)
 
-            if falling_cards[i].y >= SCREEN_HEIGHT:
-                del falling_cards[i]
+        draw_and_move_title()
 
-                falling_cards.append(get_random_card())
+        if menu_exiting:
+            draw_deck_of_cards()
+            draw_texts()
 
-                i -= 1
-
-            i += 1
-
-        hovering = 20 * math.sin(dt)
-        dt += TITLE_SPEED
-        dt %= 2*math.pi
-
-        screen.blit(BLACK_RECT, [RECT_X - x_big/2, RECT_Y + hovering - y_big/2])
-        screen.blit(PURPLE_RECT, [RECT_X, RECT_Y + hovering])
-        screen.blit(WELCOME_IMAGE, [WELCOME_X, WELCOME_Y + hovering])
-        screen.blit(TITLE_IMAGE, [TITLE_X, TITLE_Y + hovering])
+        dd = update_menu_exiting_shift()
 
         for event in pygame.event.get():
             if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP or event.type == pygame.QUIT:
-                show_menu = False
+                menu_exiting = True
+                # show_menu = False
+
+        if dd == -1:
+            show_menu = False
 
         show_display()
 def get_random_card():
@@ -681,8 +709,50 @@ def get_random_card():
 
 
     return card
+def update_menu_exiting_shift():
 
-show_menu_screen()
+    global menu_exiting, menu_exiting_shift, menu_exiting_dt
+
+    if menu_exiting:
+        menu_exiting_shift = 2 * (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) * -math.sin(menu_exiting_dt)
+
+        menu_exiting_dt += 0.01
+
+        if menu_exiting_shift <= -SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE:
+            menu_exiting = False
+            menu_exiting_dt = 0
+            return -1
+
+    else:
+        menu_exiting_shift = 0
+def draw_and_move_falling_cards(falling_cards: list):
+
+    i = 0
+    while i < len(falling_cards):
+        screen.blit(falling_cards[i].image, [falling_cards[i].x, falling_cards[i].y + menu_exiting_shift])
+
+        if not menu_exiting:
+            falling_cards[i].y += falling_cards[i].speed
+
+        if not menu_exiting and falling_cards[i].y >= SCREEN_HEIGHT:
+            del falling_cards[i]
+
+            falling_cards.append(get_random_card())
+
+            i -= 1
+
+        i += 1
+def draw_and_move_title():
+    global title_dt
+
+    hovering = 20 * math.sin(title_dt)
+    title_dt += TITLE_SPEED
+    title_dt %= 2 * math.pi
+
+    screen.blit(BLACK_RECT, [RECT_X - x_big / 2, RECT_Y + hovering - y_big / 2 + menu_exiting_shift])
+    screen.blit(PURPLE_RECT, [RECT_X, RECT_Y + hovering + menu_exiting_shift])
+    screen.blit(WELCOME_IMAGE, [WELCOME_X, WELCOME_Y + hovering + menu_exiting_shift])
+    screen.blit(TITLE_IMAGE, [TITLE_X, TITLE_Y + hovering + menu_exiting_shift])
 ''' end of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------'''
 
 ''' start of LAMA`s implementation (ID: 5555093)---------------------------------------------------------------------'''
@@ -820,10 +890,6 @@ def end_level() -> None:
 
 def update_all() -> None:
 
-  # Note: we call this function in every frame. 60 times per second
-
-  show_display()
-
   # it makes the program run at 60 FPS
   clock.tick(FPS)
 
@@ -851,6 +917,9 @@ def update_all() -> None:
   update_timers()
 
   draw_messages()
+
+  # Note: we call this function in every frame. 60 times per second
+  show_display()
 
 
 
@@ -884,6 +953,11 @@ timers = {
   'screen shake off': Timer(SCREEN_SHAKE_TIME, function=screen_shake_on)
 }
 #-----------------------
+
+
+
+show_menu_screen()
+
 
 #Game Loop ------------------------------
 run = True
