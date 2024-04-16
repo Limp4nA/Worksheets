@@ -28,7 +28,7 @@ CARD_WIDTH = 25
 CARD_HEIGHT = 36
 CARD_SIZE = 1.5 * 4 # <-- leave the (* 4) and only change the first number in the left
 CARD_SPEED = 90 # pixel per frame
-CARD_Y_ADJUSTMENT = 50 # <-- it represent the distance (in pixels) between the cards and the bottem side of the screen
+CARD_Y_ADJUSTMENT = 100 # <-- it represent the distance (in pixels) between the cards and the bottem side of the screen
 CARD_Y = (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) - CARD_Y_ADJUSTMENT
 CARDS_SPRITE_SHEET = pygame.image.load('CuteCardsPixel_outline.png').convert_alpha() # <-- loading the sprite sheet into a variable
 FALLING_CARDS_MAX_SPEED = 8
@@ -116,10 +116,16 @@ menu_exiting_shift = 0
 # the animation change of time
 menu_exiting_dt = 0
 
+# -- start of suit symbols sittings --
+SUIT_SIZE = 20
+
+up_side = CARD_Y - 5 * SUIT_SIZE
+left_side = 0
+down_side = CARD_Y + CARD_HEIGHT * CARD_SIZE
+right_side = SCREEN_WIDTH - SUIT_SIZE * 4
 
 
-
-# -- start of small group variables sittings
+# -- start of small group variables sittings --
 card_is_moving_to_hand = False
 card_is_moving_from_deck = False
 
@@ -389,25 +395,28 @@ def draw_texts() -> None:
     # here is the drawing
     for text in texts.keys():
 
+        current_y = TEXT_Y + (TEXT_OFF_SET * iterate)
+
         if text == 'score' or text == 'multiplier':
 
             message_image = font.render(messages[text], True, MESSAGE_COLOR)
             message_image.set_alpha(ALPHA_VALUE)
 
-            screen.blit(message_image, (TEXT_X + 520, TEXT_Y + (TEXT_OFF_SET * iterate)))
+            screen.blit(message_image, (TEXT_X + 520, current_y))
 
         if text == 'score' and shake_score:
 
             x_off_set = random.randint(0, shake_score_amount * 2) - shake_score_amount
             y_off_set = random.randint(0, shake_score_amount * 2) - shake_score_amount
 
-            screen.blit(texts[text], (TEXT_X + x_off_set, TEXT_Y + (TEXT_OFF_SET * iterate) + y_off_set))
+            screen.blit(texts[text], (TEXT_X + x_off_set, current_y + y_off_set))
 
-        elif menu_exiting and SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) > -menu_exiting_shift:
-            screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate) + SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) + menu_exiting_shift))
+        elif menu_exiting :
+
+            screen.blit(texts[text], (TEXT_X, current_y + SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) + menu_exiting_shift))
 
         else:
-            screen.blit(texts[text], (TEXT_X, TEXT_Y + (TEXT_OFF_SET * iterate)))
+            screen.blit(texts[text], (TEXT_X, current_y))
 
 
 
@@ -569,8 +578,8 @@ def draw_deck_of_cards() -> None:
 
         y = deck_of_cards.cards_back_images[i]['y']
 
-        if menu_exiting and  SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) > -menu_exiting_shift:
-            y = deck_of_cards.cards_back_images[i]['y'] + SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) + menu_exiting_shift
+        if menu_exiting:
+            y += SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) + menu_exiting_shift
 
 
         # we draw the image in the screen
@@ -681,6 +690,7 @@ def show_menu_screen():
         if menu_exiting:
             draw_deck_of_cards()
             draw_texts()
+            draw_symbols()
 
         dd = update_menu_exiting_shift()
 
@@ -753,6 +763,78 @@ def draw_and_move_title():
     screen.blit(PURPLE_RECT, [RECT_X, RECT_Y + hovering + menu_exiting_shift])
     screen.blit(WELCOME_IMAGE, [WELCOME_X, WELCOME_Y + hovering + menu_exiting_shift])
     screen.blit(TITLE_IMAGE, [TITLE_X, TITLE_Y + hovering + menu_exiting_shift])
+def get_suit_image(suit: str):
+    width = 4
+    top_left_corner_x = 4
+
+    if suit == 'Hearts':
+        height = 4
+        top_left_corner_y = 113
+    elif suit == 'Clubs':
+        height = 5
+        top_left_corner_y = 5
+    elif suit == 'Diamonds':
+        height = 5
+        top_left_corner_y = 41
+    elif suit == 'Spades':
+        height = 6
+        top_left_corner_y = 76
+
+    image = pygame.Surface((width, height)).convert_alpha()
+
+    bottom_right_corner_x = top_left_corner_x + width
+    bottom_right_corner_y = top_left_corner_y + height
+
+    image.blit(CARDS_SPRITE_SHEET, [0, 0],
+               [top_left_corner_x , top_left_corner_y , bottom_right_corner_x , bottom_right_corner_y ])
+
+    for y in range(height):
+        for x in range(width):
+
+            # Get the color at (x, y) position
+            color = image.get_at((x, y))
+
+            if color == (255, 254, 248, 255):
+                image.set_at([x,y], Background_Color)
+
+
+    # if suit == 'Hearts':
+    #     image = pygame.transform.scale(image, [width, height * (5/4)])
+    # elif suit == 'Spades':
+    #     image = pygame.transform.scale(image, [width, height * (5/6)])
+
+
+    image = pygame.transform.scale(image, [image.get_width() * SUIT_SIZE, image.get_height() * SUIT_SIZE])
+
+    return image
+def draw_symbols():
+    global suit_images
+
+    for sym in suit_images:
+
+        suit_x = 0
+        suit_y = 0
+
+        if sym == 'Spades':
+            suit_x = right_side
+            suit_y = up_side - SUIT_SIZE
+
+        elif sym == 'Hearts':
+            suit_x = left_side
+            suit_y = up_side + SUIT_SIZE
+
+        elif sym == 'Clubs':
+            suit_x = left_side
+            suit_y = down_side
+
+        elif sym == 'Diamonds':
+            suit_x = right_side
+            suit_y = down_side
+
+        if menu_exiting:
+            suit_y += SCREEN_HEIGHT + (CARD_HEIGHT * CARD_SIZE) + menu_exiting_shift
+
+        screen.blit(suit_images[sym], [suit_x, suit_y])
 ''' end of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------'''
 
 ''' start of LAMA`s implementation (ID: 5555093)---------------------------------------------------------------------'''
@@ -854,7 +936,6 @@ class Button():
 
 
 #creat Button instances
-
 start_button = Button(START_X,START_Y,button_images['start_button'],0.25)
 exit_button = Button(EXIT_X, EXIT_Y,button_images['exit_button'], 0.25)
 yes_button = Button(YES_X,YES_Y,button_images['yes_button'],1)
@@ -897,6 +978,8 @@ def update_all() -> None:
   # and if you don`t understant why we do that every frame, then try to remove this line and run the program
   screen.fill(Background_Color)
 
+  draw_symbols()
+
   # here we draw all of the text in the top left corner
   draw_texts()
 
@@ -922,11 +1005,16 @@ def update_all() -> None:
   show_display()
 
 
-
 # images loading
 #-----------------------
 black_card_back_image = get_card_back_image('black')
 red_card_back_image = get_card_back_image('red')
+suit_images = {
+    'Clubs': get_suit_image('Clubs'),
+    'Diamonds': get_suit_image('Diamonds'),
+    'Spades': get_suit_image('Spades'),
+    'Hearts': get_suit_image('Hearts')
+}
 #-----------------------
 
 # game sitting variables
@@ -957,7 +1045,6 @@ timers = {
 
 
 show_menu_screen()
-
 
 #Game Loop ------------------------------
 run = True
