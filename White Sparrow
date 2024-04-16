@@ -274,8 +274,6 @@ class Timer:
         self.active = False
 
 
-        # self.start_time = 0
-
         # if the timer is on repeat
         if self.repeat:
             # start again
@@ -299,14 +297,14 @@ class Timer:
             # check the difference
             if current_time - self.start_time >= self.duration:
 
+                # turn off the timer
+                self.deactivate()
+
                 # if the function exist
                 if self.func:
 
                     # call it
                     self.func()
-
-                # turn off the timer
-                self.deactivate()
 def draw() -> None:
 
     # this function draws a cards to the player hand
