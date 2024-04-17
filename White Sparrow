@@ -969,9 +969,11 @@ pygame.mixer.pre_init(44100, -16,2,512)
 #initialize
 mixer.init()
 
+
 #variables
-VOLUME = 0.4
+SOUNDS_VOLUME = 0.4
 MUSIC_DELAY = 4000
+MUSIC_VOLUME = 0.6
 
 #just random values we will updated as we need
 START_X = SCREEN_WIDTH / 3
@@ -991,13 +993,14 @@ sounds= {
    'button_click': pygame.mixer.Sound('button_click.wav')
            }
 
-sounds['one_card'].set_volume(VOLUME)
-sounds['button_click'].set_volume(VOLUME)
+sounds['one_card'].set_volume(SOUNDS_VOLUME)
+sounds['button_click'].set_volume(SOUNDS_VOLUME)
 
 #load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
 pygame.mixer.music.load("piano-loops.wav")
+pygame.mixer.music.set_volume(MUSIC_VOLUME)
 
-# play the background sound with 4000 ms delay that more comfortable for users since it does not start strong
+# play the background sound with 4000 ms delay that more comfortable for users since it does not start strong ,and -1 for looping indefinitely
 pygame.mixer.music.play(-1,0.0, MUSIC_DELAY)
 
 # button images loading
@@ -1028,19 +1031,24 @@ class Button():
     # in order to click the button once and release it before click it again
         self.clicked = False
 
-    def draw(self):
+    def draw(self) -> None:
+        #draw button on screen
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+    
+    # to know if user pressed the button 
+    def is_pressed(self):
         # instance variable so we can return it in order to make each button does different thing
         action = False
         # the idea is to click the buttons by left side button of the mouse to do that:
 
-        #get mouse position
+        # get mouse position
         mouse_pos = pygame.mouse.get_pos()
 
         # to check if the mouse over one of buttons & clicked conditions
 
-        #is the mouse is colliding the rectangle of the button ? if yes check the click
+        # is the mouse is colliding the rectangle of the button ? if yes check the click
         if self.rect.collidepoint(mouse_pos):
-            #for left mouse button -> 0
+            # for left mouse button -> 0
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
                 action = True
@@ -1051,10 +1059,6 @@ class Button():
         return action
 
 
-        #draw button on screen
-        screen.blit(self.image, (self.rect.x, self.rect.y))
-
-
 #creat Button instances
 
 start_button = Button(START_X,START_Y,button_images['start_button'],0.25)
@@ -1063,18 +1067,18 @@ yes_button = Button(YES_X,YES_Y,button_images['yes_button'],1)
 no_button = Button(NO_X,NO_Y,button_images['no_button'],1)
 
 # to calcute score
-def calculate_score():
-# score is a global variable and player_hand contains the current hand of cards
 
+
+def calculate_score(amount=0, multiplier=1) -> None:
     global score, player_hand
 
-    # Sum of card values
-    score = 0
-    for card in player_hand:
-        score += card.val  # adding the score value
+    if len(player_hand) > 0:
+        # add the value of the last card drawn + any bonus amount, then apply multiplier
+        score += (player_hand[-1].val + amount) * multiplier
 
     # Update the score display
     update_texts()
+
 
 
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
