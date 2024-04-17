@@ -1066,18 +1066,12 @@ exit_button = Button(EXIT_X, EXIT_Y,button_images['exit_button'], 0.25)
 yes_button = Button(YES_X,YES_Y,button_images['yes_button'],1)
 no_button = Button(NO_X,NO_Y,button_images['no_button'],1)
 
-# to calcute score
-
-
+# to calculate score
 def calculate_score(amount=0, multiplier=1) -> None:
     global score, player_hand
 
-    if len(player_hand) > 0:
-        # add the value of the last card drawn + any bonus amount, then apply multiplier
-        score += (player_hand[-1].val + amount) * multiplier
-
-    # Update the score display
-    update_texts()
+    # add the value of the last card drawn + any bonus amount, then apply multiplier
+    score += (player_hand[-1].val + amount) * multiplier
 
 
 
