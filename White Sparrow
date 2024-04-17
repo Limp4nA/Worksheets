@@ -42,6 +42,14 @@ DECK_OF_CARDS_SPACING = .5
 DECK_OF_CARDS_ROTATION = 170 # in degrees
 DECK_OF_CARDS_SPEED = 20
 
+# here is the deck of card reset animation, it`s in 2 parts
+# the part1 of the animation is the one that move the old deck to the right side of the screen then reset the deck.
+# if the deck is empty, part1 will be skipped,
+deck_of_cards_reset_part1 = False
+# the part2 of the animation will start descending the new deck from the top of the screen
+deck_of_cards_reset_part2 = False
+part2_descend_y = -4 * DECK_OF_CARDS_Y
+
 # -- start of text sittings --
 TEXT_COLOR = 'white'
 TEXT_X = 10
@@ -83,6 +91,7 @@ TITLE_X = 17
 TITLE_Y = 115
 TITLE_SPEED = 0.03
 title_dt = 0
+title_hovering = 0
 
 #welcome message
 WELCOME = "WELCOME TO"
@@ -91,7 +100,6 @@ WELCOME_X = TITLE_X + 50
 WELCOME_Y = TITLE_Y - 100
 
 #the rectangles behind the title and the welcome message
-
 RECT_WIDTH = 620
 RECT_HEIGHT = 210
 RECT_COLOR = [90,0,0] # dark red
@@ -101,11 +109,10 @@ RECT_Y = SCREEN_HEIGHT * 0.1
 
 # How wide (x-axis) and height (y-axis) is the black rectangle compared
 # to the red rectangle to give an outline effect
-x_big = 10
-y_big = 10
+outline_size = 5
 
 #initializing the red rectangle
-RED_RECT = pygame.Surface((RECT_WIDTH - x_big, RECT_HEIGHT - y_big)).convert_alpha()
+RED_RECT = pygame.Surface((RECT_WIDTH - outline_size * 2, RECT_HEIGHT - outline_size * 2)).convert_alpha()
 RED_RECT.fill(RECT_COLOR)
 
 
@@ -114,10 +121,8 @@ all_title_images = pygame.Surface((RECT_WIDTH , RECT_HEIGHT)).convert_alpha()
 all_title_images.fill("black")
 
 RED_RECT.blit(TITLE_IMAGE, [TITLE_X, TITLE_Y])
-RED_RECT.blit(WELCOME_IMAGE, [67, 15])
-all_title_images.blit(RED_RECT, [x_big/2, y_big/2])
-
-hovering = 0
+RED_RECT.blit(WELCOME_IMAGE, [WELCOME_X, WELCOME_Y])
+all_title_images.blit(RED_RECT, [outline_size, outline_size])
 
 # if it True, it will start the menu exit animation after the player presses the button
 menu_exiting = False
@@ -129,6 +134,39 @@ menu_animation_shift = 0
 menu_animation_dt = 0
 menu_animation_speed = 0.01
 
+# -- start of reset option sittings --
+WANT_TO_RESET = "WANT TO RESET"
+WANT_TO_RESET_IMAGE = font.render(f'{WANT_TO_RESET}', True, TEXT_COLOR)
+WANT_TO_RESET_X = outline_size + 75
+WANT_TO_RESET_Y = outline_size + 10
+
+THE_DECK = "THE DECK ?"
+THE_DECK_IMAGE = font.render(f'{THE_DECK}', True, TEXT_COLOR)
+THE_DECK_X = outline_size + 155
+THE_DECK_Y = outline_size + 100
+
+RESET_OPTION_WIDTH = 700
+RESET_OPTION_HEIGHT = 320
+RESET_OPTION_X = (SCREEN_WIDTH - RESET_OPTION_WIDTH) / 2
+RESET_OPTION_Y = 200
+
+RESET_OPTION_IMAGE = pygame.Surface((RESET_OPTION_WIDTH , RESET_OPTION_HEIGHT)).convert_alpha()
+RESET_OPTION_IMAGE.fill("black")
+
+RED_RECT = pygame.Surface((RESET_OPTION_WIDTH - outline_size * 2, RESET_OPTION_HEIGHT - outline_size * 2)).convert_alpha()
+RED_RECT.fill(RECT_COLOR)
+
+RESET_OPTION_IMAGE.blit(RED_RECT, [outline_size, outline_size])
+RESET_OPTION_IMAGE.blit(WANT_TO_RESET_IMAGE, [WANT_TO_RESET_X, WANT_TO_RESET_Y])
+RESET_OPTION_IMAGE.blit(THE_DECK_IMAGE, [THE_DECK_X, THE_DECK_Y])
+
+RESET_OPTION_START_Y_POSITION_DEFAULT_VALUE = SCREEN_HEIGHT + 100
+reset_option_start_y_position = RESET_OPTION_START_Y_POSITION_DEFAULT_VALUE
+RESET_OPTION_SPEED = 20
+
+reset_option_is_on = False
+reset_option_entering = False
+reset_option_exiting = False
 
 # -- start of suit symbols sittings --
 SUIT_SIZE = 20
@@ -137,6 +175,7 @@ up_side = CARD_Y - 5 * SUIT_SIZE
 left_side = 0
 down_side = CARD_Y + CARD_HEIGHT * CARD_SIZE
 right_side = SCREEN_WIDTH - SUIT_SIZE * 4
+
 
 
 # -- start of small group variables sittings --
@@ -447,6 +486,7 @@ def moving_card() -> None:
     # this function is responsible for moving the card that has been drawn
 
     global player_hand, card_is_moving_to_hand, X_destination, card_is_moving_from_deck
+    global deck_of_cards_reset_part1,deck_of_cards_reset_part2, deck_of_cards
 
     # logically the moving card is the last card in the player hand
     moving_card = None
@@ -478,6 +518,17 @@ def moving_card() -> None:
 
             # now, there is no moving cards
             card_is_moving_to_hand = False
+
+    elif deck_of_cards_reset_part1:
+
+        for i in range(deck_of_cards.size):
+
+            deck_of_cards.cards_back_images[i]['x'] += DECK_OF_CARDS_SPEED / 3
+
+        if deck_of_cards.cards_back_images[0]['x'] > SCREEN_WIDTH + 50:
+            deck_of_cards_reset_part1 = False
+            deck_of_cards_reset_part2 = True
+            deck_of_cards = Deck_of_cards()
 def draw_hand() -> None:
     # this function just print all the player hand in the screen
     # by iterating through (player_hand for the x and y position) and (player_hand_images for the images)
@@ -557,6 +608,8 @@ def get_card_back_image(color: str) -> pygame.surface.Surface:
 def draw_deck_of_cards() -> None:
     # this function draws the deck_of_cards
 
+    global deck_of_cards_reset_part2, part2_descend_y
+
     # there is a problem, when the player draw a card, this function will not draw the last card
     # the played had drawn because it is no longer in the deck therefore we cant draw the moving card in the screen.
     # the solution is in this if statement down below
@@ -571,6 +624,7 @@ def draw_deck_of_cards() -> None:
 
         # we game the image and the x-y of each card in the deck_of_card
         image = deck_of_cards.cards_back_images[i]['image']
+
         x = deck_of_cards.cards_back_images[i]['x']
 
         y = deck_of_cards.cards_back_images[i]['y']
@@ -581,10 +635,22 @@ def draw_deck_of_cards() -> None:
         elif menu_entering:
             y += menu_animation_shift
 
-
+        # the part2 of the animation is in the draw_deck_of_cards() not moving_card,
+        # because it is difficult to move all 52 card images to an exact xy location, unlike part1 where it
+        # does not matter where do the cards really go as long as they are out of the screen
+        elif deck_of_cards_reset_part2:
+            y += part2_descend_y
 
         # we draw the image in the screen
         screen.blit(image, [x, y])
+
+    if deck_of_cards_reset_part2:
+
+        part2_descend_y += DECK_OF_CARDS_SPEED / 3
+
+        if deck_of_cards.cards_back_images[0]['y'] + part2_descend_y >= DECK_OF_CARDS_Y:
+            deck_of_cards_reset_part2 = False
+            part2_descend_y = -4 * DECK_OF_CARDS_Y
 def reset_messages() -> None:
     # reset the messages alpha value and delete all the messages except the score
 
@@ -634,15 +700,6 @@ def update_score_shake_and_color() -> None:
         score_reached_color = [255, 255 * (target * 1.5) / score, 0]
 
         shake_score_amount = score // target
-def screen_shake_on():
-    global screen_shake
-
-    if screen_shake and not timers['screen shake off'].active:
-        screen_shake = False
-
-    elif not screen_shake:
-        screen_shake = True
-        timers['screen shake off'].activate()
 def show_display():
     global menu_animation_dt, menu_exiting
 
@@ -662,7 +719,76 @@ def show_display():
     # here is shows all of the changes of the screen to the user
     pygame.display.update()
 def show_menu_screen():
-    global menu_exiting, menu_animation_dt, title_dt
+    global menu_exiting, menu_animation_dt, title_dt, run
+
+    def get_random_card():
+        values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+        suits = ['Clubs', 'Diamonds', 'Spades', 'Hearts']
+
+        values_random_index = random.randint(0, len(values) - 1)
+        suits_random_index = random.randint(0, len(suits) - 1)
+
+        falling_speed = random.randint(FALLING_CARDS_MIN_SPEED, FALLING_CARDS_MAX_SPEED)
+
+        card = Card(values[values_random_index], suits[suits_random_index], speed=falling_speed)
+
+        card.x = random.randint(-int(CARD_WIDTH * CARD_SIZE / 1.5), SCREEN_WIDTH - int(CARD_WIDTH * CARD_SIZE / 1.5))
+        card.y = random.randint(-CARD_HEIGHT * int(CARD_SIZE) * 5, -CARD_HEIGHT * int(CARD_SIZE))
+
+        return card
+    def draw_and_move_falling_cards(falling_cards: list):
+        i = 0
+        while i < len(falling_cards):
+
+            screen.blit(falling_cards[i].image, [falling_cards[i].x, falling_cards[i].y + menu_animation_shift])
+
+            if not menu_exiting:
+
+                falling_cards[i].y += falling_cards[i].speed
+
+                if falling_cards[i].y >= SCREEN_HEIGHT:
+                    del falling_cards[i]
+                    falling_cards.append(get_random_card())
+                    i -= 1
+
+            i += 1
+    def update_menu_animation_shift():
+        global menu_exiting, menu_entering, menu_animation_shift, menu_animation_dt, title_dt
+
+        if menu_exiting:
+            menu_animation_shift = -2 * (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) * math.sin(menu_animation_dt)
+
+            menu_animation_dt += menu_animation_speed
+
+            if menu_animation_shift <= -SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE:
+                menu_exiting = False
+                menu_animation_dt = 0
+                menu_animation_shift = 0
+                title_dt = 0
+                return -1
+
+        elif menu_entering:
+            menu_animation_shift = 2 * (SCREEN_HEIGHT) * math.sin(menu_animation_dt)
+
+            menu_animation_dt += menu_animation_speed / 2
+
+            if menu_animation_shift >= SCREEN_HEIGHT:
+                menu_entering = False
+                menu_animation_dt = 0
+                menu_animation_shift = 0
+    def draw_and_move_title():
+        global title_dt, title_hovering
+
+        if not menu_entering and not menu_exiting:
+            title_dt += TITLE_SPEED
+            title_dt %= 2 * math.pi
+            title_hovering = 50 * math.sin(title_dt)
+
+        if menu_entering:  # and  menu_animation_shift < SCREEN_HEIGHT:
+            screen.blit(all_title_images, [RECT_X, -(SCREEN_HEIGHT - RECT_Y) + menu_animation_shift])
+
+        else:
+            screen.blit(all_title_images, [RECT_X, RECT_Y + title_hovering + menu_animation_shift])
 
     falling_cards = []
 
@@ -670,7 +796,7 @@ def show_menu_screen():
         falling_cards.append(get_random_card())
 
     show_menu = True
-    while show_menu:
+    while show_menu and run:
 
         screen.fill(Background_Color)
         clock.tick(FPS)
@@ -692,7 +818,10 @@ def show_menu_screen():
         dd = update_menu_animation_shift()
 
         for event in pygame.event.get():
-             if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP or event.type == pygame.QUIT:
+            if  event.type == pygame.QUIT:
+                run = False
+
+            if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
                 if not menu_entering and not menu_exiting:
                     menu_exiting = True
                     # show_menu = False
@@ -701,78 +830,6 @@ def show_menu_screen():
             show_menu = False
 
         show_display()
-def get_random_card():
-    values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
-    suits = ['Clubs', 'Diamonds', 'Spades', 'Hearts']
-
-    values_random_index = random.randint(0, len(values) - 1)
-    suits_random_index = random.randint(0, len(suits) - 1)
-
-    falling_speed = random.randint(FALLING_CARDS_MIN_SPEED, FALLING_CARDS_MAX_SPEED)
-
-    card = Card(values[values_random_index], suits[suits_random_index], speed=falling_speed)
-
-    card.x = random.randint(-int(CARD_WIDTH * CARD_SIZE / 1.5), SCREEN_WIDTH - int(CARD_WIDTH * CARD_SIZE / 1.5))
-    card.y = random.randint(-CARD_HEIGHT * int(CARD_SIZE) * 5, -CARD_HEIGHT * int(CARD_SIZE))
-
-    return card
-def update_menu_animation_shift():
-    global menu_exiting, menu_entering, menu_animation_shift, menu_animation_dt, title_dt
-
-    if menu_exiting:
-        menu_animation_shift = -2 * (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) * math.sin(menu_animation_dt)
-
-        menu_animation_dt += menu_animation_speed
-
-        if menu_animation_shift <= -SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE:
-            menu_exiting = False
-            menu_animation_dt = 0
-            menu_animation_shift = 0
-            title_dt = 0
-            return -1
-
-    elif menu_entering:
-        menu_animation_shift = 2 * (SCREEN_HEIGHT) * math.sin(menu_animation_dt)
-
-        menu_animation_dt += menu_animation_speed/2
-
-        if menu_animation_shift >= SCREEN_HEIGHT:
-            menu_entering = False
-            menu_animation_dt = 0
-            menu_animation_shift = 0
-def draw_and_move_falling_cards(falling_cards: list):
-    i = 0
-    while i < len(falling_cards):
-
-        screen.blit(falling_cards[i].image, [falling_cards[i].x, falling_cards[i].y + menu_animation_shift])
-
-        if not menu_exiting:
-
-            falling_cards[i].y += falling_cards[i].speed
-
-            if falling_cards[i].y >= SCREEN_HEIGHT:
-
-                del falling_cards[i]
-                falling_cards.append(get_random_card())
-                i -= 1
-
-        i += 1
-def draw_and_move_title():
-    global title_dt, hovering
-
-    if not menu_entering and not menu_exiting:
-        title_dt += TITLE_SPEED
-        title_dt %= 2 * math.pi
-        hovering = 60 * math.sin(title_dt)
-
-
-
-
-    if menu_entering: #and  menu_animation_shift < SCREEN_HEIGHT:
-        screen.blit(all_title_images, [RECT_X, -(SCREEN_HEIGHT - RECT_Y) + menu_animation_shift])
-
-    else:
-        screen.blit(all_title_images, [RECT_X, RECT_Y + hovering + menu_animation_shift])
 def get_suit_image(suit: str):
     width = 4
     top_left_corner_x = 4
@@ -847,10 +904,56 @@ def draw_symbols():
 
 
         screen.blit(suit_images[sym], [suit_x, suit_y])
+def draw_and_move_reset_option():
+    global reset_option_is_on, reset_option_start_y_position, reset_option_entering, reset_option_exiting
+
+    if reset_option_is_on and not reset_option_entering and not reset_option_exiting:
+        reset_option_entering = True
+
+    if reset_option_is_on:
+
+        screen.blit(RESET_OPTION_IMAGE, [RESET_OPTION_X, RESET_OPTION_Y + reset_option_start_y_position])
+
+        if reset_option_entering:
+
+            if reset_option_start_y_position > 0:
+
+                reset_option_start_y_position -= RESET_OPTION_SPEED
+
+            else:
+                reset_option_start_y_position = 0
+                reset_option_entering = False
+
+        elif reset_option_exiting:
+
+            if reset_option_start_y_position < RESET_OPTION_START_Y_POSITION_DEFAULT_VALUE:
+                reset_option_start_y_position += RESET_OPTION_SPEED
+
+            else:
+                reset_option_is_on = False
+                reset_option_exiting = False
+                reset_option_start_y_position = RESET_OPTION_START_Y_POSITION_DEFAULT_VALUE
+def reset_deck_of_cards():
+    global deck_of_cards_reset_part1, deck_of_cards_reset_part2, deck_of_cards
+
+    if deck_of_cards.size > 0:
+        deck_of_cards_reset_part1 = True
+    else:
+        deck_of_cards_reset_part2 = True
+        deck_of_cards = Deck_of_cards()
 def go_to_menu_screen():
     global menu_entering
     menu_entering = True
     show_menu_screen()
+def screen_shake_on():
+    global screen_shake
+
+    if screen_shake and not timers['screen shake off'].active:
+        screen_shake = False
+
+    elif not screen_shake:
+        screen_shake = True
+        timers['screen shake off'].activate()
 
 
 ''' end of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------'''
@@ -877,7 +980,7 @@ EXIT_X = SCREEN_WIDTH * 2 / 3
 EXIT_Y = SCREEN_HEIGHT / 2
 NO_X = SCREEN_WIDTH / 3
 NO_Y = SCREEN_HEIGHT / 2
-YES_X = 2 * SCREEN_WIDTH / 3
+YES_X = SCREEN_WIDTH * 2 / 3
 YES_Y = SCREEN_HEIGHT / 2
 
 #load sounds & set the volume
@@ -1022,6 +1125,8 @@ def update_all() -> None:
 
   draw_messages()
 
+  draw_and_move_reset_option()
+
   # Note: we call this function in every frame. 60 times per second
   show_display()
 
@@ -1045,11 +1150,11 @@ suit_images = {
 player_hand = []
 deck_of_cards = Deck_of_cards()
 level = 1
-max_cards = 1
+max_cards = 5
 score = 0
 target = 20
 target_increment = 5
-multiplier = 1.1
+multiplier = 1
 #-----------------------
 
 
@@ -1065,32 +1170,43 @@ timers = {
 }
 #-----------------------
 
-show_menu_screen()
+
+global run
+run = True
+
+# show_menu_screen()
+
+aa =True
 
 #Game Loop ------------------------------
-run = True
 while run:
 
     #update everything for this frame
     update_all()
 
-
     # the event handler
     for event in pygame.event.get():
+
+        key = pygame.key.get_pressed()
 
         # shut down the program of the player preses the X symbol in the screen
         if event.type == pygame.QUIT:
              run = False
 
         # if the player presses any key
-        if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
+        elif event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
 
+            condition1 = card_is_moving_from_deck or card_is_moving_to_hand or reset_option_is_on
+            condition2 = deck_of_cards_reset_part1 or deck_of_cards_reset_part2 or slide_out
+            animation_is_going = condition1 or condition2
 
-            # if no card is moving and the player can draw more cards
-            if not card_is_moving_from_deck and not card_is_moving_to_hand and len(player_hand) < max_cards:
-                # there is a card moving now so play a card sound
+            # if there is no animation and the player can draw more cards
+            if not animation_is_going and len(player_hand) < max_cards:
 
+                # start moving the card from the deck to the right side of the screen
                 card_is_moving_from_deck = True
+
+                # there is a card moving now so play a card sound
                 sounds['one_card'].play()
 
                 # update the x destination for the new card that has been drawn
@@ -1102,7 +1218,7 @@ while run:
                 # reset the messages alpha value and delete all the messages except the score
                 reset_messages()
 
-                # score += round(player_hand[-1].val * multiplier, 1)
+                calculate_score()
 
                 # set the score message
                 messages['score'] = f"+{round(player_hand[-1].val * multiplier, 1)}"
