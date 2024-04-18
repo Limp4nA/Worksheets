@@ -1236,15 +1236,61 @@ def calculate_score(amount=0) -> None:
 
 
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
-
 ''' start of ARDA`s implementation ----------------------------------------------------------------------'''
+#Special Conditions:
+ace_bonus = False
+royal_bonus = False
+lucky_seven_bonus = False
+def all_aces_drawn(player_hand):
+    global max_cards , ace_bonus
+    aces = 0
+    for card in player_hand:
+        if card.val == 1:
+            aces += 1
+
+    if aces == 4 and not ace_bonus:
+        max_cards += 1
+        ace_bonus = True
+        messages["ace_bonus_activated"] = "You draw all the aces now you can hold one more card!"
+
+def if_consecutive_drawn(last_card, new_card):
+    global target
+    if last_card == new_card:
+        target -=3
+
+    messages["consecutive_bonus_activated"] = "You drawn consecutive cards -3 Target"
+
+def royal_family_bonus(player_hand):
+    global score, messages, royal_bonus
+    royal_count = {11:0, 12:0, 13:0}
+    for card in player_hand:
+        if card.val in royal_count:
+            royal_count[card.val] += 1
+
+    if (all(count == 1 for count in royal_count.values()) and not royal_bonus):
+        score += 14
+        royal_bonus = True
+        messages['royal_activated'] = "Royal Family Bonus Activated +14 Score!"
+
+def lucky_seven_bonus():
+    global score, messages, lucky_seven_bonus
+    lucky_seven_chance = 5  # Chance of seven being lucky.
+    for card in player_hand:
+        if card.val == 7 and not lucky_seven_bonus:
+            if random.randint(1, 100) <= lucky_seven_chance: # Randomising a number between 1 and 100 and making 7 lucky if the number smaller than lucky seven chance.
+                score *= 2
+                messages['lucky_seven']= "You found a lucky seven! Score doubled to {score}!"
+                lucky_seven_bonus = True
+
+
+
 # ----------------------------------------------------------------------------------------------------
 ''' end of ARDA`s implementation------------------------------------------------------------------------'''
 
 
 # this function will be called by a timer when the level is finished.
 def end_level() -> None:
-    # some one should implement it
+    #some one should implement it
     go_to_menu_screen()
     global player_hand
     player_hand = []
@@ -1252,40 +1298,41 @@ def end_level() -> None:
 
 
 def update_all() -> None:
-    # it makes the program run at 60 FPS
-    clock.tick(FPS)
 
-    # here where the fill the screen with pink all of it.
-    # and if you don`t understant why we do that every frame, then try to remove this line and run the program
-    screen.fill(Background_Color)
+  # it makes the program run at 60 FPS
+  clock.tick(FPS)
 
-    draw_symbols()
+  # here where the fill the screen with pink all of it.
+  # and if you don`t understant why we do that every frame, then try to remove this line and run the program
+  screen.fill(Background_Color)
 
-    # here we draw all of the text in the top left corner
-    draw_texts()
+  draw_symbols()
 
-    # here we draw the cards in the screen
-    draw_hand()
+  # here we draw all of the text in the top left corner
+  draw_texts()
 
-    # here we draw the deck_of_cards in the screen
-    draw_deck_of_cards()
+  # here we draw the cards in the screen
+  draw_hand()
 
-    # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
-    moving_card()
+  # here we draw the deck_of_cards in the screen
+  draw_deck_of_cards()
 
-    # TODO we need to move this function to the place where we start each level.
-    #  we only need to update the value at the begging of every level not every frame
-    update_cards_x_adjustment()
+  # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
+  moving_card()
 
-    # we update all of the timers to check if they are finished
-    update_timers()
+  # TODO we need to move this function to the place where we start each level.
+  #  we only need to update the value at the begging of every level not every frame
+  update_cards_x_adjustment()
 
-    draw_messages()
+  #we update all of the timers to check if they are finished
+  update_timers()
 
-    draw_and_move_reset_option()
+  draw_messages()
 
-    # Note: we call this function in every frame. 60 times per second
-    show_display()
+  draw_and_move_reset_option()
+
+  # Note: we call this function in every frame. 60 times per second
+  show_display()
 
 
 # images loading
@@ -1318,16 +1365,16 @@ MENU_BUTTONS_RECT_IMAGE = get_background_rect(MENU_BUTTONS_RECT_WIDTH, MENU_BUTT
 # -----------------------
 
 # game sitting variables
-# -----------------------
+#-----------------------
 player_hand = []
 deck_of_cards = Deck_of_cards()
 level = 1
-max_cards = 1
+max_cards = 5
 score = 0
 target = 20
 target_increment = 5
 multiplier = 1
-# -----------------------
+#-----------------------
 
 
 # timers initialising
@@ -1348,15 +1395,14 @@ timers = {
 global run
 run = True
 
-show_menu_screen()
+# show_menu_screen()
 
-aa = True
+aa =True
 
-# show_reset_opiton()
-# Game Loop ------------------------------
+#Game Loop ------------------------------
 while run:
 
-    # update everything for this frame
+    #update everything for this frame
     update_all()
 
     # the event handler
@@ -1366,7 +1412,7 @@ while run:
 
         # shut down the program of the player preses the X symbol in the screen
         if event.type == pygame.QUIT:
-            run = False
+             run = False
 
         # if the player presses any key
         elif event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
@@ -1389,7 +1435,9 @@ while run:
 
                 # draw a card
                 draw()
-
+                all_aces_drawn(player_hand)
+                royal_family_bonus(player_hand)
+                lucky_seven_bonus()
                 # reset the messages alpha value and delete all the messages except the score
                 reset_messages()
 
@@ -1403,9 +1451,10 @@ while run:
 
                 # if the player draws the maximum amount of cards
                 if len(player_hand) == max_cards:
+
                     timers['card slide'].activate()
 
-                    # activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
+                    #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
                     timers['end level'].activate()
 
 pygame.quit()
