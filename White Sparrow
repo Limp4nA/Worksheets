@@ -4,12 +4,13 @@ import random
 import math
 
 pygame.init()
+pygame.event.set_blocked(pygame.MOUSEMOTION)
 
 # start of behind the scenes sitting variables
 # ----------------------------------------------------------------
 
 # -- start of screen sittings --
-Background_Color = [50,90,50] #'green'
+Background_Color = [50, 90, 50]  # 'green'
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 900
 
@@ -26,20 +27,21 @@ SCREEN_SHAKE_TIME = 250
 # the width and height in pixels from the sprite_sheet
 CARD_WIDTH = 25
 CARD_HEIGHT = 36
-CARD_SIZE = 1.5 * 4 # <-- leave the (* 4) and only change the first number in the left
-CARD_SPEED = 90 # pixel per frame
-CARD_Y_ADJUSTMENT = 100 # <-- it represent the distance (in pixels) between the cards and the bottem side of the screen
+CARD_SIZE = 1.5 * 4  # <-- leave the (* 4) and only change the first number in the left
+CARD_SPEED = 90  # pixel per frame
+CARD_Y_ADJUSTMENT = 100  # <-- it represent the distance (in pixels) between the cards and the bottem side of the screen
 CARD_Y = (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) - CARD_Y_ADJUSTMENT
-CARDS_SPRITE_SHEET = pygame.image.load('CuteCardsPixel_outline.png').convert_alpha() # <-- loading the sprite sheet into a variable
+CARDS_SPRITE_SHEET = pygame.image.load(
+    'CuteCardsPixel_outline.png').convert_alpha()  # <-- loading the sprite sheet into a variable
 FALLING_CARDS_MAX_SPEED = 8
 FALLING_CARDS_MIN_SPEED = 2
 
 # -- start of deck_of_cards sittings --
 DECK_OF_CARDS_X = SCREEN_WIDTH - 250
 DECK_OF_CARDS_Y = 75
-DECK_OF_CARDS_SIZE = 1.2 * 4 # <-- leave the (* 4) and only change the first number in the left
+DECK_OF_CARDS_SIZE = 1.2 * 4  # <-- leave the (* 4) and only change the first number in the left
 DECK_OF_CARDS_SPACING = .5
-DECK_OF_CARDS_ROTATION = 170 # in degrees
+DECK_OF_CARDS_ROTATION = 170  # in degrees
 DECK_OF_CARDS_SPEED = 20
 
 # here is the deck of card reset animation, it`s in 2 parts
@@ -55,34 +57,35 @@ TEXT_COLOR = 'white'
 TEXT_X = 10
 TEXT_Y = 10
 TEXT_SIZE = 100
-TEXT_OFF_SET = 100 # is the distance in pixels between each text
-font = pygame.font.Font('m6x11.ttf', TEXT_SIZE)
-score_reached_color = [255, 255, 0] # <- this is yellow
+TEXT_OFF_SET = 100  # is the distance in pixels between each text
+FONT = pygame.font.Font('m6x11.ttf', TEXT_SIZE)
+SMALL_FONT =  pygame.font.Font('m6x11.ttf', int(TEXT_SIZE/2))
+score_reached_color = [255, 255, 0]  # <- this is yellow
 score_color = TEXT_COLOR
 shake_score = False
 shake_score_amount = 1
 texts = {}
 
 # -- start of messages sittings --
-MESSAGE_COLOR = [0,0,200]#'pink'
+MESSAGE_COLOR = [0, 0, 200]
 MESSAGE_X = SCREEN_WIDTH / 2 - 50
 MESSAGE_Y = SCREEN_HEIGHT / 2 - 150
 MESSAGE_SIZE = 50
 MESSAGE_FADE_SPEED = 2
 DEFAULT_ALPHA_VALUE = 200
-ALPHA_VALUE = 0
+alpha_value = 0
 MESSAGES_DISTANCE = 100
 messages = {'score': '', 'multiplier': ''}
 
 # -- start of cards slide-our animation sittings --
 y_slide = math.pi
 SIN_COEFFICIENT = 1
-SMALL_ADDING_AMOUNT = .9 #local minimum
+SMALL_ADDING_AMOUNT = .9  # local minimum
 CARDS_SLIDE_SPEED = 0.02
 slide_out = False
 
 # -- start of menu sittings --
-#title message
+# title message
 TITLE_SIZE = 100
 TITLE_FONT = pygame.font.Font('m6x11.ttf', TITLE_SIZE)
 TITLE = "WHITE SPARROW"
@@ -90,39 +93,41 @@ TITLE_IMAGE = TITLE_FONT.render(f'{TITLE}', True, TEXT_COLOR)
 TITLE_X = 17
 TITLE_Y = 115
 TITLE_SPEED = 0.03
+TITLE_MOVING_DISTANCE = 50
 title_dt = 0
 title_hovering = 0
 
-#welcome message
+# welcome message
 WELCOME = "WELCOME TO"
 WELCOME_IMAGE = TITLE_FONT.render(f'{WELCOME}', True, TEXT_COLOR)
 WELCOME_X = TITLE_X + 50
 WELCOME_Y = TITLE_Y - 100
 
-#the rectangles behind the title and the welcome message
+START = 'START'
+START_IMAGE = SMALL_FONT.render(f'{START}', True, TEXT_COLOR)
+# START_IMAGE = SMALL_FONT.render(f'{START}', True, 'green')
+START_X_SHIFT_FROM_BUTTON_X = 30
+
+EXIT = 'EXIT'
+EXIT_IMAGE = SMALL_FONT.render(f'{EXIT}', True, TEXT_COLOR)
+# EXIT_IMAGE = SMALL_FONT.render(f'{EXIT}', True, 'red')
+EXIT_X_SHIFT_FROM_BUTTON_X = 38
+
+SMALL_TEXTS_Y_DISTANCE_FROM_BUTTONS = 50
+
+# the color of all rectangles in the game
+RECT_COLOR = [90, 0, 0]  # dark red
+
+# the rectangles behind the title
 RECT_WIDTH = 620
 RECT_HEIGHT = 210
-RECT_COLOR = [90,0,0] # dark red
 
-RECT_X = (SCREEN_WIDTH - RECT_WIDTH)/2
+RECT_X = (SCREEN_WIDTH - RECT_WIDTH) / 2
 RECT_Y = SCREEN_HEIGHT * 0.1
 
 # How wide (x-axis) and height (y-axis) is the black rectangle compared
 # to the red rectangle to give an outline effect
-outline_size = 5
-
-#initializing the red rectangle
-RED_RECT = pygame.Surface((RECT_WIDTH - outline_size * 2, RECT_HEIGHT - outline_size * 2)).convert_alpha()
-RED_RECT.fill(RECT_COLOR)
-
-
-#initializing the image that contains all the title related images
-all_title_images = pygame.Surface((RECT_WIDTH , RECT_HEIGHT)).convert_alpha()
-all_title_images.fill("black")
-
-RED_RECT.blit(TITLE_IMAGE, [TITLE_X, TITLE_Y])
-RED_RECT.blit(WELCOME_IMAGE, [WELCOME_X, WELCOME_Y])
-all_title_images.blit(RED_RECT, [outline_size, outline_size])
+OUTLINE_SIZE = 5
 
 # if it True, it will start the menu exit animation after the player presses the button
 menu_exiting = False
@@ -134,39 +139,49 @@ menu_animation_shift = 0
 menu_animation_dt = 0
 menu_animation_speed = 0.01
 
+# the distance between the menu buttons and the left and right sides of the background rectangle
+MENU_BUTTONS_RECT_HORIZONTAL_DISTANCE = 20
+# the distance between the menu buttons and the top and bottom sides of the background rectangle
+MENU_BUTTONS_RECT_VERTICAL_DISTANCE = 20
+
+
+
 # -- start of reset option sittings --
 WANT_TO_RESET = "WANT TO RESET"
-WANT_TO_RESET_IMAGE = font.render(f'{WANT_TO_RESET}', True, TEXT_COLOR)
-WANT_TO_RESET_X = outline_size + 75
-WANT_TO_RESET_Y = outline_size + 10
+WANT_TO_RESET_IMAGE = FONT.render(f'{WANT_TO_RESET}', True, TEXT_COLOR)
+WANT_TO_RESET_X = OUTLINE_SIZE + 75
+WANT_TO_RESET_Y = OUTLINE_SIZE + 10
 
 THE_DECK = "THE DECK ?"
-THE_DECK_IMAGE = font.render(f'{THE_DECK}', True, TEXT_COLOR)
-THE_DECK_X = outline_size + 155
-THE_DECK_Y = outline_size + 100
+THE_DECK_IMAGE = FONT.render(f'{THE_DECK}', True, TEXT_COLOR)
+THE_DECK_X = OUTLINE_SIZE + 155
+THE_DECK_Y = OUTLINE_SIZE + 100
+
+YES = 'YES'
+YES_IMAGE = SMALL_FONT.render(f'{YES}', True, TEXT_COLOR)
+YES_X_SHIFT_FROM_BUTTON_X = 50
+
+NO = 'NO'
+NO_IMAGE = SMALL_FONT.render(f'{NO}', True, TEXT_COLOR)
+NO_X_SHIFT_FROM_BUTTON_X = 60
 
 RESET_OPTION_WIDTH = 700
-RESET_OPTION_HEIGHT = 320
+RESET_OPTION_HEIGHT = 420
 RESET_OPTION_X = (SCREEN_WIDTH - RESET_OPTION_WIDTH) / 2
 RESET_OPTION_Y = 200
-
-RESET_OPTION_IMAGE = pygame.Surface((RESET_OPTION_WIDTH , RESET_OPTION_HEIGHT)).convert_alpha()
-RESET_OPTION_IMAGE.fill("black")
-
-RED_RECT = pygame.Surface((RESET_OPTION_WIDTH - outline_size * 2, RESET_OPTION_HEIGHT - outline_size * 2)).convert_alpha()
-RED_RECT.fill(RECT_COLOR)
-
-RESET_OPTION_IMAGE.blit(RED_RECT, [outline_size, outline_size])
-RESET_OPTION_IMAGE.blit(WANT_TO_RESET_IMAGE, [WANT_TO_RESET_X, WANT_TO_RESET_Y])
-RESET_OPTION_IMAGE.blit(THE_DECK_IMAGE, [THE_DECK_X, THE_DECK_Y])
 
 RESET_OPTION_START_Y_POSITION_DEFAULT_VALUE = SCREEN_HEIGHT + 100
 reset_option_start_y_position = RESET_OPTION_START_Y_POSITION_DEFAULT_VALUE
 RESET_OPTION_SPEED = 20
 
+# the distance between the reset buttons and the left and right sides of the background rectangle
+OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE = 90
+
+
 reset_option_is_on = False
 reset_option_entering = False
 reset_option_exiting = False
+
 
 # -- start of suit symbols sittings --
 SUIT_SIZE = 20
@@ -176,23 +191,20 @@ left_side = 0
 down_side = CARD_Y + CARD_HEIGHT * CARD_SIZE
 right_side = SCREEN_WIDTH - SUIT_SIZE * 4
 
-
-
-# -- start of small group variables sittings --
+# -- start of unnamed small group variables sittings --
 card_is_moving_to_hand = False
 card_is_moving_from_deck = False
 
-pygame.event.set_blocked(pygame.MOUSEMOTION)
 
-cards_x_adjustment = 0 # <--- this variable is explained in the update_cards_x_adjustment()
-X_destination = None # <--- this variable is explained in the update_X_destination()
+cards_x_adjustment = 0  # <--- this variable is explained in the update_cards_x_adjustment()
+X_destination = None  # <--- this variable is explained in the update_X_destination()
 
 FPS = 60
 clock = pygame.time.Clock()
 
-
 # ----------------------------------------------------------------
 # end of behind the scenes sitting variables
+
 class Card:
 
     def __init__(self, val: str, suit: str, speed=None):
@@ -415,26 +427,32 @@ class Timer:
                 if self.func:
                     # call it
                     self.func()
+def get_background_rect(width, height):
+
+    background_rect = pygame.Surface((width, height)).convert_alpha()
+    background_rect.fill("black")
+
+    # initializing the red rectangle
+    RED_RECT = pygame.Surface((width - OUTLINE_SIZE * 2, height - OUTLINE_SIZE * 2)).convert_alpha()
+    RED_RECT.fill(RECT_COLOR)
+
+    background_rect.blit(RED_RECT, [OUTLINE_SIZE, OUTLINE_SIZE])
+
+    return background_rect
 def draw() -> None:
     # this function draws a cards to the player hand
     global player_hand, deck_of_cards
     player_hand.append(deck_of_cards.draw())
     # calculate_score(
-
-    if len(player_hand) > 1:
-        last_card = player_hand[-2].val
-        new_card = player_hand[-1].val
-        if_consecutive_drawn(last_card, new_card)
-
 def update_texts() -> None:
     # it updates all the texts
     global texts, level, max_cards, score, player_hand, target
 
-    texts['level'] = font.render(f'Level {level}', True, TEXT_COLOR)
-    texts['multiplier'] = font.render(f'multiplier {multiplier}', True, TEXT_COLOR)
-    texts['score'] = font.render(f'Score {score}', True, score_color)
-    texts['target'] = font.render(f'Target {target}', True, TEXT_COLOR)
-    texts['max_cards'] = font.render(f'Cards {len(player_hand)}/{max_cards}', True, TEXT_COLOR)
+    texts['level'] = FONT.render(f'Level {level}', True, TEXT_COLOR)
+    texts['multiplier'] = FONT.render(f'multiplier {multiplier}', True, TEXT_COLOR)
+    texts['score'] = FONT.render(f'Score {score}', True, score_color)
+    texts['target'] = FONT.render(f'Target {target}', True, TEXT_COLOR)
+    texts['max_cards'] = FONT.render(f'Cards {len(player_hand)}/{max_cards}', True, TEXT_COLOR)
 def draw_texts() -> None:
     # this function update the texts by calling update_texts() then draws them in the top left corner of the screen
     update_texts()
@@ -449,8 +467,8 @@ def draw_texts() -> None:
         current_y = TEXT_Y + (TEXT_OFF_SET * iterate)
 
         if text == 'score' or text == 'multiplier':
-            message_image = font.render(messages[text], True, MESSAGE_COLOR)
-            message_image.set_alpha(ALPHA_VALUE)
+            message_image = FONT.render(messages[text], True, MESSAGE_COLOR)
+            message_image.set_alpha(alpha_value)
 
             screen.blit(message_image, (TEXT_X + 520, current_y))
 
@@ -492,7 +510,7 @@ def moving_card() -> None:
     # this function is responsible for moving the card that has been drawn
 
     global player_hand, card_is_moving_to_hand, X_destination, card_is_moving_from_deck
-    global deck_of_cards_reset_part1,deck_of_cards_reset_part2, deck_of_cards
+    global deck_of_cards_reset_part1, deck_of_cards_reset_part2, deck_of_cards
 
     # logically the moving card is the last card in the player hand
     moving_card = None
@@ -528,7 +546,6 @@ def moving_card() -> None:
     elif deck_of_cards_reset_part1:
 
         for i in range(deck_of_cards.size):
-
             deck_of_cards.cards_back_images[i]['x'] += DECK_OF_CARDS_SPEED / 3
 
         if deck_of_cards.cards_back_images[0]['x'] > SCREEN_WIDTH + 50:
@@ -660,32 +677,32 @@ def draw_deck_of_cards() -> None:
 def reset_messages() -> None:
     # reset the messages alpha value and delete all the messages except the score
 
-    global messages, ALPHA_VALUE
+    global messages, alpha_value
 
     # reset the alpha_value to show all the messages that will pop out
-    ALPHA_VALUE = DEFAULT_ALPHA_VALUE
+    alpha_value = DEFAULT_ALPHA_VALUE
 
     messages = {'score': messages['score'],
                 'multiplier': messages['multiplier']
                 }
 def draw_messages() -> None:
-    global ALPHA_VALUE, MESSAGE_FADE_SPEED, messages
+    global alpha_value, MESSAGE_FADE_SPEED, messages
 
-    if ALPHA_VALUE >= 0:
+    if alpha_value >= 0:
 
         off_set = 0
 
         for message in messages:
 
             if message != 'score' and message != 'multiplier':
-                message_image = font.render(messages[message], True, MESSAGE_COLOR)
-                message_image.set_alpha(ALPHA_VALUE)
+                message_image = FONT.render(messages[message], True, MESSAGE_COLOR)
+                message_image.set_alpha(alpha_value)
 
                 screen.blit(message_image, [MESSAGE_X, MESSAGE_Y + (off_set * MESSAGES_DISTANCE)])
 
                 off_set += 1
 
-        ALPHA_VALUE -= MESSAGE_FADE_SPEED
+        alpha_value -= MESSAGE_FADE_SPEED
 def set_slide_out() -> None:
     global set_slide_out, y_slide, slide_out, SIN_COEFFICIENT, SMALL_ADDING_AMOUNT
 
@@ -742,6 +759,7 @@ def show_menu_screen():
         card.y = random.randint(-CARD_HEIGHT * int(CARD_SIZE) * 5, -CARD_HEIGHT * int(CARD_SIZE))
 
         return card
+
     def draw_and_move_falling_cards(falling_cards: list):
         i = 0
         while i < len(falling_cards):
@@ -758,8 +776,9 @@ def show_menu_screen():
                     i -= 1
 
             i += 1
+
     def update_menu_animation_shift():
-        global menu_exiting, menu_entering, menu_animation_shift, menu_animation_dt, title_dt
+        global menu_exiting, menu_entering, menu_animation_shift, menu_animation_dt, title_dt, show_menu
 
         if menu_exiting:
             menu_animation_shift = -2 * (SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE) * math.sin(menu_animation_dt)
@@ -771,7 +790,7 @@ def show_menu_screen():
                 menu_animation_dt = 0
                 menu_animation_shift = 0
                 title_dt = 0
-                return -1
+                show_menu = False
 
         elif menu_entering:
             menu_animation_shift = 2 * (SCREEN_HEIGHT) * math.sin(menu_animation_dt)
@@ -784,8 +803,43 @@ def show_menu_screen():
                 menu_animation_shift = 0
 
     def draw_buttons():
-        start_button.draw()
-        exit_button.draw()
+
+        if menu_entering:
+            shift = menu_animation_shift - SCREEN_HEIGHT
+
+        elif menu_exiting:
+            shift = menu_animation_shift
+
+        else:
+            shift = -title_hovering/10
+
+        rect_x = min(start_button.x, exit_button.x) - MENU_BUTTONS_RECT_HORIZONTAL_DISTANCE
+        rect_y = MENU_BUTTONS_Y - MENU_BUTTONS_RECT_HORIZONTAL_DISTANCE
+
+        screen.blit(MENU_BUTTONS_RECT_IMAGE, [rect_x, rect_y + shift])
+        start_button.draw(shift)
+        exit_button.draw(shift)
+
+        # small_texts_y = start_button.y - SMALL_TEXTS_Y_DISTANCE_FROM_BUTTONS
+        small_texts_y = start_button.y + start_button.image.get_height()/2 - 20
+
+        start_x = start_button.x + START_X_SHIFT_FROM_BUTTON_X
+        exit_x = exit_button.x + EXIT_X_SHIFT_FROM_BUTTON_X
+
+        screen.blit(START_IMAGE, [start_x, small_texts_y + shift])
+        screen.blit(EXIT_IMAGE, [exit_x, small_texts_y + shift])
+
+    def check_menu_buttons():
+        global menu_exiting, run
+
+        if not menu_entering and not menu_exiting:
+
+            if start_button.is_pressed():
+
+                menu_exiting = True
+
+            elif exit_button.is_pressed():
+                run = False
 
     def draw_and_move_title():
         global title_dt, title_hovering
@@ -793,25 +847,31 @@ def show_menu_screen():
         if not menu_entering and not menu_exiting:
             title_dt += TITLE_SPEED
             title_dt %= 2 * math.pi
-            title_hovering = 50 * math.sin(title_dt)
+            title_hovering = TITLE_MOVING_DISTANCE / 2 * math.sin(title_dt)
+
+
 
         if menu_entering:  # and  menu_animation_shift < SCREEN_HEIGHT:
-            screen.blit(all_title_images, [RECT_X, -(SCREEN_HEIGHT - RECT_Y) + menu_animation_shift])
+            shift = menu_animation_shift - SCREEN_HEIGHT
 
         else:
-            screen.blit(all_title_images, [RECT_X, RECT_Y + title_hovering + menu_animation_shift])
+            shift = menu_animation_shift + title_hovering
+
+        screen.blit(all_title_images, [RECT_X, RECT_Y + shift])
 
     falling_cards = []
 
     for i in range(10):
         falling_cards.append(get_random_card())
 
+
+    global show_menu
     show_menu = True
+
     while show_menu and run:
 
         screen.fill(Background_Color)
         clock.tick(FPS)
-
 
         if not menu_entering:
             draw_and_move_falling_cards(falling_cards)
@@ -819,27 +879,25 @@ def show_menu_screen():
         draw_and_move_title()
         draw_buttons()
 
-
         if menu_exiting or menu_entering:
             draw_deck_of_cards()
             draw_texts()
             draw_symbols()
 
-        if menu_entering:
-            pass
+        update_menu_animation_shift()
 
-        dd = update_menu_animation_shift()
+        check_menu_buttons()
 
         for event in pygame.event.get():
-            if  event.type == pygame.QUIT:
+            if event.type == pygame.QUIT:
                 run = False
 
             if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
                 if not menu_entering and not menu_exiting:
-                    menu_exiting = True
-                    # show_menu = False
+                    pass
 
-        if dd == -1:
+
+        if menu_exiting and menu_animation_shift <= -SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE:
             show_menu = False
 
         show_display()
@@ -915,17 +973,24 @@ def draw_symbols():
         elif menu_entering:
             suit_y += menu_animation_shift
 
-
         screen.blit(suit_images[sym], [suit_x, suit_y])
 def draw_and_move_reset_option():
     global reset_option_is_on, reset_option_start_y_position, reset_option_entering, reset_option_exiting
 
-    if reset_option_is_on and not reset_option_entering and not reset_option_exiting:
-        reset_option_entering = True
-
     if reset_option_is_on:
 
         screen.blit(RESET_OPTION_IMAGE, [RESET_OPTION_X, RESET_OPTION_Y + reset_option_start_y_position])
+
+        yes_button.draw(reset_option_start_y_position)
+        no_button.draw(reset_option_start_y_position)
+
+        small_texts_y = OPTION_BUTTONS_Y + start_button.image.get_height()/2 - 25
+
+        yes_x = yes_button.x + YES_X_SHIFT_FROM_BUTTON_X
+        screen.blit(YES_IMAGE, [yes_x, small_texts_y + reset_option_start_y_position])
+
+        no_x = no_button.x + NO_X_SHIFT_FROM_BUTTON_X
+        screen.blit(NO_IMAGE, [no_x, small_texts_y + reset_option_start_y_position])
 
         if reset_option_entering:
 
@@ -946,6 +1011,21 @@ def draw_and_move_reset_option():
                 reset_option_is_on = False
                 reset_option_exiting = False
                 reset_option_start_y_position = RESET_OPTION_START_Y_POSITION_DEFAULT_VALUE
+
+        else:
+
+            if yes_button.is_pressed():
+                timers['reset deck'].activate()
+                reset_option_exiting = True
+
+            if no_button.is_pressed():
+                reset_option_exiting = True
+
+def show_reset_opiton():
+    global reset_option_entering, reset_option_is_on
+    reset_option_is_on = True
+    reset_option_entering = True
+
 def reset_deck_of_cards():
     global deck_of_cards_reset_part1, deck_of_cards_reset_part2, deck_of_cards
 
@@ -967,54 +1047,86 @@ def screen_shake_on():
     elif not screen_shake:
         screen_shake = True
         timers['screen shake off'].activate()
+def get_button_image(button_type:str):
 
+    image_width = 16
+    image_height = 16
+
+    buttons_sprite_sheet = pygame.image.load('button UI.png').convert_alpha()
+
+    if button_type == "green":
+        col = 0
+        row = 0
+
+    elif button_type == 'red':
+        col = 0
+        row = 3
+
+
+    image = pygame.Surface((image_width, image_height)).convert_alpha()
+
+    sprite_x = image_width * col
+    sprite_y = image_height * row
+
+    image.blit(buttons_sprite_sheet, [0, 0], [sprite_x , sprite_y, sprite_x + image_width, sprite_y + image_height])
+
+    black_rect = pygame.surface.Surface((image.get_width(), BUTTONS_BLACK_RECT_HEIGHT)).convert_alpha()
+    black_rect.fill('black')
+
+    black_rect_y = (image.get_height() - BUTTONS_BLACK_RECT_HEIGHT)/2
+
+    image.blit(black_rect, [0 , black_rect_y])
+
+    return image
 
 ''' end of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------'''
 
 ''' start of LAMA`s implementation (ID: 5555093)---------------------------------------------------------------------'''
 
-#local import in order to add and controle the sounds within the game
+# local import in order to add and controle the sounds within the game
 from pygame import mixer
 
-#pre-initialization(random values so we can make sure it works properly)
-pygame.mixer.pre_init(44100, -16,2,512)
+# pre-initialization(random values so we can make sure it works properly)
+pygame.mixer.pre_init(44100, -16, 2, 512)
 
-#initialize
+# initialize
 mixer.init()
 
-
-#variables
+# variables
 SOUNDS_VOLUME = 0.4
 MUSIC_DELAY = 4000
 MUSIC_VOLUME = 0.6
 
-#just random values we will updated as we need
-START_X = SCREEN_WIDTH * (2.6/ 9)
-START_Y = SCREEN_HEIGHT * ( 2.5/ 9)
-EXIT_X = SCREEN_WIDTH * ( 2.6/ 9)
-EXIT_Y = SCREEN_HEIGHT * ( 4/ 9)
+# just random values we will updated as we need
+START_X = SCREEN_WIDTH * (2.6 / 9)
+MENU_BUTTONS_Y = SCREEN_HEIGHT * (2.5 / 9)
+EXIT_X = SCREEN_WIDTH * (2.6 / 9)
+EXIT_Y = SCREEN_HEIGHT * (4 / 9)
 NO_X = SCREEN_WIDTH / 3
 NO_Y = SCREEN_HEIGHT / 2
 YES_X = SCREEN_WIDTH * 2 / 3
 YES_Y = SCREEN_HEIGHT / 2
 
-#load sounds & set the volume
+# load sounds & set the volume
 
 global sounds
-sounds= {
-   'one_card': pygame.mixer.Sound('card.wav'),
-   'button_click': pygame.mixer.Sound('button_click.wav')
-           }
+sounds = {
+    'one_card': pygame.mixer.Sound('card.wav'),
+    'button_click': pygame.mixer.Sound('button_click.wav')
+}
 
 sounds['one_card'].set_volume(SOUNDS_VOLUME)
 sounds['button_click'].set_volume(SOUNDS_VOLUME)
 
-#load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
+# load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
 pygame.mixer.music.load("piano-loops.wav")
 pygame.mixer.music.set_volume(MUSIC_VOLUME)
 
 # play the background sound with 4000 ms delay that more comfortable for users since it does not start strong ,and -1 for looping indefinitely
-pygame.mixer.music.play(-1,0.0, MUSIC_DELAY)
+pygame.mixer.music.play(-1, 0.0, MUSIC_DELAY)
+
+
+BUTTONS_BLACK_RECT_HEIGHT = 6
 
 # button images loading
 global button_images
@@ -1022,33 +1134,35 @@ button_images = {
     'yes_button': pygame.image.load('Yes_button.png').convert_alpha(),
     'no_button': pygame.image.load('No_button.png').convert_alpha(),
     'start_button': pygame.image.load('start_button.png').convert_alpha(),
-    'exit_button' : pygame.image.load('exit_button.png').convert_alpha()
+    'exit_button': pygame.image.load('exit_button.png').convert_alpha(),
+    'green': get_button_image('green'),
+    'red': get_button_image('red')
 }
 
 
 class Button():
     # Adding scale parameter in case we need to resize the images
-    def __init__(self, x: float, y: float, image, scale):
-    # to adjest images we need first to know what the original dimention
+    def __init__(self, x: float, y: float, image: pygame.Surface, scale):
+        # to adjest images we need first to know what the original dimention
         width = image.get_width()
         height = image.get_height()
 
-    # assign the scaled version of the image, and multiply both width & height by the scale
-        self.image =  pygame.transform.scale(image, (int(width * scale), int(height * scale) ))
+        # assign the scaled version of the image, and multiply both width & height by the scale
+        self.image = pygame.transform.scale(image, [int(width * scale), int(height * scale)])
 
-        #creat a rectangle for the image
-        self.rect = self.image.get_rect()
-        #to determine where the rectangle and the image to be
-        self.rect.topleft = (x,y)
+        # store the x and y to the object
+        self.x = x
+        self.y = y
 
-    # in order to click the button once and release it before click it again
+        # in order to click the button once and release it before click it again
         self.clicked = False
 
-    def draw(self) -> None:
-        #draw button on screen
-        screen.blit(self.image, (self.rect.x, self.rect.y))
-    
-    # to know if user pressed the button 
+    def draw(self, shift=0) -> None:
+        # draw button on screen
+        # 'shift' is used for animations
+        screen.blit(self.image, (self.x, self.y + shift))
+
+    # to know if user pressed the button
     def is_pressed(self):
         # instance variable so we can return it in order to make each button does different thing
         action = False
@@ -1057,94 +1171,80 @@ class Button():
         # get mouse position
         mouse_pos = pygame.mouse.get_pos()
 
-        # to check if the mouse over one of buttons & clicked conditions
+        # store the xy mouse position in an easy and readable way
+        m_x = mouse_pos[0]
+        m_y = mouse_pos[1]
 
-        # is the mouse is colliding the rectangle of the button ? if yes check the click
-        if self.rect.collidepoint(mouse_pos):
+        # to check if the mouse over one of buttons & clicked conditions
+        # the mouse is inside the button if m_x is between the horizontal side of the button
+        # and m_y is between the vertical side of the button
+        x_axis_condition = self.x <= m_x and m_x <= self.x + self.image.get_width()
+        y_axis_condition = self.y <= m_y and m_y <= self.y + self.image.get_height()
+
+        mouse_inside_button = x_axis_condition and y_axis_condition
+
+
+        if mouse_inside_button:
+
             # for left mouse button -> 0
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
                 action = True
 
             if pygame.mouse.get_pressed()[0] == 0:
-                self.clicked == False
+                self.clicked = False
 
         return action
 
 
-#creat Button instances
+# creat Button instances
 
-start_button = Button(START_X,START_Y,button_images['start_button'],0.2)
-exit_button = Button(EXIT_X, EXIT_Y,button_images['exit_button'], 0.2)
-yes_button = Button(YES_X,YES_Y,button_images['yes_button'],1)
-no_button = Button(NO_X,NO_Y,button_images['no_button'],1)
+# start_button = Button(START_X, MENU_BUTTONS_Y, button_images['start_button'], 0.2)
+# exit_button = Button(EXIT_X, EXIT_Y, button_images['exit_button'], 0.2)
+
+start_button = Button(START_X, MENU_BUTTONS_Y, button_images['start_button'], 1)
+exit_button = Button(EXIT_X, EXIT_Y, button_images['exit_button'], 1)
+
+
+
+
+size = 10
+
+MENU_BUTTONS_Y = SCREEN_HEIGHT / 2 + 100
+START_X = (SCREEN_WIDTH - button_images['green'].get_width() * size) / 2 - button_images['green'].get_width() * size
+EXIT_X = (SCREEN_WIDTH - button_images['green'].get_width() * size) / 2 + button_images['green'].get_width() * size
+
+OPTION_BUTTONS_Y = RESET_OPTION_Y + RESET_OPTION_HEIGHT - button_images['green'].get_height() * size - OUTLINE_SIZE
+YES_X = RESET_OPTION_X + OUTLINE_SIZE + OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE
+NO_X = RESET_OPTION_X + RESET_OPTION_WIDTH - OUTLINE_SIZE - OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE \
+       - button_images['green'].get_width() * size
+
+
+start_button = Button(START_X, MENU_BUTTONS_Y, button_images['green'], size)
+exit_button = Button(EXIT_X, MENU_BUTTONS_Y, button_images['red'], size)
+yes_button = Button(YES_X, YES_Y, button_images['green'], size)
+no_button = Button(NO_X, NO_Y, button_images['red'], size)
+# start_button = Button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 100, button_images['start'], size)
+
 
 # to calculate score
-def calculate_score(amount=0, multiplier=1) -> None:
+def calculate_score(amount=0) -> None:
     global score, player_hand
 
     # add the value of the last card drawn + any bonus amount, then apply multiplier
     score += (player_hand[-1].val + amount) * multiplier
 
 
-
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 
 ''' start of ARDA`s implementation ----------------------------------------------------------------------'''
-#Special Conditions:
-ace_bonus = False
-royal_bonus = False
-lucky_seven_bonus = False
-def all_aces_drawn(player_hand):
-    global max_cards , ace_bonus
-    aces = 0
-    for card in player_hand:
-        if card.val == 1:
-            aces += 1
-
-    if aces == 4 and not ace_bonus:
-        max_cards += 1
-        ace_bonus = True
-        messages["ace_bonus_activated"] = "You draw all the aces now you can hold one more card!"
-
-def if_consecutive_drawn(last_card, new_card):
-    global target
-    if last_card == new_card:
-        target -=3
-
-    messages["consecutive_bonus_activated"] = "You drawn consecutive cards -3 Target"
-
-def royal_family_bonus(player_hand):
-    global score, messages, royal_bonus
-    royal_count = {11:0, 12:0, 13:0}
-    for card in player_hand:
-        if card.val in royal_count:
-            royal_count[card.val] += 1
-
-    if (all(count == 1 for count in royal_count.values()) and not royal_bonus):
-        score += 14
-        royal_bonus = True
-        messages['royal_activated'] = "Royal Family Bonus Activated +14 Score!"
-
-def lucky_seven_bonus():
-    global score, messages, lucky_seven_bonus
-    lucky_seven_chance = 5  # Chance of seven being lucky.
-    for card in player_hand:
-        if card.val == 7 and not lucky_seven_bonus:
-            if random.randint(1, 100) <= lucky_seven_chance: # Randomising a number between 1 and 100 and making 7 lucky if the number smaller than lucky seven chance.
-                score *= 2
-                messages['lucky_seven']= "You found a lucky seven! Score doubled to {score}!"
-                lucky_seven_bonus = True
-
-
-
 # ----------------------------------------------------------------------------------------------------
 ''' end of ARDA`s implementation------------------------------------------------------------------------'''
 
 
 # this function will be called by a timer when the level is finished.
 def end_level() -> None:
-    #some one should implement it
+    # some one should implement it
     go_to_menu_screen()
     global player_hand
     player_hand = []
@@ -1152,46 +1252,44 @@ def end_level() -> None:
 
 
 def update_all() -> None:
+    # it makes the program run at 60 FPS
+    clock.tick(FPS)
 
-  # it makes the program run at 60 FPS
-  clock.tick(FPS)
+    # here where the fill the screen with pink all of it.
+    # and if you don`t understant why we do that every frame, then try to remove this line and run the program
+    screen.fill(Background_Color)
 
-  # here where the fill the screen with pink all of it.
-  # and if you don`t understant why we do that every frame, then try to remove this line and run the program
-  screen.fill(Background_Color)
+    draw_symbols()
 
-  draw_symbols()
+    # here we draw all of the text in the top left corner
+    draw_texts()
 
-  # here we draw all of the text in the top left corner
-  draw_texts()
+    # here we draw the cards in the screen
+    draw_hand()
 
-  # here we draw the cards in the screen
-  draw_hand()
+    # here we draw the deck_of_cards in the screen
+    draw_deck_of_cards()
 
-  # here we draw the deck_of_cards in the screen
-  draw_deck_of_cards()
+    # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
+    moving_card()
 
-  # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
-  moving_card()
+    # TODO we need to move this function to the place where we start each level.
+    #  we only need to update the value at the begging of every level not every frame
+    update_cards_x_adjustment()
 
-  # TODO we need to move this function to the place where we start each level.
-  #  we only need to update the value at the begging of every level not every frame
-  update_cards_x_adjustment()
+    # we update all of the timers to check if they are finished
+    update_timers()
 
-  #we update all of the timers to check if they are finished
-  update_timers()
+    draw_messages()
 
-  draw_messages()
+    draw_and_move_reset_option()
 
-  draw_and_move_reset_option()
-
-  # Note: we call this function in every frame. 60 times per second
-  show_display()
-
+    # Note: we call this function in every frame. 60 times per second
+    show_display()
 
 
 # images loading
-#-----------------------
+# -----------------------
 black_card_back_image = get_card_back_image('black')
 red_card_back_image = get_card_back_image('red')
 
@@ -1201,45 +1299,64 @@ suit_images = {
     'Spades': get_suit_image('Spades'),
     'Hearts': get_suit_image('Hearts')
 }
-#-----------------------
+
+RESET_OPTION_IMAGE = get_background_rect(RESET_OPTION_WIDTH, RESET_OPTION_HEIGHT)
+RESET_OPTION_IMAGE.blit(WANT_TO_RESET_IMAGE, [WANT_TO_RESET_X, WANT_TO_RESET_Y])
+RESET_OPTION_IMAGE.blit(THE_DECK_IMAGE, [THE_DECK_X, THE_DECK_Y])
+
+
+all_title_images = get_background_rect(RECT_WIDTH, RECT_HEIGHT)
+all_title_images.blit(TITLE_IMAGE, [TITLE_X + OUTLINE_SIZE, TITLE_Y + OUTLINE_SIZE])
+all_title_images.blit(WELCOME_IMAGE, [WELCOME_X + OUTLINE_SIZE, WELCOME_Y + OUTLINE_SIZE])
+
+max_x = max(start_button.x, exit_button.x)
+min_x = min(start_button.x, exit_button.x)
+MENU_BUTTONS_RECT_WIDTH = max_x + start_button.image.get_width() + 2 * MENU_BUTTONS_RECT_HORIZONTAL_DISTANCE - min_x
+MENU_BUTTONS_RECT_HEIGHT = start_button.image.get_height() + 2 * MENU_BUTTONS_RECT_VERTICAL_DISTANCE
+MENU_BUTTONS_RECT_IMAGE = get_background_rect(MENU_BUTTONS_RECT_WIDTH, MENU_BUTTONS_RECT_HEIGHT)
+
+# -----------------------
 
 # game sitting variables
-#-----------------------
+# -----------------------
 player_hand = []
 deck_of_cards = Deck_of_cards()
 level = 1
-max_cards = 5
+max_cards = 1
 score = 0
 target = 20
 target_increment = 5
 multiplier = 1
-#-----------------------
+# -----------------------
 
 
 # timers initialising
-#-----------------------
+# -----------------------
 timers = {
-  #we dont wont the second the player draw the last card, the level ends. with this timer it solves this issue
-  'end level': Timer(3000, function=end_level),
+    # we dont wont the second the player draw the last card, the level ends. with this timer it solves this issue
+    'end level': Timer(3000, function=end_level),
 
-  'card slide': Timer(1000, function=set_slide_out),
+    'card slide': Timer(1000, function=set_slide_out),
 
-  'screen shake off': Timer(SCREEN_SHAKE_TIME, function=screen_shake_on)
+    'screen shake off': Timer(SCREEN_SHAKE_TIME, function=screen_shake_on),
+
+    'reset deck': Timer(500, function=reset_deck_of_cards)
 }
-#-----------------------
+# -----------------------
 
 
 global run
 run = True
 
-# show_menu_screen()
+show_menu_screen()
 
-aa =True
+aa = True
 
-#Game Loop ------------------------------
+# show_reset_opiton()
+# Game Loop ------------------------------
 while run:
 
-    #update everything for this frame
+    # update everything for this frame
     update_all()
 
     # the event handler
@@ -1249,7 +1366,7 @@ while run:
 
         # shut down the program of the player preses the X symbol in the screen
         if event.type == pygame.QUIT:
-             run = False
+            run = False
 
         # if the player presses any key
         elif event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
@@ -1272,9 +1389,7 @@ while run:
 
                 # draw a card
                 draw()
-                all_aces_drawn(player_hand)
-                royal_family_bonus(player_hand)
-                lucky_seven_bonus()
+
                 # reset the messages alpha value and delete all the messages except the score
                 reset_messages()
 
@@ -1288,10 +1403,9 @@ while run:
 
                 # if the player draws the maximum amount of cards
                 if len(player_hand) == max_cards:
-
                     timers['card slide'].activate()
 
-                    #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
+                    # activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
                     timers['end level'].activate()
 
 pygame.quit()
