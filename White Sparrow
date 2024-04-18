@@ -420,6 +420,12 @@ def draw() -> None:
     global player_hand, deck_of_cards
     player_hand.append(deck_of_cards.draw())
     # calculate_score(
+
+    if len(player_hand) > 1:
+        last_card = player_hand[-2].val
+        new_card = player_hand[-1].val
+        if_consecutive_drawn(last_card, new_card)
+
 def update_texts() -> None:
     # it updates all the texts
     global texts, level, max_cards, score, player_hand, target
@@ -1085,6 +1091,53 @@ def calculate_score(amount=0, multiplier=1) -> None:
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 
 ''' start of ARDA`s implementation ----------------------------------------------------------------------'''
+#Special Conditions:
+ace_bonus = False
+royal_bonus = False
+lucky_seven_bonus = False
+def all_aces_drawn(player_hand):
+    global max_cards , ace_bonus
+    aces = 0
+    for card in player_hand:
+        if card.val == 1:
+            aces += 1
+
+    if aces == 4 and not ace_bonus:
+        max_cards += 1
+        ace_bonus = True
+        messages["ace_bonus_activated"] = "You draw all the aces now you can hold one more card!"
+
+def if_consecutive_drawn(last_card, new_card):
+    global target
+    if last_card == new_card:
+        target -=3
+
+    messages["consecutive_bonus_activated"] = "You drawn consecutive cards -3 Target"
+
+def royal_family_bonus(player_hand):
+    global score, messages, royal_bonus
+    royal_count = {11:0, 12:0, 13:0}
+    for card in player_hand:
+        if card.val in royal_count:
+            royal_count[card.val] += 1
+
+    if (all(count == 1 for count in royal_count.values()) and not royal_bonus):
+        score += 14
+        royal_bonus = True
+        messages['royal_activated'] = "Royal Family Bonus Activated +14 Score!"
+
+def lucky_seven_bonus():
+    global score, messages, lucky_seven_bonus
+    lucky_seven_chance = 5  # Chance of seven being lucky.
+    for card in player_hand:
+        if card.val == 7 and not lucky_seven_bonus:
+            if random.randint(1, 100) <= lucky_seven_chance: # Randomising a number between 1 and 100 and making 7 lucky if the number smaller than lucky seven chance.
+                score *= 2
+                messages['lucky_seven']= "You found a lucky seven! Score doubled to {score}!"
+                lucky_seven_bonus = True
+
+
+
 # ----------------------------------------------------------------------------------------------------
 ''' end of ARDA`s implementation------------------------------------------------------------------------'''
 
@@ -1219,7 +1272,9 @@ while run:
 
                 # draw a card
                 draw()
-
+                all_aces_drawn(player_hand)
+                royal_family_bonus(player_hand)
+                lucky_seven_bonus()
                 # reset the messages alpha value and delete all the messages except the score
                 reset_messages()
 
