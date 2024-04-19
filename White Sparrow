@@ -1275,15 +1275,51 @@ def royal_family_bonus(player_hand):
         royal_bonus = True
         messages['royal_activated'] = "Royal Family Bonus Activated +14 Score!"
 
+# Lucky Seven Bonus
+
+class Graph:
+    def __init__(self):
+        self.vertices = {}
+        self.ajd_matrix=None
+
+    def add_vertex(self, data):
+        if data not in self.vertices:
+            self.vertices[data]=[]
+
+    def del_vertex(self,data):
+        if data in self.vertices:
+            del self.vertices[data]
+
+    def add_edge(self, data1, data2):
+        if data1 in self.vertices and data2 in self.vertices:
+            self.vertices[data1].append(data2)
+            self.vertices[data2].append(data1)
+
+def lucky_seven_graph():
+    graph = Graph()
+    nodes = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20']
+    for node in nodes:
+        graph.add_vertex(node)
+    for i in range(len(nodes)-1):
+        graph.add_edge(nodes[i], nodes[i+1])
+    lucky_node = '7'
+    return graph,lucky_node
+
+lucky_graph, lucky_node = lucky_seven_graph()
+current_node = '1' # Starting node
+def check_lucky_seven(current_node,lucky_node):
+    global score, seven_bonus
+    if current_node == lucky_node and not seven_bonus:
+        score *= 2 # Not working with multiplication for some reason I will look into it.
+        seven_bonus = True
+        print("Lucky Seven activated")
+
 def lucky_seven_bonus():
-    global score, messages, seven_bonus
-    lucky_seven_chance = 5  # Chance of seven being lucky.
+    global current_node, lucky_node
     for card in player_hand:
-        if card.val == 7 and not seven_bonus:
-            if random.randint(1, 100) <= lucky_seven_chance: # Randomising a number between 1 and 100 and making 7 lucky if the number smaller than lucky seven chance.
-                score *= 2
-                messages['lucky_seven']= "You found a lucky seven! Score doubled to {score}!"
-                seven_bonus = True
+        if card.val == 7:
+            check_lucky_seven(current_node,lucky_node)
+        current_node = random.choice(lucky_graph.vertices[current_node])
 
 # Ending level, prepearing next level, ending the game.
 def reset_bonuses():
