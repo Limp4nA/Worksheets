@@ -444,6 +444,10 @@ def draw() -> None:
     global player_hand, deck_of_cards
     player_hand.append(deck_of_cards.draw())
     # calculate_score(
+    if len(player_hand) > 1:
+        last_card = player_hand[-2].val
+        new_card = player_hand[-1].val
+        if_consecutive_drawn(last_card, new_card)
 def update_texts() -> None:
     # it updates all the texts
     global texts, level, max_cards, score, player_hand, target
@@ -1279,20 +1283,44 @@ def lucky_seven_bonus():
                 messages['lucky_seven']= "You found a lucky seven! Score doubled to {score}!"
                 seven_bonus = True
 
+# Ending level, prepearing next level, ending the game.
+def reset_bonuses():
+    global ace_count,royal_count,ace_bonus, royal_bonus, seven_bonus
+    ace_bonus = False
+    royal_bonus = False
+    seven_bonus = False
+    royal_count = {11: 0, 12: 0, 13: 0}
+    ace_count = 0
+
+def reset_shake():
+    global shake_score, shake_score_amount
+    shake_score = False
+    shake_score_amount = 0
+
+def player_lost():
+    global score, level, target
+    go_to_menu_screen()
+    messages['player_lost'] = "You lost!"
+    level = 1
+    target = 20
+    score = 0
+def end_level():
+    global player_hand, score, messages, target, level, max_cards, score_color
+    player_hand = []
+    reset_bonuses()
+    reset_shake()
+    score_color = TEXT_COLOR
+    if score >= target:
+        messages['end_level'] = "Next level"
+        level += 1
+        target += target_increment
+        score = 0
+    else:
+        player_lost()
 
 
 # ----------------------------------------------------------------------------------------------------
 ''' end of ARDA`s implementation------------------------------------------------------------------------'''
-
-
-# this function will be called by a timer when the level is finished.
-def end_level() -> None:
-    #some one should implement it
-    go_to_menu_screen()
-    global player_hand
-    player_hand = []
-    pass
-
 
 def update_all() -> None:
 
