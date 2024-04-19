@@ -1310,7 +1310,7 @@ current_node = '1' # Starting node
 def check_lucky_seven(current_node,lucky_node):
     global score, seven_bonus
     if current_node == lucky_node and not seven_bonus:
-        score *= 2 # Not working with multiplication for some reason I will look into it.
+        score *= 2 
         seven_bonus = True
         print("Lucky Seven activated")
 
