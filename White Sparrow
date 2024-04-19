@@ -838,10 +838,12 @@ def show_menu_screen():
         if not menu_entering and not menu_exiting:
 
             if start_button.is_pressed():
+                sounds['button_click'].play()
 
                 menu_exiting = True
 
             elif exit_button.is_pressed():
+                sounds['button_click'].play()
                 run = False
 
     def draw_and_move_title():
@@ -1018,17 +1020,21 @@ def draw_and_move_reset_option():
         else:
 
             if yes_button.is_pressed():
+                sounds['button_click'].play()
                 timers['reset deck'].activate()
                 reset_option_exiting = True
 
             if no_button.is_pressed():
+                sounds['button_click'].play()
                 reset_option_exiting = True
+
 def show_reset_opiton():
     global reset_option_entering, reset_option_is_on
     reset_option_is_on = True
     reset_option_entering = True
 def reset_deck_of_cards():
     global deck_of_cards_reset_part1, deck_of_cards_reset_part2, deck_of_cards
+    sounds['reset_cards'].play()
 
     if deck_of_cards.size > 0:
         deck_of_cards_reset_part1 = True
