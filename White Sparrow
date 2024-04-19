@@ -106,12 +106,12 @@ WELCOME_Y = TITLE_Y - 100
 START = 'START'
 START_IMAGE = SMALL_FONT.render(f'{START}', True, TEXT_COLOR)
 # START_IMAGE = SMALL_FONT.render(f'{START}', True, 'green')
-START_X_SHIFT_FROM_BUTTON_X = 30
+START_X_SHIFT_FROM_BUTTON_X = 27
 
 EXIT = 'EXIT'
 EXIT_IMAGE = SMALL_FONT.render(f'{EXIT}', True, TEXT_COLOR)
 # EXIT_IMAGE = SMALL_FONT.render(f'{EXIT}', True, 'red')
-EXIT_X_SHIFT_FROM_BUTTON_X = 38
+EXIT_X_SHIFT_FROM_BUTTON_X = 37
 
 SMALL_TEXTS_Y_DISTANCE_FROM_BUTTONS = 50
 
@@ -820,8 +820,7 @@ def show_menu_screen():
         start_button.draw(shift)
         exit_button.draw(shift)
 
-        # small_texts_y = start_button.y - SMALL_TEXTS_Y_DISTANCE_FROM_BUTTONS
-        small_texts_y = start_button.y + start_button.image.get_height()/2 - 20
+        small_texts_y = start_button.y + start_button.image.get_height()/2 - 19
 
         start_x = start_button.x + START_X_SHIFT_FROM_BUTTON_X
         exit_x = exit_button.x + EXIT_X_SHIFT_FROM_BUTTON_X
@@ -984,7 +983,7 @@ def draw_and_move_reset_option():
         yes_button.draw(reset_option_start_y_position)
         no_button.draw(reset_option_start_y_position)
 
-        small_texts_y = OPTION_BUTTONS_Y + start_button.image.get_height()/2 - 25
+        small_texts_y = OPTION_BUTTONS_Y + start_button.image.get_height()/2 - 24
 
         yes_x = yes_button.x + YES_X_SHIFT_FROM_BUTTON_X
         screen.blit(YES_IMAGE, [yes_x, small_texts_y + reset_option_start_y_position])
@@ -1020,12 +1019,10 @@ def draw_and_move_reset_option():
 
             if no_button.is_pressed():
                 reset_option_exiting = True
-
 def show_reset_opiton():
     global reset_option_entering, reset_option_is_on
     reset_option_is_on = True
     reset_option_entering = True
-
 def reset_deck_of_cards():
     global deck_of_cards_reset_part1, deck_of_cards_reset_part2, deck_of_cards
 
@@ -1396,6 +1393,8 @@ global run
 run = True
 
 # show_menu_screen()
+
+show_reset_opiton()
 
 aa =True
 
