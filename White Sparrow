@@ -1247,43 +1247,44 @@ def calculate_score(amount=0) -> None:
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 ''' start of ARDA`s implementation ----------------------------------------------------------------------'''
 #Special Conditions:
+# Flags for tracking bonuses.
 ace_bonus = False
 royal_bonus = False
 seven_bonus = False
-def all_aces_drawn(player_hand):
+def all_aces_drawn(player_hand): # Function to award a bonus if all aces are drawn.
     global max_cards , ace_bonus
-    aces = 0
+    aces = 0 # To count aces.
     for card in player_hand:
-        if card.val == 1:
+        if card.val == 1: # Adding 1 ace to the count if the player draw an ace.
             aces += 1
 
-    if aces == 4 and not ace_bonus:
+    if aces == 4 and not ace_bonus: # Checks if all aces are drawn and if the bonus is not activated before.
         max_cards += 1
         ace_bonus = True
         messages["ace_bonus_activated"] = "You draw all the aces now you can hold one more card!"
 
-def if_consecutive_drawn(last_card, new_card):
+def if_consecutive_drawn(last_card, new_card): # Funtion to award a bonus if consecutive cards are drawn.
     global target
     if last_card == new_card:
         target -=3
 
     messages["consecutive_bonus_activated"] = "You drawn consecutive cards -3 Target"
 
-def royal_family_bonus(player_hand):
+def royal_family_bonus(player_hand): # Function to give player a bonus if they draw all royal cards(Q,K,J).
     global score, messages, royal_bonus
     royal_count = {11:0, 12:0, 13:0}
     for card in player_hand:
         if card.val in royal_count:
             royal_count[card.val] += 1
 
-    if (all(count == 1 for count in royal_count.values()) and not royal_bonus):
+    if (all(count == 1 for count in royal_count.values()) and not royal_bonus): # Checks if there is one of each royal card.
         score += 14
         royal_bonus = True
         messages['royal_activated'] = "Royal Family Bonus Activated +14 Score!"
 
 # Lucky Seven Bonus
 
-class Graph:
+class Graph: # Functions required for a simple graph.
     def __init__(self):
         self.vertices = {}
         self.ajd_matrix=None
@@ -1301,7 +1302,7 @@ class Graph:
             self.vertices[data1].append(data2)
             self.vertices[data2].append(data1)
 
-def lucky_seven_graph():
+def lucky_seven_graph(): # Funtion to make a graph with multiple nodes one being lucky.
     graph = Graph()
     nodes = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20']
     for node in nodes:
@@ -1311,24 +1312,26 @@ def lucky_seven_graph():
     lucky_node = '7'
     return graph,lucky_node
 
-lucky_graph, lucky_node = lucky_seven_graph()
+lucky_graph, lucky_node = lucky_seven_graph() # Initialising the graph.
 current_node = '1' # Starting node
+
 def check_lucky_seven(current_node,lucky_node):
     global score, seven_bonus
-    if current_node == lucky_node and not seven_bonus:
+    if current_node == lucky_node and not seven_bonus: # If current node is lucky node and seven bonus is not activated double the score.
         score *= 2 
         seven_bonus = True
         print("Lucky Seven activated")
 
-def lucky_seven_bonus():
+def lucky_seven_bonus(): # The main function that checks if the seven is drawn and the conditions are met.
     global current_node, lucky_node
     for card in player_hand:
         if card.val == 7:
             check_lucky_seven(current_node,lucky_node)
-        current_node = random.choice(lucky_graph.vertices[current_node])
+        current_node = random.choice(lucky_graph.vertices[current_node]) # To change current node a random node.
 
 # Ending level, prepearing next level, ending the game.
-def reset_bonuses():
+
+def reset_bonuses(): # Reseting bonuses to default.
     global ace_count,royal_count,ace_bonus, royal_bonus, seven_bonus
     ace_bonus = False
     royal_bonus = False
@@ -1336,20 +1339,22 @@ def reset_bonuses():
     royal_count = {11: 0, 12: 0, 13: 0}
     ace_count = 0
 
-def reset_shake():
+def reset_shake(): # Reseting screen shake effects.
     global shake_score, shake_score_amount
     shake_score = False
     shake_score_amount = 0
 
-def player_lost():
+def player_lost():  # Handling the player losing scenario.
     global score, level, target
     go_to_menu_screen()
     messages['player_lost'] = "You lost!"
     level = 1
     target = 20
     score = 0
-def end_level():
+
+def end_level(): # Ends current level either finishes the game or advance player to the next level.
     global player_hand, score, messages, target, level, max_cards, score_color
+     # Clearing the players hand and reseting some values to default.
     player_hand = []
     reset_bonuses()
     reset_shake()
@@ -1357,9 +1362,9 @@ def end_level():
     if score >= target:
         messages['end_level'] = "Next level"
         level += 1
-        target += target_increment
+        target += target_increment # Increasing target score for the next level.
         score = 0
-    else:
+    else: # If target score is not met ,end the game.
         player_lost()
 
 
