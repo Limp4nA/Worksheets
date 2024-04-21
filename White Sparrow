@@ -1503,9 +1503,12 @@ while run:
                 # start moving the card from the deck to the right side of the screen
                 card_is_moving_from_deck = True
 
-                # there is a card moving now so play a card sound
+                # There is a card moving now so play a card sound
                 sounds['one_card'].play()
-
+                
+                # reset messages' alpha value and delete all the messages except the score
+                reset_messages()
+                
                 # update the x destination for the new card that has been drawn
                 update_X_destination()
 
@@ -1514,8 +1517,6 @@ while run:
                 all_aces_drawn(player_hand)
                 royal_family_bonus(player_hand)
                 lucky_seven_bonus()
-                # reset the messages alpha value and delete all the messages except the score
-                reset_messages()
 
                 calculate_score()
 
