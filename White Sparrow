@@ -1091,19 +1091,35 @@ pygame.mixer.pre_init(44100, -16, 2, 512)
 # initialize
 mixer.init()
 
+
 # variables
 SOUNDS_VOLUME = 0.4
 MUSIC_DELAY = 4000
 MUSIC_VOLUME = 0.6
 
-# just random values we will updated as we need
-START_X = SCREEN_WIDTH * (2.6 / 9)
-MENU_BUTTONS_Y = SCREEN_HEIGHT * (2.5 / 9)
-EXIT_X = SCREEN_WIDTH * (2.6 / 9)
-EXIT_Y = SCREEN_HEIGHT * (4 / 9)
-NO_X = SCREEN_WIDTH / 3
+
+BUTTONS_BLACK_RECT_HEIGHT = 6
+
+global button_images
+button_images = {
+
+    'green': get_button_image('green'),
+    'red': get_button_image('red')
+}
+
+size = 10
+
+
+
+MENU_BUTTONS_Y = SCREEN_HEIGHT / 2 + 100
+START_X = (SCREEN_WIDTH - button_images['green'].get_width() * size) / 2 - button_images['green'].get_width() * size
+EXIT_X = (SCREEN_WIDTH - button_images['green'].get_width() * size) / 2 + button_images['green'].get_width() * size
+
+OPTION_BUTTONS_Y = RESET_OPTION_Y + RESET_OPTION_HEIGHT - button_images['green'].get_height() * size - OUTLINE_SIZE
+YES_X = RESET_OPTION_X + OUTLINE_SIZE + OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE
+NO_X = RESET_OPTION_X + RESET_OPTION_WIDTH - OUTLINE_SIZE - OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE \
+       - button_images['green'].get_width() * size
 NO_Y = SCREEN_HEIGHT / 2
-YES_X = SCREEN_WIDTH * 2 / 3
 YES_Y = SCREEN_HEIGHT / 2
 
 # load sounds & set the volume
@@ -1127,18 +1143,7 @@ pygame.mixer.music.set_volume(MUSIC_VOLUME)
 pygame.mixer.music.play(-1, 0.0, MUSIC_DELAY)
 
 
-BUTTONS_BLACK_RECT_HEIGHT = 6
 
-# button images loading
-global button_images
-button_images = {
-    'yes_button': pygame.image.load('Yes_button.png').convert_alpha(),
-    'no_button': pygame.image.load('No_button.png').convert_alpha(),
-    'start_button': pygame.image.load('start_button.png').convert_alpha(),
-    'exit_button': pygame.image.load('exit_button.png').convert_alpha(),
-    'green': get_button_image('green'),
-    'red': get_button_image('red')
-}
 
 
 class Button():
@@ -1198,34 +1203,15 @@ class Button():
         return action
 
 
+
+
+
 # creat Button instances
-
-# start_button = Button(START_X, MENU_BUTTONS_Y, button_images['start_button'], 0.2)
-# exit_button = Button(EXIT_X, EXIT_Y, button_images['exit_button'], 0.2)
-
-start_button = Button(START_X, MENU_BUTTONS_Y, button_images['start_button'], 1)
-exit_button = Button(EXIT_X, EXIT_Y, button_images['exit_button'], 1)
-
-
-
-
-size = 10
-
-MENU_BUTTONS_Y = SCREEN_HEIGHT / 2 + 100
-START_X = (SCREEN_WIDTH - button_images['green'].get_width() * size) / 2 - button_images['green'].get_width() * size
-EXIT_X = (SCREEN_WIDTH - button_images['green'].get_width() * size) / 2 + button_images['green'].get_width() * size
-
-OPTION_BUTTONS_Y = RESET_OPTION_Y + RESET_OPTION_HEIGHT - button_images['green'].get_height() * size - OUTLINE_SIZE
-YES_X = RESET_OPTION_X + OUTLINE_SIZE + OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE
-NO_X = RESET_OPTION_X + RESET_OPTION_WIDTH - OUTLINE_SIZE - OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE \
-       - button_images['green'].get_width() * size
-
 
 start_button = Button(START_X, MENU_BUTTONS_Y, button_images['green'], size)
 exit_button = Button(EXIT_X, MENU_BUTTONS_Y, button_images['red'], size)
 yes_button = Button(YES_X, YES_Y, button_images['green'], size)
 no_button = Button(NO_X, NO_Y, button_images['red'], size)
-# start_button = Button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 100, button_images['start'], size)
 
 
 # to calculate score
@@ -1234,6 +1220,7 @@ def calculate_score(amount=0) -> None:
 
     # add the value of the last card drawn + any bonus amount, then apply multiplier
     score += (player_hand[-1].val + amount) * multiplier
+
 
 
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
