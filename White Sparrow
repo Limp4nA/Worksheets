@@ -329,12 +329,12 @@ class Deck_of_cards:
         # here we shuffle the cards by the using the random.shuffle() function
         random.shuffle(cards)
 
+        # the size attribute will hold the number of cards in the Stack (card)
+        self.size = 52
+
         # then we create a stack that we hold of the shuffled cards
         self.cards = Stack()
         self.cards.list = cards
-
-        # the size attribute will hold the number of cards in the Stack (card)
-        self.size = 52
 
         # this list will hold all the images in the deck of cards
         self.cards_back_images = []
@@ -356,6 +356,7 @@ class Deck_of_cards:
                                   'y': DECK_OF_CARDS_Y - (DECK_OF_CARDS_SPACING * i)}
 
             self.cards_back_images.append(current_dictionary)
+
 
     def draw(self) -> Card:
 
@@ -428,7 +429,6 @@ class Timer:
                     # call it
                     self.func()
 def get_background_rect(width, height):
-
     background_rect = pygame.Surface((width, height)).convert_alpha()
     background_rect.fill("black")
 
@@ -442,12 +442,12 @@ def get_background_rect(width, height):
 def draw() -> None:
     # this function draws a cards to the player hand
     global player_hand, deck_of_cards
-    player_hand.append(deck_of_cards.draw())
-    # calculate_score(
-    if len(player_hand) > 1:
-        last_card = player_hand[-2].val
-        new_card = player_hand[-1].val
-        if_consecutive_drawn(last_card, new_card)
+
+    if deck_of_cards.size > 0:
+        player_hand.append(deck_of_cards.draw())
+
+    # if deck_of_cards.size == 0:
+    #     timers['reset deck'].activate()
 def update_texts() -> None:
     # it updates all the texts
     global texts, level, max_cards, score, player_hand, target
@@ -815,7 +815,7 @@ def show_menu_screen():
             shift = menu_animation_shift
 
         else:
-            shift = -title_hovering/10
+            shift = -title_hovering / 10
 
         rect_x = min(start_button.x, exit_button.x) - MENU_BUTTONS_RECT_HORIZONTAL_DISTANCE
         rect_y = MENU_BUTTONS_Y - MENU_BUTTONS_RECT_HORIZONTAL_DISTANCE
@@ -824,7 +824,7 @@ def show_menu_screen():
         start_button.draw(shift)
         exit_button.draw(shift)
 
-        small_texts_y = start_button.y + start_button.image.get_height()/2 - 19
+        small_texts_y = start_button.y + start_button.image.get_height() / 2 - 19
 
         start_x = start_button.x + START_X_SHIFT_FROM_BUTTON_X
         exit_x = exit_button.x + EXIT_X_SHIFT_FROM_BUTTON_X
@@ -854,8 +854,6 @@ def show_menu_screen():
             title_dt %= 2 * math.pi
             title_hovering = TITLE_MOVING_DISTANCE / 2 * math.sin(title_dt)
 
-
-
         if menu_entering:  # and  menu_animation_shift < SCREEN_HEIGHT:
             shift = menu_animation_shift - SCREEN_HEIGHT
 
@@ -868,7 +866,6 @@ def show_menu_screen():
 
     for i in range(10):
         falling_cards.append(get_random_card())
-
 
     global show_menu
     show_menu = True
@@ -900,7 +897,6 @@ def show_menu_screen():
             if event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
                 if not menu_entering and not menu_exiting:
                     pass
-
 
         if menu_exiting and menu_animation_shift <= -SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE:
             show_menu = False
@@ -989,7 +985,7 @@ def draw_and_move_reset_option():
         yes_button.draw(reset_option_start_y_position)
         no_button.draw(reset_option_start_y_position)
 
-        small_texts_y = OPTION_BUTTONS_Y + start_button.image.get_height()/2 - 24
+        small_texts_y = OPTION_BUTTONS_Y + start_button.image.get_height() / 2 - 24
 
         yes_x = yes_button.x + YES_X_SHIFT_FROM_BUTTON_X
         screen.blit(YES_IMAGE, [yes_x, small_texts_y + reset_option_start_y_position])
@@ -1027,7 +1023,6 @@ def draw_and_move_reset_option():
             if no_button.is_pressed():
                 sounds['button_click'].play()
                 reset_option_exiting = True
-
 def show_reset_opiton():
     global reset_option_entering, reset_option_is_on
     reset_option_is_on = True
@@ -1054,8 +1049,7 @@ def screen_shake_on():
     elif not screen_shake:
         screen_shake = True
         timers['screen shake off'].activate()
-def get_button_image(button_type:str):
-
+def get_button_image(button_type: str):
     image_width = 16
     image_height = 16
 
@@ -1069,23 +1063,21 @@ def get_button_image(button_type:str):
         col = 0
         row = 3
 
-
     image = pygame.Surface((image_width, image_height)).convert_alpha()
 
     sprite_x = image_width * col
     sprite_y = image_height * row
 
-    image.blit(buttons_sprite_sheet, [0, 0], [sprite_x , sprite_y, sprite_x + image_width, sprite_y + image_height])
+    image.blit(buttons_sprite_sheet, [0, 0], [sprite_x, sprite_y, sprite_x + image_width, sprite_y + image_height])
 
     black_rect = pygame.surface.Surface((image.get_width(), BUTTONS_BLACK_RECT_HEIGHT)).convert_alpha()
     black_rect.fill('black')
 
-    black_rect_y = (image.get_height() - BUTTONS_BLACK_RECT_HEIGHT)/2
+    black_rect_y = (image.get_height() - BUTTONS_BLACK_RECT_HEIGHT) / 2
 
-    image.blit(black_rect, [0 , black_rect_y])
+    image.blit(black_rect, [0, black_rect_y])
 
     return image
-
 ''' end of TURKI`s implementation (ID: 5554912)----------------------------------------------------------------------'''
 
 ''' start of LAMA`s implementation (ID: 5555093)---------------------------------------------------------------------'''
@@ -1246,54 +1238,53 @@ def calculate_score(amount=0) -> None:
 
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 ''' start of ARDA`s implementation ----------------------------------------------------------------------'''
-#Special Conditions:
+# Special Conditions:
 # Flags for tracking bonuses.
 ace_bonus = False
 royal_bonus = False
 seven_bonus = False
-def all_aces_drawn(player_hand): # Function to award a bonus if all aces are drawn.
-    global max_cards , ace_bonus
-    aces = 0 # To count aces.
+def all_aces_drawn():  # Function to award a bonus if all aces are drawn.
+    global max_cards, ace_bonus, player_hand
+    aces = 0  # To count aces.
     for card in player_hand:
-        if card.val == 1: # Adding 1 ace to the count if the player draw an ace.
+        if card.val == 1:  # Adding 1 ace to the count if the player draw an ace.
             aces += 1
 
-    if aces == 4 and not ace_bonus: # Checks if all aces are drawn and if the bonus is not activated before.
+    if aces == 4 and not ace_bonus:  # Checks if all aces are drawn and if the bonus is not activated before.
         max_cards += 1
         ace_bonus = True
         messages["ace_bonus_activated"] = "You draw all the aces now you can hold one more card!"
-
-def if_consecutive_drawn(last_card, new_card): # Funtion to award a bonus if consecutive cards are drawn.
+def if_consecutive_drawn():  # Funtion to award a bonus if consecutive cards are drawn.
     global target
-    if last_card == new_card:
-        target -=3
-
-    messages["consecutive_bonus_activated"] = "You drawn consecutive cards -3 Target"
-
-def royal_family_bonus(player_hand): # Function to give player a bonus if they draw all royal cards(Q,K,J).
-    global score, messages, royal_bonus
-    royal_count = {11:0, 12:0, 13:0}
+    if len(player_hand) > 1:
+        last_card = player_hand[-2].val
+        new_card = player_hand[-1].val
+        if last_card == new_card:
+            target -= 3
+            messages["consecutive_bonus_activated"] = "You drawn consecutive cards -3 Target"
+def royal_family_bonus():  # Function to give player a bonus if they draw all royal cards(Q,K,J).
+    global score, messages, royal_bonus, player_hand
+    royal_count = {11: 0, 12: 0, 13: 0}
     for card in player_hand:
         if card.val in royal_count:
             royal_count[card.val] += 1
 
-    if (all(count == 1 for count in royal_count.values()) and not royal_bonus): # Checks if there is one of each royal card.
+    if (all(count == 1 for count in
+            royal_count.values()) and not royal_bonus):  # Checks if there is one of each royal card.
         score += 14
         royal_bonus = True
         messages['royal_activated'] = "Royal Family Bonus Activated +14 Score!"
-
 # Lucky Seven Bonus
-
-class Graph: # Functions required for a simple graph.
+class Graph:  # Functions required for a simple graph.
     def __init__(self):
         self.vertices = {}
-        self.ajd_matrix=None
+        self.ajd_matrix = None
 
     def add_vertex(self, data):
         if data not in self.vertices:
-            self.vertices[data]=[]
+            self.vertices[data] = []
 
-    def del_vertex(self,data):
+    def del_vertex(self, data):
         if data in self.vertices:
             del self.vertices[data]
 
@@ -1301,49 +1292,42 @@ class Graph: # Functions required for a simple graph.
         if data1 in self.vertices and data2 in self.vertices:
             self.vertices[data1].append(data2)
             self.vertices[data2].append(data1)
-
-def lucky_seven_graph(): # Funtion to make a graph with multiple nodes one being lucky.
+def lucky_seven_graph():  # Funtion to make a graph with multiple nodes one being lucky.
     graph = Graph()
-    nodes = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20']
+    nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
+             '20']
     for node in nodes:
         graph.add_vertex(node)
-    for i in range(len(nodes)-1):
-        graph.add_edge(nodes[i], nodes[i+1])
+    for i in range(len(nodes) - 1):
+        graph.add_edge(nodes[i], nodes[i + 1])
     lucky_node = '7'
-    return graph,lucky_node
-
-lucky_graph, lucky_node = lucky_seven_graph() # Initialising the graph.
-current_node = '1' # Starting node
-
-def check_lucky_seven(current_node,lucky_node):
+    return graph, lucky_node
+lucky_graph, lucky_node = lucky_seven_graph()  # Initialising the graph.
+current_node = '1'  # Starting node
+def check_lucky_seven(current_node, lucky_node):
     global score, seven_bonus
-    if current_node == lucky_node and not seven_bonus: # If current node is lucky node and seven bonus is not activated double the score.
-        score *= 2 
+    if current_node == lucky_node and not seven_bonus:  # If current node is lucky node and seven bonus is not activated double the score.
+        score *= 2
         seven_bonus = True
         print("Lucky Seven activated")
-
-def lucky_seven_bonus(): # The main function that checks if the seven is drawn and the conditions are met.
+def lucky_seven_bonus():  # The main function that checks if the seven is drawn and the conditions are met.
     global current_node, lucky_node
     for card in player_hand:
         if card.val == 7:
-            check_lucky_seven(current_node,lucky_node)
-        current_node = random.choice(lucky_graph.vertices[current_node]) # To change current node a random node.
-
+            check_lucky_seven(current_node, lucky_node)
+        current_node = random.choice(lucky_graph.vertices[current_node])  # To change current node a random node.
 # Ending level, prepearing next level, ending the game.
-
-def reset_bonuses(): # Reseting bonuses to default.
-    global ace_count,royal_count,ace_bonus, royal_bonus, seven_bonus
+def reset_bonuses():  # Reseting bonuses to default.
+    global ace_count, royal_count, ace_bonus, royal_bonus, seven_bonus
     ace_bonus = False
     royal_bonus = False
     seven_bonus = False
     royal_count = {11: 0, 12: 0, 13: 0}
     ace_count = 0
-
-def reset_shake(): # Reseting screen shake effects.
+def reset_shake():  # Reseting screen shake effects.
     global shake_score, shake_score_amount
     shake_score = False
     shake_score_amount = 0
-
 def player_lost():  # Handling the player losing scenario.
     global score, level, target
     go_to_menu_screen()
@@ -1351,10 +1335,9 @@ def player_lost():  # Handling the player losing scenario.
     level = 1
     target = 20
     score = 0
-
-def end_level(): # Ends current level either finishes the game or advance player to the next level.
+def end_level():  # Ends current level either finishes the game or advance player to the next level.
     global player_hand, score, messages, target, level, max_cards, score_color
-     # Clearing the players hand and reseting some values to default.
+    # Clearing the players hand and reseting some values to default.
     player_hand = []
     reset_bonuses()
     reset_shake()
@@ -1362,13 +1345,10 @@ def end_level(): # Ends current level either finishes the game or advance player
     if score >= target:
         messages['end_level'] = "Next level"
         level += 1
-        target += target_increment # Increasing target score for the next level.
+        target += target_increment  # Increasing target score for the next level.
         score = 0
-    else: # If target score is not met ,end the game.
+    else:  # If target score is not met ,end the game.
         player_lost()
-
-
-# ----------------------------------------------------------------------------------------------------
 ''' end of ARDA`s implementation------------------------------------------------------------------------'''
 
 def update_all() -> None:
@@ -1475,10 +1455,10 @@ show_reset_opiton()
 
 aa =True
 
-#Game Loop ------------------------------
+# Game Loop ------------------------------
 while run:
 
-    #update everything for this frame
+    # update everything for this frame
     update_all()
 
     # the event handler
@@ -1488,35 +1468,41 @@ while run:
 
         # shut down the program of the player preses the X symbol in the screen
         if event.type == pygame.QUIT:
-             run = False
+            run = False
 
         # if the player presses any key
         elif event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
 
             condition1 = card_is_moving_from_deck or card_is_moving_to_hand or reset_option_is_on
             condition2 = deck_of_cards_reset_part1 or deck_of_cards_reset_part2 or slide_out
-            animation_is_going = condition1 or condition2
+            condition3 = (deck_of_cards.size == 0)
+            animation_is_going = condition1 or condition2 or condition3
 
-            # if there is no animation and the player can draw more cards
-            if not animation_is_going and len(player_hand) < max_cards:
+            deck_is_empty = deck_of_cards.size == 0
+
+            # it is True if there is no animation and the deck is not empty and the player can draw more cards
+            acceptable_click = not animation_is_going and not deck_is_empty and len(player_hand) < max_cards
+
+            if acceptable_click:
 
                 # start moving the card from the deck to the right side of the screen
                 card_is_moving_from_deck = True
 
                 # There is a card moving now so play a card sound
                 sounds['one_card'].play()
-                
+
                 # reset messages' alpha value and delete all the messages except the score
                 reset_messages()
-                
+
                 # update the x destination for the new card that has been drawn
                 update_X_destination()
 
                 # draw a card
                 draw()
-                all_aces_drawn(player_hand)
-                royal_family_bonus(player_hand)
+                all_aces_drawn()
+                royal_family_bonus()
                 lucky_seven_bonus()
+                if_consecutive_drawn()
 
                 calculate_score()
 
@@ -1528,10 +1514,9 @@ while run:
 
                 # if the player draws the maximum amount of cards
                 if len(player_hand) == max_cards:
-
                     timers['card slide'].activate()
 
-                    #activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
+                    # activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
                     timers['end level'].activate()
 
 pygame.quit()
