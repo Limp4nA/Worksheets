@@ -1082,7 +1082,7 @@ def get_button_image(button_type: str):
 
 ''' start of LAMA`s implementation (ID: 5555093)---------------------------------------------------------------------'''
 
-# imports the mixer module from the Pygame library in order to add and control the sounds within the game
+# import the mixer module from the Pygame library in order to add and control the sounds within the game
 from pygame import mixer
 
 # pre-initialization(random values so we can make sure it works properly)
