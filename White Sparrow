@@ -1222,6 +1222,7 @@ def calculate_score(amount=0) -> None:
 
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 ''' start of ARDA`s implementation ----------------------------------------------------------------------'''
+pygame.display.set_caption("White Sparrow") # To name game window "White Sparrow".
 # Special Conditions:
 # Flags for tracking bonuses.
 ace_bonus = False
