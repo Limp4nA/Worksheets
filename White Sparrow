@@ -1082,7 +1082,7 @@ def get_button_image(button_type: str):
 
 ''' start of LAMA`s implementation (ID: 5555093)---------------------------------------------------------------------'''
 
-# local import in order to add and controle the sounds within the game
+# imports the mixer module from the Pygame library in order to add and control the sounds within the game
 from pygame import mixer
 
 # pre-initialization(random values so we can make sure it works properly)
@@ -1100,7 +1100,7 @@ MUSIC_VOLUME = 0.6
 
 BUTTONS_BLACK_RECT_HEIGHT = 6
 
-
+# stores button images in a dictionary
 global button_images
 button_images = {
 
@@ -1108,6 +1108,7 @@ button_images = {
     'red': get_button_image('red')
 }
 
+# scale factor
 size = 10
 
 
@@ -1222,8 +1223,6 @@ def calculate_score(amount=0) -> None:
 
     # add the value of the last card drawn + any bonus amount, then apply multiplier
     score += (player_hand[-1].val + amount) * multiplier
-
-
 
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 ''' start of ARDA`s implementation ----------------------------------------------------------------------'''
