@@ -1100,6 +1100,7 @@ MUSIC_VOLUME = 0.6
 
 BUTTONS_BLACK_RECT_HEIGHT = 6
 
+
 global button_images
 button_images = {
 
@@ -1122,7 +1123,7 @@ NO_X = RESET_OPTION_X + RESET_OPTION_WIDTH - OUTLINE_SIZE - OPTION_BUTTONS_RECT_
 NO_Y = SCREEN_HEIGHT / 2
 YES_Y = SCREEN_HEIGHT / 2
 
-# load sounds & set the volume
+# load sounds and set the volume
 
 global sounds
 sounds = {
@@ -1131,9 +1132,11 @@ sounds = {
     'reset_cards' : pygame.mixer.Sound('reset_cards_sound.wav')
 }
 
-sounds['one_card'].set_volume(SOUNDS_VOLUME)
-sounds['button_click'].set_volume(SOUNDS_VOLUME)
-sounds['reset_cards'].set_volume(SOUNDS_VOLUME)
+
+# setting sounds volum by for loop
+# sound_name is the key in sounds dic, sound is the corresponding value associated with that key = pygame.mixer.Sound
+for sound_name, sound in sounds.items():
+    sound.set_volume(SOUNDS_VOLUME)
 
 # load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
 pygame.mixer.music.load("background_sound.wav")
@@ -1145,11 +1148,11 @@ pygame.mixer.music.play(-1, 0.0, MUSIC_DELAY)
 
 
 
-
+# creat a button class to add and control buttons in the game
 class Button():
     # Adding scale parameter in case we need to resize the images
     def __init__(self, x: float, y: float, image: pygame.Surface, scale):
-        # to adjest images we need first to know what the original dimention
+        # to adjest images, we first need to know the original dimentions
         width = image.get_width()
         height = image.get_height()
 
@@ -1181,7 +1184,7 @@ class Button():
         m_x = mouse_pos[0]
         m_y = mouse_pos[1]
 
-        # to check if the mouse over one of buttons & clicked conditions
+        # to check if the mouse over one of buttons and clicked conditions
         # the mouse is inside the button if m_x is between the horizontal side of the button
         # and m_y is between the vertical side of the button
         x_axis_condition = self.x <= m_x and m_x <= self.x + self.image.get_width()
