@@ -1101,7 +1101,6 @@ MUSIC_VOLUME = 0.6
 BUTTONS_BLACK_RECT_HEIGHT = 6
 
 # stores button images in a dictionary
-global button_images
 button_images = {
 
     'green': get_button_image('green'),
@@ -1126,7 +1125,6 @@ YES_Y = SCREEN_HEIGHT / 2
 
 # load sounds and set the volume
 
-global sounds
 sounds = {
     'one_card': pygame.mixer.Sound('card.wav'),
     'button_click': pygame.mixer.Sound('button_click.wav'),
