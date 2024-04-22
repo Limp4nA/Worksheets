@@ -1222,6 +1222,19 @@ def calculate_score(amount=0) -> None:
     # add the value of the last card drawn + any bonus amount, then apply multiplier
     score += (player_hand[-1].val + amount) * multiplier
 
+def read_higher_score():
+    try:
+        with open("higher_score.txt", "r") as file:
+            higher_score = int(file.read().strip())
+    except FileNotFoundError:
+        higher_score = 0
+    return higher_score
+
+def write_higher_score(score):
+    with open("higher_score.txt", "w") as file:
+        file.write(str(score))
+
+
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 ''' start of ARDA`s implementation ----------------------------------------------------------------------'''
 pygame.display.set_caption("White Sparrow") # To name game window "White Sparrow".
