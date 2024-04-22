@@ -1085,7 +1085,7 @@ def get_button_image(button_type: str):
 # import the mixer module from the Pygame library in order to add and control the sounds within the game
 from pygame import mixer
 
-# pre-initialization(random values so we can make sure it works properly)
+# pre-initialization(values so we can make sure it works properly)
 pygame.mixer.pre_init(44100, -16, 2, 512)
 
 # initialize
