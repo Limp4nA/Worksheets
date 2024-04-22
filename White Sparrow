@@ -1134,9 +1134,8 @@ sounds = {
 
 
 # setting sounds volum by for loop
-# sound_name is the key in sounds dic, sound is the corresponding value associated with that key = pygame.mixer.Sound
-for sound_name, sound in sounds.items():
-    sound.set_volume(SOUNDS_VOLUME)
+for sound_name in sounds:
+    sounds[sound_name].set_volume(SOUNDS_VOLUME)
 
 # load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
 pygame.mixer.music.load("background_sound.wav")
