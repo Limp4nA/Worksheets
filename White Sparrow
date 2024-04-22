@@ -1097,7 +1097,6 @@ SOUNDS_VOLUME = 0.4
 MUSIC_DELAY = 4000
 MUSIC_VOLUME = 0.6
 
-
 BUTTONS_BLACK_RECT_HEIGHT = 6
 
 # stores button images in a dictionary
@@ -1110,12 +1109,12 @@ button_images = {
 # scale factor
 size = 10
 
-
-
+#calculations to ensure that both buttons are horizontally centered on the screen with appropriate spacing between them.
 MENU_BUTTONS_Y = SCREEN_HEIGHT / 2 + 100
 START_X = (SCREEN_WIDTH - button_images['green'].get_width() * size) / 2 - button_images['green'].get_width() * size
 EXIT_X = (SCREEN_WIDTH - button_images['green'].get_width() * size) / 2 + button_images['green'].get_width() * size
 
+#calculations to ensure that the option buttons are positioned appropriately relative to the reset option and each other
 OPTION_BUTTONS_Y = RESET_OPTION_Y + RESET_OPTION_HEIGHT - button_images['green'].get_height() * size - OUTLINE_SIZE
 YES_X = RESET_OPTION_X + OUTLINE_SIZE + OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE
 NO_X = RESET_OPTION_X + RESET_OPTION_WIDTH - OUTLINE_SIZE - OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE \
@@ -1124,7 +1123,6 @@ NO_Y = SCREEN_HEIGHT / 2
 YES_Y = SCREEN_HEIGHT / 2
 
 # load sounds in a dictionary
-
 sounds = {
     'one_card': pygame.mixer.Sound('card.wav'),
     'button_click': pygame.mixer.Sound('button_click.wav'),
