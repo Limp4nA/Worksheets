@@ -1123,7 +1123,7 @@ NO_X = RESET_OPTION_X + RESET_OPTION_WIDTH - OUTLINE_SIZE - OPTION_BUTTONS_RECT_
 NO_Y = SCREEN_HEIGHT / 2
 YES_Y = SCREEN_HEIGHT / 2
 
-# load sounds and set the volume
+# load sounds in a dictionary
 
 sounds = {
     'one_card': pygame.mixer.Sound('card.wav'),
