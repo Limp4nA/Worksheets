@@ -1302,7 +1302,7 @@ def lucky_seven_bonus():  # The main function that checks if the seven is drawn 
     for card in player_hand:
         if card.val == 7:
             check_lucky_seven(current_node, lucky_node)
-        current_node = random.choice(lucky_graph.vertices[current_node])  # To change current node a random node.
+        current_node = random.choice(lucky_graph.vertices[current_node])  # To change current node to a random node.
 # Ending level, prepearing next level, ending the game.
 def reset_bonuses():  # Reseting bonuses to default.
     global ace_count, royal_count, ace_bonus, royal_bonus, seven_bonus
