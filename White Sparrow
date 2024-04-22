@@ -1126,7 +1126,9 @@ YES_Y = SCREEN_HEIGHT / 2
 sounds = {
     'one_card': pygame.mixer.Sound('card.wav'),
     'button_click': pygame.mixer.Sound('button_click.wav'),
-    'reset_cards' : pygame.mixer.Sound('reset_cards_sound.wav')
+    'reset_cards' : pygame.mixer.Sound('reset_cards_sound.wav'),
+    'end_level':pygame.mixer.Sound('end_level_sound.wav'),
+    'lose_sound': pygame.mixer.Sound('lose_sound.wav')
 }
 
 
