@@ -1317,6 +1317,7 @@ def reset_shake():  # Reseting screen shake effects.
     shake_score_amount = 0
 def player_lost():  # Handling the player losing scenario.
     global score, level, target
+    sounds['lose_sound'].play()
     go_to_menu_screen()
     messages['player_lost'] = "You lost!"
     level = 1
@@ -1334,6 +1335,7 @@ def end_level():  # Ends current level either finishes the game or advance playe
         level += 1
         target += target_increment  # Increasing target score for the next level.
         score = 0
+        sounds['end_level'].play()
     else:  # If target score is not met ,end the game.
         player_lost()
 ''' end of ARDA`s implementation------------------------------------------------------------------------'''
