@@ -1229,6 +1229,7 @@ def read_highest_level():
             highest_level = int(file.read().strip())
     except FileNotFoundError:
         highest_level = 1
+        write_highest_level(highest_level)
     return highest_level
 
 # to write the highest level achieved by the player to a file
