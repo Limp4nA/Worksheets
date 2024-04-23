@@ -1222,6 +1222,24 @@ def calculate_score(amount=0) -> None:
     # add the value of the last card drawn + any bonus amount, then apply multiplier
     score += (player_hand[-1].val + amount) * multiplier
 
+def read_highest_level():
+    try:
+        with open("highest_level.txt", "r") as file:
+            highest_level = int(file.read().strip())
+    except FileNotFoundError:
+        highest_level = 1
+    return highest_level
+
+def write_highest_level(level):
+    with open("highest_level.txt", "w") as file:
+        file.write(str(level))
+
+def update_highest_level(level):
+    highest_level = read_highest_level()
+    if level > highest_level:
+        write_highest_level(level)
+
+
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 ''' start of ARDA`s implementation ----------------------------------------------------------------------'''
 pygame.display.set_caption("White Sparrow") # To name game window "White Sparrow".
@@ -1318,6 +1336,10 @@ def reset_shake():  # Reseting screen shake effects.
 def player_lost():  # Handling the player losing scenario.
     global score, level, target
     sounds['lose_sound'].play()
+
+    update_highest_level(level)
+    messages['highest_level'] = read_highest_level()
+
     go_to_menu_screen()
     messages['player_lost'] = "You lost!"
     level = 1
