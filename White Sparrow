@@ -595,8 +595,8 @@ def draw_texts() -> None:
         if text == 'score' and shake_score:
 
             # get the random x and y off set from the range -> (-shake_score_amount, shake_score_amount)
-            x_off_set = random.randint(0, shake_score_amount * 2) - shake_score_amount
-            y_off_set = random.randint(0, shake_score_amount * 2) - shake_score_amount
+            x_off_set = random.randint(0, int(shake_score_amount * 2)) - int(shake_score_amount)
+            y_off_set = random.randint(0, int(shake_score_amount * 2)) - int(shake_score_amount)
 
             # draw the score text and move the X&Y positions by the off sets
             screen.blit(texts[text], (TEXT_X + x_off_set, current_y + y_off_set))
