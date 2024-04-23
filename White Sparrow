@@ -1704,9 +1704,15 @@ no_button = Button(NO_X, OPTION_BUTTONS_Y, button_images['red'], size)
 # to calculate score
 def calculate_score(amount=0) -> None:
     global score, player_hand
+   
+    # round the amount to the first decimal place
+    added_score = round((player_hand[-1].val + amount) * multiplier, 1)
+
+    # send the message
+    messages['score'] = added_score
 
     # add the value of the last card drawn + any bonus amount, then apply multiplier
-    score += (player_hand[-1].val + amount) * multiplier
+    score += added_score
 
 
 
@@ -2035,8 +2041,6 @@ while run:
                 if_consecutive_drawn()
                 check_all_speical_cases()
 
-                # set the score message
-                messages['score'] = f"+{round(player_hand[-1].val * multiplier, 1)}"
 
                 update_score_shake_and_color()
 
