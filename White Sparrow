@@ -1719,7 +1719,7 @@ def calculate_score(amount=0) -> None:
     score = round(score, 1)
 
 
-
+# File name for storing the highest level achieved by the player
 highest_level_file_name = "highest_level.txt"
 
 #to read the highest level achieved by the player from a file
@@ -1727,7 +1727,8 @@ def read_highest_level():
     try:
         with open(highest_level_file_name, "r") as file:
             file_level = int(file.read().strip())
-    except:
+    except:   # If the file does not exist, set the highest level to 1 and write it to the file
+
         file_level = 1
         write_highest_level(file_level)
     return file_level
