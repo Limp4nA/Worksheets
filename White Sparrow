@@ -1222,6 +1222,7 @@ def calculate_score(amount=0) -> None:
     # add the value of the last card drawn + any bonus amount, then apply multiplier
     score += (player_hand[-1].val + amount) * multiplier
 
+#to read the highest level achieved by the player from a file
 def read_highest_level():
     try:
         with open("highest_level.txt", "r") as file:
@@ -1230,10 +1231,12 @@ def read_highest_level():
         highest_level = 1
     return highest_level
 
+# to write the highest level achieved by the player to a file
 def write_highest_level(level):
     with open("highest_level.txt", "w") as file:
         file.write(str(level))
 
+#to update the highest level achieved by the player if the current level is higher.
 def update_highest_level(level):
     highest_level = read_highest_level()
     if level > highest_level:
