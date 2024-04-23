@@ -1758,7 +1758,7 @@ special_cases = {
 
 seven_bonus = True
 
-def check_all_speical_cases(): # Function to check special cases.
+def check_all_special_cases(): # Function to check special cases.
 
     global max_cards
 
@@ -2050,7 +2050,7 @@ while run:
 
                 lucky_seven_bonus()
                 if_consecutive_drawn()
-                check_all_speical_cases()
+                check_all_special_cases()
 
 
                 update_score_shake_and_color()
