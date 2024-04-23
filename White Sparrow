@@ -1623,6 +1623,9 @@ sounds = {
 for sound_name in sounds:
     sounds[sound_name].set_volume(SOUNDS_VOLUME)
 
+#adjast the end level volume more
+sounds['end_level'].set_volume(0.3)
+
 # load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
 pygame.mixer.music.load("background_sound.wav")
 pygame.mixer.music.set_volume(MUSIC_VOLUME)
