@@ -1883,7 +1883,7 @@ def player_lost():  # Handling the player losing scenario.
     target = 20
     score = 0
 def end_level():  # Ends current level either finishes the game or advance player to the next level.
-    global player_hand, score, messages, target, level, max_cards, score_color
+    global player_hand, score, messages, target, level, max_cards, score_color, multiplier
     # Clearing the players hand and reseting some values to default.
     score_x2target_bonus()
     player_hand = []
