@@ -1403,6 +1403,34 @@ def show_menu_screen():
             # assign the new hovering value
             title_hovering = TITLE_MOVING_DISTANCE / 2 * math.sin(title_dt)
 
+    def draw_highest_level():
+
+        # if entering animation is on
+        if menu_entering:
+            y_shift = menu_animation_shift - SCREEN_HEIGHT
+
+        # if exiting animation is on
+        elif menu_exiting:
+            y_shift = menu_animation_shift
+
+        # if no animation is on
+        else:
+            # the menu buttons hovering animation goes in the opposite direction from the title
+            # and dividing the hovering speed by 8
+            y_shift = -title_hovering / 8
+
+        # we get the text image
+        highest_level_image = SMALL_FONT.render(f'HIGHEST LEVEL {current_highest_level}', True, TEXT_COLOR)
+
+        # setting up the X&Y values
+        text_x = min(start_button.x, exit_button.x) + 80
+        text_y = MENU_BUTTONS_Y + start_button.image.get_height() + 15
+
+        # draw the highest level
+        screen.blit(highest_level_image, [text_x, text_y + y_shift])
+
+    current_highest_level = read_highest_level()
+
     # initialize the falling cards list
     falling_cards = []
 
@@ -1422,13 +1450,16 @@ def show_menu_screen():
         # run the program at 60 frames per second
         clock.tick(FPS)
 
-        # call the draw funcitons
-        draw_title()
-        draw_buttons()
+        # call the draw funcitons:
 
         # draw the falling cards if the entering animation is off
         if not menu_entering:
             draw_and_move_falling_cards(falling_cards)
+
+        draw_title()
+        draw_buttons()
+        draw_highest_level()
+
 
         # draw the game screen images of a major animation is on
         if menu_exiting or menu_entering:
@@ -1439,7 +1470,6 @@ def show_menu_screen():
         # call the update functions
         update_title_hovering()
         update_menu_animation_shift()
-
 
         # check the menu buttons
         check_menu_buttons()
@@ -1554,6 +1584,7 @@ MUSIC_DELAY = 4000
 MUSIC_VOLUME = 0.6
 
 BUTTONS_BLACK_RECT_HEIGHT = 6
+BUTTONS_SPRITE_SHEET = pygame.image.load('button UI.png').convert_alpha()
 
 # stores button images in a dictionary
 button_images = {
@@ -1598,7 +1629,6 @@ pygame.mixer.music.set_volume(MUSIC_VOLUME)
 
 # play the background sound with 4000 ms delay that more comfortable for users since it does not start strong ,and -1 for looping indefinitely
 pygame.mixer.music.play(-1, 0.0, MUSIC_DELAY)
-
 
 
 
@@ -1667,8 +1697,8 @@ class Button():
 
 start_button = Button(START_X, MENU_BUTTONS_Y, button_images['green'], size)
 exit_button = Button(EXIT_X, MENU_BUTTONS_Y, button_images['red'], size)
-yes_button = Button(YES_X, YES_Y, button_images['green'], size)
-no_button = Button(NO_X, NO_Y, button_images['red'], size)
+yes_button = Button(YES_X, OPTION_BUTTONS_Y, button_images['green'], size)
+no_button = Button(NO_X, OPTION_BUTTONS_Y, button_images['red'], size)
 
 
 # to calculate score
@@ -1678,19 +1708,23 @@ def calculate_score(amount=0) -> None:
     # add the value of the last card drawn + any bonus amount, then apply multiplier
     score += (player_hand[-1].val + amount) * multiplier
 
+
+
+highest_level_file_name = "highest_level.txt"
+
 #to read the highest level achieved by the player from a file
 def read_highest_level():
     try:
-        with open("highest_level.txt", "r") as file:
-            highest_level = int(file.read().strip())
-    except FileNotFoundError:
-        highest_level = 1
-        write_highest_level(highest_level)
-    return highest_level
+        with open(highest_level_file_name, "r") as file:
+            file_level = int(file.read().strip())
+    except:
+        file_level = 1
+        write_highest_level(file_level)
+    return file_level
 
 # to write the highest level achieved by the player to a file
 def write_highest_level(level):
-    with open("highest_level.txt", "w") as file:
+    with open(highest_level_file_name, "w") as file:
         file.write(str(level))
 
 #to update the highest level achieved by the player if the current level is higher.
@@ -1705,9 +1739,38 @@ def update_highest_level(level):
 pygame.display.set_caption("White Sparrow") # To name game window "White Sparrow".
 # Special Conditions:
 # Flags for tracking bonuses.
-ace_bonus = False
-royal_bonus = False
-seven_bonus = False
+
+
+special_cases = {
+        "ace bonus": True,
+        "royal bonus" : True,
+}
+
+seven_bonus = True
+
+def check_all_speical_cases():
+
+    global max_cards
+
+    amount_to_add_to_score = 0
+
+    if special_cases['ace bonus'] and all_aces_drawn():
+
+        max_cards += 1
+        messages["ace_bonus_activated"] = "All Aces"
+
+        special_cases['ace bonus'] = False
+
+    if special_cases["royal bonus"] and royal_family_bonus():
+
+        amount_to_add_to_score += 14
+        messages['royal_activated'] = "Royal Family"
+
+        special_cases["royal bonus"] = False
+
+    calculate_score(amount_to_add_to_score)
+
+
 def all_aces_drawn():  # Function to award a bonus if all aces are drawn.
     global max_cards, ace_bonus, player_hand
     aces = 0  # To count aces.
@@ -1715,10 +1778,9 @@ def all_aces_drawn():  # Function to award a bonus if all aces are drawn.
         if card.val == 1:  # Adding 1 ace to the count if the player draw an ace.
             aces += 1
 
-    if aces == 4 and not ace_bonus:  # Checks if all aces are drawn and if the bonus is not activated before.
-        max_cards += 1
-        ace_bonus = True
-        messages["ace_bonus_activated"] = "You draw all the aces now you can hold one more card!"
+    # returns if all aces are drawn and if the bonus is not activated before.
+    return aces == 4 and not ace_bonus
+
 def if_consecutive_drawn():  # Funtion to award a bonus if consecutive cards are drawn.
     global target
     if len(player_hand) > 1:
@@ -1726,19 +1788,18 @@ def if_consecutive_drawn():  # Funtion to award a bonus if consecutive cards are
         new_card = player_hand[-1].val
         if last_card == new_card:
             target -= 3
-            messages["consecutive_bonus_activated"] = "You drawn consecutive cards -3 Target"
+            messages["consecutive_bonus_activated"] = "Consecutive"
 def royal_family_bonus():  # Function to give player a bonus if they draw all royal cards(Q,K,J).
-    global score, messages, royal_bonus, player_hand
+    global score, messages, player_hand
     royal_count = {11: 0, 12: 0, 13: 0}
     for card in player_hand:
         if card.val in royal_count:
             royal_count[card.val] += 1
 
-    if (all(count == 1 for count in
-            royal_count.values()) and not royal_bonus):  # Checks if there is one of each royal card.
-        score += 14
-        royal_bonus = True
-        messages['royal_activated'] = "Royal Family Bonus Activated +14 Score!"
+    # Checks if there is one of each royal card.
+    return royal_count[11] and royal_count[12] and royal_count[13]
+    # return all(count == 1 for count in royal_count.values())
+
 # Lucky Seven Bonus
 class Graph:  # Functions required for a simple graph.
     def __init__(self):
@@ -1819,6 +1880,7 @@ def end_level():  # Ends current level either finishes the game or advance playe
         score = 0
         sounds['end_level'].play()
     else:  # If target score is not met ,end the game.
+        update_highest_level(level)
         player_lost()
 ''' end of ARDA`s implementation------------------------------------------------------------------------'''
 
@@ -1843,7 +1905,7 @@ def update_all() -> None:
   draw_deck_of_cards()
 
   # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
-  moving_card()
+  update_moving_card()
 
   # TODO we need to move this function to the place where we start each level.
   #  we only need to update the value at the begging of every level not every frame
@@ -1877,14 +1939,14 @@ RESET_OPTION_IMAGE.blit(WANT_TO_RESET_IMAGE, [WANT_TO_RESET_X, WANT_TO_RESET_Y])
 RESET_OPTION_IMAGE.blit(THE_DECK_IMAGE, [THE_DECK_X, THE_DECK_Y])
 
 
-all_title_images = get_background_rect(RECT_WIDTH, RECT_HEIGHT)
-all_title_images.blit(TITLE_IMAGE, [TITLE_X + OUTLINE_SIZE, TITLE_Y + OUTLINE_SIZE])
-all_title_images.blit(WELCOME_IMAGE, [WELCOME_X + OUTLINE_SIZE, WELCOME_Y + OUTLINE_SIZE])
+MENU_IMAGE = get_background_rect(RECT_WIDTH, RECT_HEIGHT)
+MENU_IMAGE.blit(TITLE_IMAGE, [TITLE_X + OUTLINE_SIZE, TITLE_Y + OUTLINE_SIZE])
+MENU_IMAGE.blit(WELCOME_IMAGE, [WELCOME_X + OUTLINE_SIZE, WELCOME_Y + OUTLINE_SIZE])
 
 max_x = max(start_button.x, exit_button.x)
 min_x = min(start_button.x, exit_button.x)
 MENU_BUTTONS_RECT_WIDTH = max_x + start_button.image.get_width() + 2 * MENU_BUTTONS_RECT_HORIZONTAL_DISTANCE - min_x
-MENU_BUTTONS_RECT_HEIGHT = start_button.image.get_height() + 2 * MENU_BUTTONS_RECT_VERTICAL_DISTANCE
+MENU_BUTTONS_RECT_HEIGHT = start_button.image.get_height() + 2 * MENU_BUTTONS_RECT_VERTICAL_DISTANCE + 50
 MENU_BUTTONS_RECT_IMAGE = get_background_rect(MENU_BUTTONS_RECT_WIDTH, MENU_BUTTONS_RECT_HEIGHT)
 
 # -----------------------
@@ -1920,11 +1982,9 @@ timers = {
 global run
 run = True
 
-# show_menu_screen()
+show_menu_screen()
 
-show_reset_opiton()
-
-aa =True
+# show_reset_opiton()
 
 # Game Loop ------------------------------
 while run:
@@ -1970,16 +2030,13 @@ while run:
 
                 # draw a card
                 draw()
-                all_aces_drawn()
-                royal_family_bonus()
+
                 lucky_seven_bonus()
                 if_consecutive_drawn()
-
-                calculate_score()
+                check_all_speical_cases()
 
                 # set the score message
                 messages['score'] = f"+{round(player_hand[-1].val * multiplier, 1)}"
-                messages['multiplier'] = f"+33"
 
                 update_score_shake_and_color()
 
@@ -1987,7 +2044,8 @@ while run:
                 if len(player_hand) == max_cards:
                     timers['card slide'].activate()
 
-                    # activate the timer for ending the level. because we want to give the player a couple of seconds to see what he/she has drawn
+                    # activate the timer for ending the level. because we want to
+                    # give the player a couple of seconds to see what he/she has drawn
                     timers['end level'].activate()
 
 pygame.quit()
