@@ -1755,28 +1755,33 @@ special_cases = {
 
 seven_bonus = True
 
-def check_all_speical_cases():
+def check_all_speical_cases(): # Function to check special cases.
 
     global max_cards
 
     amount_to_add_to_score = 0
 
-    if special_cases['ace bonus'] and all_aces_drawn():
+    if special_cases['ace bonus'] and all_aces_drawn(): # Checks if the ace bonus is enabled and all aces are drawn.
 
         max_cards += 1
         messages["ace_bonus_activated"] = "All Aces"
 
-        special_cases['ace bonus'] = False
+        special_cases['ace bonus'] = False # Disable ace bonus after activation.
 
-    if special_cases["royal bonus"] and royal_family_bonus():
+    if special_cases["royal bonus"] and royal_family_bonus(): # Checks if the royal bonus is enabled and royal family cards are drawn.
 
         amount_to_add_to_score += 14
         messages['royal_activated'] = "Royal Family"
 
-        special_cases["royal bonus"] = False
+        special_cases["royal bonus"] = False # Disable royal bonus after activation.
 
-    calculate_score(amount_to_add_to_score)
+    calculate_score(amount_to_add_to_score) # Updating the score.
 
+def score_x2target_bonus(): # Function to increase multiplier if score is twice as the target.
+    global score, target, multiplier
+    while 2 * target < score:
+        multiplier += 0.2
+        break # Exit the loop after applying the bonus.
 
 def all_aces_drawn():  # Function to award a bonus if all aces are drawn.
     global max_cards, ace_bonus, player_hand
@@ -1876,6 +1881,7 @@ def player_lost():  # Handling the player losing scenario.
 def end_level():  # Ends current level either finishes the game or advance player to the next level.
     global player_hand, score, messages, target, level, max_cards, score_color
     # Clearing the players hand and reseting some values to default.
+    score_x2target_bonus()
     player_hand = []
     reset_bonuses()
     reset_shake()
@@ -1887,6 +1893,7 @@ def end_level():  # Ends current level either finishes the game or advance playe
         score = 0
         sounds['end_level'].play()
     else:  # If target score is not met ,end the game.
+        multiplier = 1
         update_highest_level(level)
         player_lost()
 ''' end of ARDA`s implementation------------------------------------------------------------------------'''
