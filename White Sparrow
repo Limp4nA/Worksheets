@@ -790,10 +790,15 @@ def draw_and_move_reset_option():
                 # start the exiting animation
                 reset_option_exiting = True
 
+                # activate the click sound
+                sounds['button_click'].play()
             # check of the No button is presses
             if no_button.is_pressed():
                 # start the exiting animation
                 reset_option_exiting = True
+
+                # activate the click sound
+                sounds['button_click'].play()
 def draw_messages() -> None:
     # this function draw all the messages except the score and the multiplier messages,
     # they are drawn in the draw_texts()
@@ -1359,11 +1364,15 @@ def show_menu_screen():
             # check if the start button is pressed
             if start_button.is_pressed():
 
+                sounds['button_click'].play()
+
                 # start the exiting animation
                 menu_exiting = True
 
             # check if the exit button is pressed
             elif exit_button.is_pressed():
+
+                sounds['button_click'].play()
 
                 # turn off the program
                 run = False
@@ -1498,7 +1507,6 @@ def draw() -> None:
         timers['reset deck'].activate()
 
         max_cards += 1
-
 def reset_messages() -> None:
     # reset the messages alpha value and delete all the messages except the score and multiplier
 
@@ -1614,7 +1622,7 @@ for sound_name in sounds:
     sounds[sound_name].set_volume(SOUNDS_VOLUME)
 
 # adjast the end level volume more
-sounds['end_level'].set_volume(0.2)
+sounds['end_level'].set_volume(0.05)
 
 # load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
 pygame.mixer.music.load("background_sound.wav")
@@ -1830,7 +1838,6 @@ def if_3consecutive_drawn():
     else:
         return False
 
-
 def royal_family_bonus():  # Function to give player a bonus if they draw all royal cards(Q,K,J).
     global score, messages, player_hand
     royal_count = {11: 0, 12: 0, 13: 0}
@@ -1841,7 +1848,6 @@ def royal_family_bonus():  # Function to give player a bonus if they draw all ro
     # Checks if there is one of each royal card.
     return royal_count[11] and royal_count[12] and royal_count[13]
     # return all(count == 1 for count in royal_count.values())
-
 
 # Lucky Seven Bonus
 class Graph:  # Functions required for a simple graph.
@@ -1917,12 +1923,12 @@ def end_level():  # Ends current level either finishes the game or advance playe
     # Clearing the players hand and resetting some values to default.
     score_x2target_bonus()
     if score >= target:
-        
+
         level += 1
         target += target_increment  # Increasing target score for the next level.
         reset_all()
         sounds['end_level'].play()
-        
+
         if level % 4 == 0:
             show_reset_opiton()
 
@@ -2052,8 +2058,6 @@ global run
 run = True
 
 show_menu_screen()
-
-
 
 # Game Loop ------------------------------
 while run:
