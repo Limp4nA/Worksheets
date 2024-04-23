@@ -96,7 +96,6 @@ DECK_OF_CARDS_SPEED: int = 20
 # this starts the animation of the drawn card from the deck to move to the right side of the screen
 card_is_moving_from_deck = False
 
-
 # here is the deck of card reset animation, it`s in 2 parts
 # the part1 of the animation is the one that move the old deck to the right side of the screen then reset the deck.
 # if the deck is empty, part1 will be skipped,
@@ -118,18 +117,17 @@ TEXT_SIZE = 100
 TEXT_OFF_SET = 100
 # initializing two fonts for different text sizes
 FONT = pygame.font.Font('m6x11.ttf', TEXT_SIZE)
-SMALL_FONT = pygame.font.Font('m6x11.ttf', int(TEXT_SIZE/2))
+SMALL_FONT = pygame.font.Font('m6x11.ttf', int(TEXT_SIZE / 2))
 # the variable that stores all the texts that will be writen in the top left corner of the screen
 texts = {}
 # the color of the score when it reach beyond the target
-score_reached_color = [255, 255, 0] # yellow
+score_reached_color = [255, 255, 0]  # yellow
 # the starting color of the score
 score_color = TEXT_COLOR
 # if its True, the score will began to shake
 shake_score = False
 # the starting value of the shake amount, it will increase alongside the score
 shake_score_amount = 1
-
 
 # ------ start of messages sittings ------
 # messages are a kind of text that will pop up into the screen if the player does something significant.
@@ -215,7 +213,6 @@ RECT_Y = SCREEN_HEIGHT * 0.1
 # to the red rectangle to give an outline effect
 OUTLINE_SIZE = 5
 
-
 # the hovering of the title in the main menu uses a sin function, however, what makes this different from
 # cards slide-out, in this animation we ADD the sin function to the TITLE_IMAGE Y value
 
@@ -230,7 +227,6 @@ TITLE_MOVING_DISTANCE = 50
 
 # the variable that will be added to the MENU_IMAGE Y position to give the hovering effect
 title_hovering = 0
-
 
 # if it True, it will start the menu exit animation after the player presses the start button
 menu_exiting = False
@@ -247,8 +243,6 @@ menu_animation_speed = 0.01
 MENU_BUTTONS_RECT_HORIZONTAL_DISTANCE = 20
 # the distance between the menu buttons and the top and bottom sides of the background rectangle
 MENU_BUTTONS_RECT_VERTICAL_DISTANCE = 20
-
-
 
 # ------ start of reset option sittings ------
 # reset option is the option that will be given to the player to whether he/she resets the deck or not
@@ -316,6 +310,8 @@ down_side = CARD_Y + CARD_HEIGHT * CARD_SIZE
 right_side = SCREEN_WIDTH - SUIT_SIZE * 4
 # the X value of the left side
 left_side = 0
+
+
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # end of behind the scenes sitting variables
 
@@ -581,7 +577,6 @@ def draw_texts() -> None:
         # if the text is about the score or the multiplier
         # the score and the multiplier text are associated with the score and multiplier messages
         if text == 'score' or text == 'multiplier':
-
             # get the message image for the score and the multiplier
             message_image = FONT.render(messages[text], True, MESSAGE_COLOR)
 
@@ -723,7 +718,6 @@ def show_display():
     # show the display to the user
     pygame.display.update()
 def draw_and_move_reset_option():
-
     # this function is responsible for drawing and moving the reset option that pop up to the player at the beginning
     # of every 3 levels.
     global reset_option_is_on, reset_option_y_shifter, reset_option_entering, reset_option_exiting
@@ -739,7 +733,7 @@ def draw_and_move_reset_option():
         no_button.draw(reset_option_y_shifter)
 
         # the "Yes" and "No" text Y value. the wanted value will the center the small text at the middle of the button
-        small_texts_y = OPTION_BUTTONS_Y + start_button.image.get_height()/2 - 18
+        small_texts_y = OPTION_BUTTONS_Y + start_button.image.get_height() / 2 - 18
 
         # the small texts X value is equal to the button`s X position shifted by the shift amount for each small text
         yes_x = yes_button.x + YES_X_SHIFT_FROM_BUTTON_X
@@ -798,7 +792,6 @@ def draw_and_move_reset_option():
 
             # check of the No button is presses
             if no_button.is_pressed():
-
                 # start the exiting animation
                 reset_option_exiting = True
 def draw_messages() -> None:
@@ -817,7 +810,6 @@ def draw_messages() -> None:
 
             # leave the score and multiplier messages alone
             if message != 'score' and message != 'multiplier':
-
                 # creating the message images
                 message_image = FONT.render(messages[message], True, MESSAGE_COLOR)
 
@@ -899,13 +891,12 @@ def update_part2_descend_y():
 
         # Y descend is not negative anymore
         if part2_descend_y >= 0:
-
             # stop part2 animation
             deck_of_cards_reset_part2 = False
             # reset the y descend
             part2_descend_y = PART2_DESCEND_Y_DEFAULT_VALUE
 def update_slide_out_Y(current_card_y):
-    global slide_out,slide_dt
+    global slide_out, slide_dt
 
     # if slide out animation is on
     if slide_out:
@@ -932,7 +923,6 @@ def update_texts() -> None:
     texts['target'] = FONT.render(f'Target {target}', True, TEXT_COLOR)
     texts['max_cards'] = FONT.render(f'Cards {len(player_hand)}/{max_cards}', True, TEXT_COLOR)
 def update_X_destination() -> float:
-
     global player_hand, max_cards, x_destination
 
     # this number represents the interval of all the possible x position any card can be
@@ -978,7 +968,6 @@ def update_score_shake_and_color() -> None:
 
     # if the score surpassed the target by 150%
     if score >= target * 1.5:
-
         # turn on the score shake animation
         shake_score = True
 
@@ -1109,7 +1098,7 @@ def get_card_back_image(color: str) -> pygame.surface.Surface:
 
     # return the image
     return card_back_image
-def get_button_image(button_type:str):
+def get_button_image(button_type: str):
     # this function return the green and red buttons from the sprite sheet
 
     # the sizes of the buttons got from the sprite sheet
@@ -1133,22 +1122,21 @@ def get_button_image(button_type:str):
     sprite_y = button_height * row
 
     # cutting the button image form the sheet
-    image.blit(BUTTONS_SPRITE_SHEET, [0, 0], [sprite_x , sprite_y, sprite_x + button_width, sprite_y + button_height])
+    image.blit(BUTTONS_SPRITE_SHEET, [0, 0], [sprite_x, sprite_y, sprite_x + button_width, sprite_y + button_height])
 
     # creating the small black rectangle that is inside the button to hold the small text on it
     black_rect = pygame.surface.Surface((image.get_width(), BUTTONS_BLACK_RECT_HEIGHT)).convert_alpha()
     black_rect.fill('black')
 
     # black_rect_y stores the Y position that will align the rectangle in the middle of the button
-    black_rect_y = (image.get_height() - BUTTONS_BLACK_RECT_HEIGHT)/2
+    black_rect_y = (image.get_height() - BUTTONS_BLACK_RECT_HEIGHT) / 2
 
     # draw the black_rect into button image
-    image.blit(black_rect, [0 , black_rect_y])
+    image.blit(black_rect, [0, black_rect_y])
 
     # return the button image
     return image
 def get_suit_image(suit: str):
-
     # this function returns the suit image in the cards top left corner form the cards sprite sheet
 
     # all suits share the same width and X position
@@ -1261,7 +1249,6 @@ def show_menu_screen():
 
                 # if the card is beneath the screen
                 if falling_cards[i].y >= SCREEN_HEIGHT:
-
                     # delete the card from the list of falling cards
                     del falling_cards[i]
 
@@ -1290,7 +1277,6 @@ def show_menu_screen():
             # if the y_shift reached a certain value,we know that all menu images are shifted above the screen
             # and all game screen images are in their default location
             if menu_animation_shift <= -SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE:
-
                 # turn off the exiting animation
                 menu_exiting = False
                 # reset the y_shift variable
@@ -1300,6 +1286,7 @@ def show_menu_screen():
                 title_dt = 0
                 # turn off the menu screen
                 show_menu = False
+
 
         # if entering animation is on
         elif menu_entering:
@@ -1318,6 +1305,9 @@ def show_menu_screen():
                 # reset the y_shift variable
                 menu_animation_dt = 0
                 menu_animation_shift = 0
+
+                # reset all the variables before beginning a new game
+                reset_all(beginning_of_game=True)
 
     def draw_buttons():
 
@@ -1349,7 +1339,7 @@ def show_menu_screen():
         exit_button.draw(y_shift)
 
         # small text "START" and "EXIT" Y position
-        small_texts_y = start_button.y + start_button.image.get_height()/2 - 19
+        small_texts_y = start_button.y + start_button.image.get_height() / 2 - 19
 
         start_x = start_button.x + START_X_SHIFT_FROM_BUTTON_X
         exit_x = exit_button.x + EXIT_X_SHIFT_FROM_BUTTON_X
@@ -1460,7 +1450,6 @@ def show_menu_screen():
         draw_buttons()
         draw_highest_level()
 
-
         # draw the game screen images of a major animation is on
         if menu_exiting or menu_entering:
             draw_deck_of_cards()
@@ -1483,6 +1472,7 @@ def show_menu_screen():
 
         # if the exiting shift reached the desired value
         if menu_exiting and menu_animation_shift <= -SCREEN_HEIGHT - CARD_HEIGHT * CARD_SIZE:
+
             # turn off menu screen
             show_menu = False
 
@@ -1495,7 +1485,7 @@ def show_menu_screen():
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 def draw() -> None:
     # this function draws a cards to the player hand
-    global player_hand, deck_of_cards
+    global player_hand, deck_of_cards, max_cards
 
     # if the deck is not empty
     if deck_of_cards.size > 0:
@@ -1506,6 +1496,9 @@ def draw() -> None:
     if deck_of_cards.size == 0:
         # activate the reset deck timer
         timers['reset deck'].activate()
+
+        max_cards += 1
+
 def reset_messages() -> None:
     # reset the messages alpha value and delete all the messages except the score and multiplier
 
@@ -1577,7 +1570,6 @@ pygame.mixer.pre_init(44100, -16, 2, 512)
 # initialize
 mixer.init()
 
-
 # variables
 SOUNDS_VOLUME = 0.4
 MUSIC_DELAY = 4000
@@ -1588,7 +1580,6 @@ BUTTONS_SPRITE_SHEET = pygame.image.load('button UI.png').convert_alpha()
 
 # stores button images in a dictionary
 button_images = {
-
     'green': get_button_image('green'),
     'red': get_button_image('red')
 }
@@ -1596,12 +1587,12 @@ button_images = {
 # scale factor
 size = 10
 
-#calculations to ensure that both buttons are horizontally centered on the screen with appropriate spacing between them.
+# calculations to ensure that both buttons are horizontally centered on the screen with appropriate spacing between them.
 MENU_BUTTONS_Y = SCREEN_HEIGHT / 2 + 100
 START_X = (SCREEN_WIDTH - button_images['green'].get_width() * size) / 2 - button_images['green'].get_width() * size
 EXIT_X = (SCREEN_WIDTH - button_images['green'].get_width() * size) / 2 + button_images['green'].get_width() * size
 
-#calculations to ensure that the option buttons are positioned appropriately relative to the reset option and each other
+# calculations to ensure that the option buttons are positioned appropriately relative to the reset option and each other
 OPTION_BUTTONS_Y = RESET_OPTION_Y + RESET_OPTION_HEIGHT - button_images['green'].get_height() * size - OUTLINE_SIZE
 YES_X = RESET_OPTION_X + OUTLINE_SIZE + OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE
 NO_X = RESET_OPTION_X + RESET_OPTION_WIDTH - OUTLINE_SIZE - OPTION_BUTTONS_RECT_HORIZONTAL_DISTANCE \
@@ -1613,17 +1604,16 @@ YES_Y = SCREEN_HEIGHT / 2
 sounds = {
     'one_card': pygame.mixer.Sound('card.wav'),
     'button_click': pygame.mixer.Sound('button_click.wav'),
-    'reset_cards' : pygame.mixer.Sound('reset_cards_sound.wav'),
-    'end_level':pygame.mixer.Sound('end_level_sound.wav'),
+    'reset_cards': pygame.mixer.Sound('reset_cards_sound.wav'),
+    'end_level': pygame.mixer.Sound('end_level_sound.wav'),
     'lose_sound': pygame.mixer.Sound('lose_sound.wav')
 }
-
 
 # setting sounds volum by for loop
 for sound_name in sounds:
     sounds[sound_name].set_volume(SOUNDS_VOLUME)
 
-#adjast the end level volume more
+# adjast the end level volume more
 sounds['end_level'].set_volume(0.2)
 
 # load background sound (we donot have to sighn avairable bec. it will always plays in backgraound)
@@ -1634,8 +1624,7 @@ pygame.mixer.music.set_volume(MUSIC_VOLUME)
 pygame.mixer.music.play(-1, 0.0, MUSIC_DELAY)
 
 
-
-# creat a button class to add and control buttons in the game
+# create a button class to add and control buttons in the game
 class Button():
     # Adding scale parameter in case we need to resize the images
     def __init__(self, x: float, y: float, image: pygame.Surface, scale):
@@ -1679,7 +1668,6 @@ class Button():
 
         mouse_inside_button = x_axis_condition and y_axis_condition
 
-
         if mouse_inside_button:
 
             # for left mouse button -> 0
@@ -1691,12 +1679,7 @@ class Button():
                 self.clicked = False
 
         return action
-
-
-
-
-
-# creat Button instances
+# create Button instances
 
 start_button = Button(START_X, MENU_BUTTONS_Y, button_images['green'], size)
 exit_button = Button(EXIT_X, MENU_BUTTONS_Y, button_images['red'], size)
@@ -1707,7 +1690,7 @@ no_button = Button(NO_X, OPTION_BUTTONS_Y, button_images['red'], size)
 # to calculate score
 def calculate_score(amount=0) -> None:
     global score, player_hand
-   
+
     # round the amount to the first decimal place
     added_score = round((player_hand[-1].val + amount) * multiplier, 1)
 
@@ -1722,23 +1705,26 @@ def calculate_score(amount=0) -> None:
 # File name for storing the highest level achieved by the player
 highest_level_file_name = "highest_level.txt"
 
-#to read the highest level achieved by the player from a file
+
+# to read the highest level achieved by the player from a file
 def read_highest_level():
     try:
         with open(highest_level_file_name, "r") as file:
             file_level = int(file.read().strip())
-    except:   # If the file does not exist, set the highest level to 1 and write it to the file
+    except:  # If the file does not exist, set the highest level to 1 and write it to the file
 
         file_level = 1
         write_highest_level(file_level)
     return file_level
+
 
 # to write the highest level achieved by the player to a file
 def write_highest_level(level):
     with open(highest_level_file_name, "w") as file:
         file.write(str(level))
 
-#to update the highest level achieved by the player if the current level is higher.
+
+# to update the highest level achieved by the player if the current level is higher.
 def update_highest_level(level):
     highest_level = read_highest_level()
     if level > highest_level:
@@ -1747,46 +1733,70 @@ def update_highest_level(level):
 
 ''' end of LAMA`s implementation (ID: 5555093)-----------------------------------------------------------------------'''
 ''' start of ARDA`s implementation ----------------------------------------------------------------------'''
-pygame.display.set_caption("White Sparrow") # To name game window "White Sparrow".
+pygame.display.set_caption("White Sparrow")  # To name game window "White Sparrow".
 # Special Conditions:
 # Flags for tracking bonuses.
 
 
 special_cases = {
-        "ace bonus": True,
-        "royal bonus" : True,
+    "ace bonus": True,
+    "royal bonus": True,
+    "2consecutive": True,
+    "3consecutive": True
 }
 
 seven_bonus = True
+activated_SC_this_round = 0
 
-def check_all_special_cases(): # Function to check special cases.
+def check_all_special_cases():  # Function to check special cases.
 
-    global max_cards
+    global max_cards, multiplier, activated_SC_this_round, target
 
     amount_to_add_to_score = 0
 
-    if special_cases['ace bonus'] and all_aces_drawn(): # Checks if the ace bonus is enabled and all aces are drawn.
+    # Checks if the ace bonus is enabled and all aces are drawn.
+    if special_cases['ace bonus'] and all_aces_drawn():
 
         max_cards += 1
         messages["ace_bonus_activated"] = "All Aces"
 
-        special_cases['ace bonus'] = False # Disable ace bonus after activation.
+        activated_SC_this_round +=1
+        special_cases['ace bonus'] = False  # Disable ace bonus after activation.
 
-    if special_cases["royal bonus"] and royal_family_bonus(): # Checks if the royal bonus is enabled and royal family cards are drawn.
+    # Checks if the royal bonus is enabled and royal family cards are drawn.
+    if special_cases["royal bonus"] and royal_family_bonus():
 
         amount_to_add_to_score += 14
         messages['royal_activated'] = "Royal Family"
 
-        special_cases["royal bonus"] = False # Disable royal bonus after activation.
+        activated_SC_this_round += 1
+        special_cases["royal bonus"] = False  # Disable royal bonus after activation.
 
-    calculate_score(amount_to_add_to_score) # Updating the score.
+    if special_cases['2consecutive'] and if_2consecutive_drawn():
 
-def score_x2target_bonus(): # Function to increase multiplier if score is twice as the target.
-    global score, target, multiplier
-    while 2 * target < score:
-        multiplier += 0.2
-        multiplier = round(multiplier, 1) # Rounding multiplier to one decimal to avoid issues.
-        break # Exit the loop after applying the bonus.
+        target -= 3
+        messages["consecutive_bonus_activated"] = "2Consecutive"
+
+        activated_SC_this_round += 1
+        special_cases['2consecutive'] = False
+
+    if special_cases['3consecutive'] and if_3consecutive_drawn():
+        max_cards += 1
+        messages["consecutive_bonus_activated"] = "3Consecutive"
+
+        activated_SC_this_round += 1
+        special_cases['3consecutive'] = False
+
+    calculate_score(amount_to_add_to_score)  # Updating the score.
+
+def score_x2target_bonus():  # Function to increase multiplier if score is twice as the target.
+    global score, target, multiplier, activated_SC_this_round
+    if score >= target * 2:
+        multiplier += 0.3
+        multiplier = round(multiplier, 1)  # Rounding multiplier to one decimal to avoid issues.
+        messages['multiplier'] = f"+{0.1}"
+        activated_SC_this_round += 1
+
 
 def all_aces_drawn():  # Function to award a bonus if all aces are drawn.
     global max_cards, ace_bonus, player_hand
@@ -1798,14 +1808,29 @@ def all_aces_drawn():  # Function to award a bonus if all aces are drawn.
     # returns if all aces are drawn and if the bonus is not activated before.
     return aces == 4 and not ace_bonus
 
-def if_consecutive_drawn():  # Funtion to award a bonus if consecutive cards are drawn.
+
+def if_2consecutive_drawn():  # Funtion to award a bonus if consecutive cards are drawn.
     global target
     if len(player_hand) > 1:
         last_card = player_hand[-2].val
         new_card = player_hand[-1].val
-        if last_card == new_card:
-            target -= 3
-            messages["consecutive_bonus_activated"] = "Consecutive"
+        return last_card == new_card
+    else:
+        return False
+
+def if_3consecutive_drawn():
+    global target, max_cards
+    if len(player_hand) > 2:
+        third_card = player_hand[-3].val
+        last_card = player_hand[-2].val
+        new_card = player_hand[-1].val
+
+        return last_card == new_card and last_card == third_card
+
+    else:
+        return False
+
+
 def royal_family_bonus():  # Function to give player a bonus if they draw all royal cards(Q,K,J).
     global score, messages, player_hand
     royal_count = {11: 0, 12: 0, 13: 0}
@@ -1816,6 +1841,7 @@ def royal_family_bonus():  # Function to give player a bonus if they draw all ro
     # Checks if there is one of each royal card.
     return royal_count[11] and royal_count[12] and royal_count[13]
     # return all(count == 1 for count in royal_count.values())
+
 
 # Lucky Seven Bonus
 class Graph:  # Functions required for a simple graph.
@@ -1835,6 +1861,8 @@ class Graph:  # Functions required for a simple graph.
         if data1 in self.vertices and data2 in self.vertices:
             self.vertices[data1].append(data2)
             self.vertices[data2].append(data1)
+
+
 def lucky_seven_graph():  # Funtion to make a graph with multiple nodes one being lucky.
     graph = Graph()
     nodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
@@ -1845,20 +1873,26 @@ def lucky_seven_graph():  # Funtion to make a graph with multiple nodes one bein
         graph.add_edge(nodes[i], nodes[i + 1])
     lucky_node = '7'
     return graph, lucky_node
+
+
 lucky_graph, lucky_node = lucky_seven_graph()  # Initialising the graph.
 current_node = '1'  # Starting node
+
+
 def check_lucky_seven(current_node, lucky_node):
     global score, seven_bonus
     if current_node == lucky_node and not seven_bonus:  # If current node is lucky node and seven bonus is not activated double the score.
         score *= 2
         seven_bonus = True
         print("Lucky Seven activated")
+
 def lucky_seven_bonus():  # The main function that checks if the seven is drawn and the conditions are met.
     global current_node, lucky_node
     for card in player_hand:
         if card.val == 7:
             check_lucky_seven(current_node, lucky_node)
         current_node = random.choice(lucky_graph.vertices[current_node])  # To change current node to a random node.
+
 # Ending level, prepearing next level, ending the game.
 def reset_bonuses():  # Reseting bonuses to default.
     global ace_count, royal_count, ace_bonus, royal_bonus, seven_bonus
@@ -1867,79 +1901,96 @@ def reset_bonuses():  # Reseting bonuses to default.
     seven_bonus = False
     royal_count = {11: 0, 12: 0, 13: 0}
     ace_count = 0
+
 def reset_shake():  # Reseting screen shake effects.
-    global shake_score, shake_score_amount
+    global shake_score, shake_score_amount, score_color
     shake_score = False
     shake_score_amount = 0
-def player_lost():  # Handling the player losing scenario.
-    global score, level, target
-    sounds['lose_sound'].play()
+    score_color = TEXT_COLOR
 
-    update_highest_level(level)
-    messages['highest_level'] = read_highest_level()
+def reset_special_cases():
+    for s_c in special_cases:
+        special_cases[s_c] = True
 
-    go_to_menu_screen()
-    messages['player_lost'] = "You lost!"
-    level = 1
-    target = 20
-    score = 0
 def end_level():  # Ends current level either finishes the game or advance player to the next level.
     global player_hand, score, messages, target, level, max_cards, score_color, multiplier
-    # Clearing the players hand and reseting some values to default.
+    # Clearing the players hand and resetting some values to default.
     score_x2target_bonus()
-    player_hand = []
-    reset_bonuses()
-    reset_shake()
-    score_color = TEXT_COLOR
     if score >= target:
-        messages['end_level'] = "Next level"
+        
         level += 1
         target += target_increment  # Increasing target score for the next level.
-        score = 0
+        reset_all()
         sounds['end_level'].play()
+        
+        if level % 4 == 0:
+            show_reset_opiton()
+
+
     else:  # If target score is not met ,end the game.
-        multiplier = 1
         update_highest_level(level)
-        player_lost()
+        sounds['lose_sound'].play()
+        go_to_menu_screen()
+
+def reset_all(beginning_of_game = False):
+    global player_hand, score, activa, activated_SC_this_round, score_color, multiplier, max_cards, deck_of_cards
+    global level, target
+
+    reset_bonuses()
+    reset_shake()
+    reset_special_cases()
+    player_hand = []
+    score = get_new_score()
+    activated_SC_this_round = 0
+
+    if beginning_of_game:
+        score = 0
+        multiplier = 1
+        max_cards = 5
+        deck_of_cards = Deck_of_cards()
+        level = 1
+        target = 20
+
+def get_new_score():
+    return score * (activated_SC_this_round / max_cards)
 ''' end of ARDA`s implementation------------------------------------------------------------------------'''
 
+
 def update_all() -> None:
+    # it makes the program run at 60 FPS
+    clock.tick(FPS)
 
-  # it makes the program run at 60 FPS
-  clock.tick(FPS)
+    # here where the fill the screen with pink all of it.
+    # and if you don`t understant why we do that every frame, then try to remove this line and run the program
+    screen.fill(Background_Color)
 
-  # here where the fill the screen with pink all of it.
-  # and if you don`t understant why we do that every frame, then try to remove this line and run the program
-  screen.fill(Background_Color)
+    draw_symbols()
 
-  draw_symbols()
+    # here we draw all of the text in the top left corner
+    draw_texts()
 
-  # here we draw all of the text in the top left corner
-  draw_texts()
+    # here we draw the cards in the screen
+    draw_hand()
 
-  # here we draw the cards in the screen
-  draw_hand()
+    # here we draw the deck_of_cards in the screen
+    draw_deck_of_cards()
 
-  # here we draw the deck_of_cards in the screen
-  draw_deck_of_cards()
+    # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
+    update_moving_card()
 
-  # here we move the card that is being drawn if the (card_is_moving_to_hand is True)
-  update_moving_card()
+    # TODO we need to move this function to the place where we start each level.
+    #  we only need to update the value at the begging of every level not every frame
+    update_cards_x_adjustment()
 
-  # TODO we need to move this function to the place where we start each level.
-  #  we only need to update the value at the begging of every level not every frame
-  update_cards_x_adjustment()
+    # we update all of the timers to check if they are finished
+    update_timers()
 
-  #we update all of the timers to check if they are finished
-  update_timers()
+    draw_messages()
 
-  draw_messages()
+    draw_and_move_reset_option()
 
-  draw_and_move_reset_option()
-
-  # Note: we call this function in every frame. 60 times per second
-  show_display()
-
+    # Note: we call this function in every frame. 60 times per second
+    show_display()
 
 # images loading
 # -----------------------
@@ -1957,7 +2008,6 @@ RESET_OPTION_IMAGE = get_background_rect(RESET_OPTION_WIDTH, RESET_OPTION_HEIGHT
 RESET_OPTION_IMAGE.blit(WANT_TO_RESET_IMAGE, [WANT_TO_RESET_X, WANT_TO_RESET_Y])
 RESET_OPTION_IMAGE.blit(THE_DECK_IMAGE, [THE_DECK_X, THE_DECK_Y])
 
-
 MENU_IMAGE = get_background_rect(RECT_WIDTH, RECT_HEIGHT)
 MENU_IMAGE.blit(TITLE_IMAGE, [TITLE_X + OUTLINE_SIZE, TITLE_Y + OUTLINE_SIZE])
 MENU_IMAGE.blit(WELCOME_IMAGE, [WELCOME_X + OUTLINE_SIZE, WELCOME_Y + OUTLINE_SIZE])
@@ -1971,7 +2021,7 @@ MENU_BUTTONS_RECT_IMAGE = get_background_rect(MENU_BUTTONS_RECT_WIDTH, MENU_BUTT
 # -----------------------
 
 # game sitting variables
-#-----------------------
+# -----------------------
 player_hand = []
 deck_of_cards = Deck_of_cards()
 level = 1
@@ -1980,7 +2030,7 @@ score = 0
 target = 20
 target_increment = 5
 multiplier = 1
-#-----------------------
+# -----------------------
 
 
 # timers initialising
@@ -2003,7 +2053,7 @@ run = True
 
 show_menu_screen()
 
-# show_reset_opiton()
+
 
 # Game Loop ------------------------------
 while run:
@@ -2051,9 +2101,7 @@ while run:
                 draw()
 
                 lucky_seven_bonus()
-                if_consecutive_drawn()
                 check_all_special_cases()
-
 
                 update_score_shake_and_color()
 
