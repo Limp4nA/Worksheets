@@ -507,7 +507,7 @@ class Timer:
         self.active = False
         self.func = function
 
-        # start_time will be used to calculate if we surpassed the duration or not
+        # start_time will be used to  if we surpassed the duration or not
         self.start_time = 0
 
         # if the repeat is True, then the moment the timer finished it will start again automatically
@@ -1701,7 +1701,7 @@ yes_button = Button(YES_X, OPTION_BUTTONS_Y, button_images['green'], size)
 no_button = Button(NO_X, OPTION_BUTTONS_Y, button_images['red'], size)
 
 
-# to calculate score
+# to  score
 def calculate_score(amount=0) -> None:
     global score, player_hand
    
@@ -1713,6 +1713,7 @@ def calculate_score(amount=0) -> None:
 
     # add the value of the last card drawn + any bonus amount, then apply multiplier
     score += added_score
+    score = round(score, 1)
 
 
 
