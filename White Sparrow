@@ -1785,6 +1785,7 @@ def score_x2target_bonus(): # Function to increase multiplier if score is twice 
     global score, target, multiplier
     while 2 * target < score:
         multiplier += 0.2
+        multiplier = round(multiplier, 1) # Rounding multiplier to one decimal to avoid issues.
         break # Exit the loop after applying the bonus.
 
 def all_aces_drawn():  # Function to award a bonus if all aces are drawn.
